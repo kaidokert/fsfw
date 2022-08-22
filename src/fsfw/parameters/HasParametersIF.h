@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "ParameterWrapper.h"
 
 /**

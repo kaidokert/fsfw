@@ -2,7 +2,7 @@
 #define FSFW_POWER_POWERSWITCHIF_H_
 
 #include "../events/Event.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "definitions.h"
 /**
  *
@@ -13,14 +13,14 @@
  * because they can be called asynchronosuly (const ending).
  * @ingroup interfaces
  */
-class PowerSwitchIF : public HasReturnvaluesIF {
+class PowerSwitchIF {
  public:
   /**
    * Empty dtor.
    */
   virtual ~PowerSwitchIF() {}
   /**
-   * The Returnvalues id of this class, required by HasReturnvaluesIF
+   * The Returnvalues id of this class
    */
   static const uint8_t INTERFACE_ID = CLASS_ID::POWER_SWITCH_IF;
   static const ReturnValue_t SWITCH_ON = MAKE_RETURN_CODE(1);
@@ -50,7 +50,7 @@ class PowerSwitchIF : public HasReturnvaluesIF {
    * @return
    *     - @c SWITCH_ON if the specified switch is on.
    *     - @c SWITCH_OFF if the specified switch is off.
-   *     - @c RETURN_FAILED if an error occured
+   *     - @c returnvalue::FAILED if an error occured
    */
   virtual ReturnValue_t getSwitchState(power::Switch_t switchNr) const = 0;
   /**
@@ -59,7 +59,7 @@ class PowerSwitchIF : public HasReturnvaluesIF {
    * @return
    *     - @c FUSE_ON if the specified fuse is on.
    *     - @c FUSE_OFF if the specified fuse is off.
-   *     - @c RETURN_FAILED if an error occured
+   *     - @c returnvalue::FAILED if an error occured
    */
   virtual ReturnValue_t getFuseState(uint8_t fuseNr) const = 0;
   /**

@@ -37,7 +37,7 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
   auto pusParams = PusTcParams(17, 1);
   PusTcCreator creator(spParams, pusParams);
 
-  REQUIRE(psb.initialize() == HasReturnvaluesIF::RETURN_OK);
+  REQUIRE(psb.initialize() == returnvalue::OK);
 
   SECTION("State") {
     REQUIRE(psb.getIdentifier() == 17);
@@ -49,19 +49,20 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
 
   SECTION("Perform Service") {
     REQUIRE(psb.performServiceCallCnt == 0);
-    REQUIRE(psb.performOperation(0) == result::OK);
+    REQUIRE(psb.performOperation(0) == returnvalue::OK);
     REQUIRE(psb.performServiceCallCnt == 1);
   }
 
   SECTION("Send Request with Successful Handling") {
     REQUIRE(psb.performServiceCallCnt == 0);
     uint8_t* dataPtr;
-    REQUIRE(pool.getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) == result::OK);
+    REQUIRE(pool.getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) ==
+            returnvalue::OK);
     size_t serLen = 0;
-    REQUIRE(creator.serializeBe(dataPtr, serLen, creator.getSerializedSize()) == result::OK);
+    REQUIRE(creator.serializeBe(dataPtr, serLen, creator.getSerializedSize()) == returnvalue::OK);
     tmtcMsg.setStorageId(storeId);
     msgQueue.addReceivedMessage(tmtcMsg);
-    REQUIRE(psb.performOperation(0) == result::OK);
+    REQUIRE(psb.performOperation(0) == returnvalue::OK);
     uint8_t subservice = 0;
     REQUIRE(psb.getAndPopNextSubservice(subservice));
     REQUIRE(subservice == 1);
@@ -77,13 +78,14 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
 
   SECTION("Send Request with Failed Handling") {
     uint8_t* dataPtr;
-    REQUIRE(pool.getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) == result::OK);
+    REQUIRE(pool.getFreeElement(&storeId, creator.getSerializedSize(), &dataPtr) ==
+            returnvalue::OK);
     size_t serLen = 0;
-    REQUIRE(creator.serializeBe(dataPtr, serLen, creator.getSerializedSize()) == result::OK);
+    REQUIRE(creator.serializeBe(dataPtr, serLen, creator.getSerializedSize()) == returnvalue::OK);
     tmtcMsg.setStorageId(storeId);
     msgQueue.addReceivedMessage(tmtcMsg);
     psb.makeNextHandleReqCallFail(3);
-    REQUIRE(psb.performOperation(0) == result::OK);
+    REQUIRE(psb.performOperation(0) == returnvalue::OK);
     uint8_t subservice = 0;
     REQUIRE(psb.getAndPopNextSubservice(subservice));
     REQUIRE(subservice == 1);
@@ -100,7 +102,7 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
   SECTION("Invalid Packet Sent") {
     tmtcMsg.setStorageId(store_address_t::invalid());
     msgQueue.addReceivedMessage(tmtcMsg);
-    REQUIRE(psb.performOperation(0) == result::OK);
+    REQUIRE(psb.performOperation(0) == returnvalue::OK);
     REQUIRE(verificationReporter.failCallCount() == 1);
     auto verifParams = verificationReporter.getNextFailCallParams();
     REQUIRE(verifParams.tcPacketId == 0);
@@ -147,7 +149,7 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
     psbParams.objectId = 1;
     auto mockWithOwnerQueue = PsbMock(psbParams);
     REQUIRE(mockWithOwnerQueue.getRequestQueue() == MessageQueueIF::NO_QUEUE);
-    REQUIRE(mockWithOwnerQueue.initialize() == result::OK);
+    REQUIRE(mockWithOwnerQueue.initialize() == returnvalue::OK);
     REQUIRE(mockWithOwnerQueue.getRequestQueue() != MessageQueueIF::NO_QUEUE);
   }
 
@@ -190,7 +192,7 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
     auto pusDistrib = PusDistributorMock(distributorId);
     PsbMock::setStaticPusDistributor(distributorId);
     REQUIRE(PsbMock::getStaticPusDistributor() == distributorId);
-    REQUIRE(psb2.initialize() == result::OK);
+    REQUIRE(psb2.initialize() == returnvalue::OK);
     REQUIRE(pusDistrib.registerCallCount == 1);
     REQUIRE(pusDistrib.registeredServies.front() == &psb2);
   }
@@ -203,7 +205,7 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
     auto packetDest = AcceptsTmMock(destId, 2);
     PsbMock::setStaticTmDest(destId);
     REQUIRE(PsbMock::getStaticTmDest() == destId);
-    REQUIRE(psb2.initialize() == result::OK);
+    REQUIRE(psb2.initialize() == returnvalue::OK);
     auto& p = psb2.getParams();
     REQUIRE(p.tmReceiver == &packetDest);
   }
@@ -214,7 +216,7 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
     object_id_t reporterId = objects::VERIFICATION_REPORTER;
     PusVerificationReporterMock otherReporter(reporterId);
     auto psb2 = PsbMock(psbParams);
-    REQUIRE(psb2.initialize() == result::OK);
+    REQUIRE(psb2.initialize() == returnvalue::OK);
     auto& p = psb2.getParams();
     REQUIRE(p.verifReporter == &otherReporter);
   }
@@ -224,7 +226,7 @@ TEST_CASE("Pus Service Base", "[pus-service-base]") {
     psbParams.tcPool = nullptr;
     psbParams.objectId = 1;
     auto psb2 = PsbMock(psbParams);
-    REQUIRE(psb2.initialize() == result::OK);
+    REQUIRE(psb2.initialize() == returnvalue::OK);
     auto& p = psb2.getParams();
     REQUIRE(p.tcPool == &tcStoreGlobal);
   }

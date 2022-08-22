@@ -10,13 +10,13 @@ class CdsShortTimestamperMock : public TimeStamperIF, public TimeReaderIF {
  public:
   unsigned int serializeCallCount = 0;
   unsigned int deserializeCallCount = 0;
-  ReturnValue_t lastDeserializeResult = HasReturnvaluesIF::RETURN_OK;
-  ReturnValue_t lastSerializeResult = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t lastDeserializeResult = returnvalue::OK;
+  ReturnValue_t lastSerializeResult = returnvalue::OK;
   unsigned int getSizeCallCount = 0;
   bool nextSerFails = false;
-  ReturnValue_t serFailRetval = HasReturnvaluesIF::RETURN_FAILED;
+  ReturnValue_t serFailRetval = returnvalue::FAILED;
   bool nextDeserFails = false;
-  ReturnValue_t deserFailRetval = HasReturnvaluesIF::RETURN_FAILED;
+  ReturnValue_t deserFailRetval = returnvalue::FAILED;
   std::array<uint8_t, 7> valueToStamp{};
 
   CdsShortTimestamperMock() = default;
@@ -36,7 +36,7 @@ class CdsShortTimestamperMock : public TimeStamperIF, public TimeReaderIF {
       return lastSerializeResult;
     }
     std::copy(valueToStamp.begin(), valueToStamp.end(), *buffer);
-    thisNonConst.lastSerializeResult = HasReturnvaluesIF::RETURN_OK;
+    thisNonConst.lastSerializeResult = returnvalue::OK;
     *buffer += getSerializedSize();
     *size += getSerializedSize();
     return lastSerializeResult;
@@ -69,10 +69,10 @@ class CdsShortTimestamperMock : public TimeStamperIF, public TimeReaderIF {
     deserializeCallCount = 0;
     nextSerFails = false;
     nextDeserFails = false;
-    lastSerializeResult = HasReturnvaluesIF::RETURN_OK;
-    lastDeserializeResult = HasReturnvaluesIF::RETURN_OK;
-    deserFailRetval = HasReturnvaluesIF::RETURN_FAILED;
-    serFailRetval = HasReturnvaluesIF::RETURN_FAILED;
+    lastSerializeResult = returnvalue::OK;
+    lastDeserializeResult = returnvalue::OK;
+    deserFailRetval = returnvalue::FAILED;
+    serFailRetval = returnvalue::FAILED;
   }
 
   ReturnValue_t readTimeStamp(const uint8_t *buffer, size_t maxSize) override {

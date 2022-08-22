@@ -5,7 +5,7 @@ FileDataReader::FileDataReader(const uint8_t* pduBuf, size_t maxSize, FileDataIn
 
 ReturnValue_t FileDataReader::parseData() {
   ReturnValue_t result = HeaderReader::parseData();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t currentIdx = HeaderReader::getHeaderSize();
@@ -31,13 +31,13 @@ ReturnValue_t FileDataReader::parseData() {
     }
   }
   result = info.getOffset().deSerialize(&buf, &remSize, this->getEndianness());
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (remSize > 0) {
     info.setFileData(buf, remSize);
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 SerializeIF::Endianness FileDataReader::getEndianness() const { return endianness; }

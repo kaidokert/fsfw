@@ -21,15 +21,15 @@ LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQue
                                            bool appendValidityBuffer)
     : appendValidityBuffer(appendValidityBuffer) {
   if (owner == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "LocalDataPoolManager",
-                        HasReturnvaluesIF::RETURN_FAILED, "Invalid supplied owner");
+    printWarningOrError(sif::OutputTypes::OUT_WARNING, "LocalDataPoolManager", returnvalue::FAILED,
+                        "Invalid supplied owner");
     return;
   }
   this->owner = owner;
   mutex = MutexFactory::instance()->createMutex();
   if (mutex == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_ERROR, "LocalDataPoolManager",
-                        HasReturnvaluesIF::RETURN_FAILED, "Could not create mutex");
+    printWarningOrError(sif::OutputTypes::OUT_ERROR, "LocalDataPoolManager", returnvalue::FAILED,
+                        "Could not create mutex");
   }
 
   hkQueue = queueToUse;
@@ -51,9 +51,9 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
   ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
   if (ipcStore == nullptr) {
     /* Error, all destinations invalid */
-    printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize", HasReturnvaluesIF::RETURN_FAILED,
+    printWarningOrError(sif::OutputTypes::OUT_ERROR, "initialize", returnvalue::FAILED,
                         "Could not set IPC store.");
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   if (defaultHkDestination != objects::NO_OBJECT) {
@@ -67,7 +67,7 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
     }
   }
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LocalDataPoolManager::initializeAfterTaskCreation(uint8_t nonDiagInvlFactor) {
@@ -78,19 +78,19 @@ ReturnValue_t LocalDataPoolManager::initializeAfterTaskCreation(uint8_t nonDiagI
 ReturnValue_t LocalDataPoolManager::initializeHousekeepingPoolEntriesOnce() {
   if (not mapInitialized) {
     ReturnValue_t result = owner->initializeLocalDataPool(localPoolMap, *this);
-    if (result == HasReturnvaluesIF::RETURN_OK) {
+    if (result == returnvalue::OK) {
       mapInitialized = true;
     }
     return result;
   }
 
   printWarningOrError(sif::OutputTypes::OUT_WARNING, "initializeHousekeepingPoolEntriesOnce",
-                      HasReturnvaluesIF::RETURN_FAILED, "The map should only be initialized once");
-  return HasReturnvaluesIF::RETURN_OK;
+                      returnvalue::FAILED, "The map should only be initialized once");
+  return returnvalue::OK;
 }
 
 ReturnValue_t LocalDataPoolManager::performHkOperation() {
-  ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t status = returnvalue::OK;
   for (auto& receiver : hkReceivers) {
     switch (receiver.reportingType) {
       case (ReportingType::PERIODIC): {
@@ -115,7 +115,7 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
       }
       default:
         // This should never happen.
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
     }
   }
   resetHkUpdateResetHelper();
@@ -125,7 +125,7 @@ ReturnValue_t LocalDataPoolManager::performHkOperation() {
 ReturnValue_t LocalDataPoolManager::handleHkUpdate(HkReceiver& receiver, ReturnValue_t& status) {
   if (receiver.dataType == DataType::LOCAL_POOL_VARIABLE) {
     /* Update packets shall only be generated from datasets. */
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   LocalPoolDataSetBase* dataSet =
       HasLocalDpIFManagerAttorney::getDataSetHandle(owner, receiver.dataId.sid);
@@ -135,12 +135,12 @@ ReturnValue_t LocalDataPoolManager::handleHkUpdate(HkReceiver& receiver, ReturnV
   if (dataSet->hasChanged()) {
     /* Prepare and send update notification */
     ReturnValue_t result = generateHousekeepingPacket(receiver.dataId.sid, dataSet, true);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       status = result;
     }
   }
   handleChangeResetLogic(receiver.dataType, receiver.dataId, dataSet);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(HkReceiver& receiver,
@@ -160,7 +160,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(HkReceiver& receive
       HousekeepingMessage::setUpdateNotificationVariableCommand(
           &notification, gp_id_t(owner->getObjectId(), receiver.dataId.localPoolId));
       ReturnValue_t result = hkQueue->sendMessage(receiver.destinationQueue, &notification);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         status = result;
       }
       toReset = poolObj;
@@ -179,7 +179,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(HkReceiver& receive
       CommandMessage notification;
       HousekeepingMessage::setUpdateNotificationSetCommand(&notification, receiver.dataId.sid);
       ReturnValue_t result = hkQueue->sendMessage(receiver.destinationQueue, &notification);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         status = result;
       }
       toReset = dataSet;
@@ -188,7 +188,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationUpdate(HkReceiver& receive
   if (toReset != nullptr) {
     handleChangeResetLogic(receiver.dataType, receiver.dataId, toReset);
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& receiver,
@@ -205,7 +205,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
     }
 
     if (not poolObj->hasChanged()) {
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
 
     /* Prepare and send update snapshot */
@@ -219,7 +219,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
 
     store_address_t storeId;
     ReturnValue_t result = addUpdateToStore(updatePacket, storeId);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
 
@@ -227,7 +227,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
     HousekeepingMessage::setUpdateSnapshotVariableCommand(
         &notification, gp_id_t(owner->getObjectId(), receiver.dataId.localPoolId), storeId);
     result = hkQueue->sendMessage(receiver.destinationQueue, &notification);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       status = result;
     }
     toReset = poolObj;
@@ -241,7 +241,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
     }
 
     if (not dataSet->hasChanged()) {
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
 
     /* Prepare and send update snapshot */
@@ -255,14 +255,14 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
 
     store_address_t storeId;
     ReturnValue_t result = addUpdateToStore(updatePacket, storeId);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
 
     CommandMessage notification;
     HousekeepingMessage::setUpdateSnapshotSetCommand(&notification, receiver.dataId.sid, storeId);
     result = hkQueue->sendMessage(receiver.destinationQueue, &notification);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       status = result;
     }
     toReset = dataSet;
@@ -270,7 +270,7 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
   if (toReset != nullptr) {
     handleChangeResetLogic(receiver.dataType, receiver.dataId, toReset);
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LocalDataPoolManager::addUpdateToStore(HousekeepingSnapshot& updatePacket,
@@ -279,7 +279,7 @@ ReturnValue_t LocalDataPoolManager::addUpdateToStore(HousekeepingSnapshot& updat
   uint8_t* storePtr = nullptr;
   ReturnValue_t result =
       ipcStore->getFreeElement(&storeId, updatePacket.getSerializedSize(), &storePtr);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t serializedSize = 0;
@@ -356,7 +356,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(subdp::ParamsBase
   }
 
   hkReceivers.push_back(hkReceiver);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LocalDataPoolManager::subscribeForRegularUpdatePacket(
@@ -388,7 +388,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(subdp::ParamsBase& 
   hkReceivers.push_back(hkReceiver);
 
   handleHkUpdateResetListInsertion(hkReceiver.dataType, hkReceiver.dataId);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LocalDataPoolManager::subscribeForSetUpdateMessage(const uint32_t setId,
@@ -409,7 +409,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForSetUpdateMessage(const uint32_t 
   hkReceivers.push_back(hkReceiver);
 
   handleHkUpdateResetListInsertion(hkReceiver.dataType, hkReceiver.dataId);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LocalDataPoolManager::subscribeForVariableUpdateMessage(
@@ -429,7 +429,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForVariableUpdateMessage(
   hkReceivers.push_back(hkReceiver);
 
   handleHkUpdateResetListInsertion(hkReceiver.dataType, hkReceiver.dataId);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void LocalDataPoolManager::handleHkUpdateResetListInsertion(DataType dataType, DataId dataId) {
@@ -463,7 +463,7 @@ void LocalDataPoolManager::handleHkUpdateResetListInsertion(DataType dataType, D
 ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(CommandMessage* message) {
   Command_t command = message->getCommand();
   sid_t sid = HousekeepingMessage::getSid(message);
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   switch (command) {
     // Houskeeping interface handling.
     case (HousekeepingMessage::ENABLE_PERIODIC_DIAGNOSTICS_GENERATION): {
@@ -488,7 +488,7 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(CommandMessage* me
 
     case (HousekeepingMessage::REPORT_DIAGNOSTICS_REPORT_STRUCTURES): {
       result = generateSetStructurePacket(sid, true);
-      if (result == HasReturnvaluesIF::RETURN_OK) {
+      if (result == returnvalue::OK) {
         return result;
       }
       break;
@@ -496,7 +496,7 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(CommandMessage* me
 
     case (HousekeepingMessage::REPORT_HK_REPORT_STRUCTURES): {
       result = generateSetStructurePacket(sid, false);
-      if (result == HasReturnvaluesIF::RETURN_OK) {
+      if (result == returnvalue::OK) {
         return result;
       }
       break;
@@ -536,12 +536,12 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(CommandMessage* me
     /* Notification handling */
     case (HousekeepingMessage::UPDATE_NOTIFICATION_SET): {
       owner->handleChangedDataset(sid);
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
     case (HousekeepingMessage::UPDATE_NOTIFICATION_VARIABLE): {
       gp_id_t globPoolId = HousekeepingMessage::getUpdateNotificationVariableCommand(message);
       owner->handleChangedPoolVariable(globPoolId);
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
     case (HousekeepingMessage::UPDATE_SNAPSHOT_SET): {
       store_address_t storeId;
@@ -551,7 +551,7 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(CommandMessage* me
       if (clearMessage) {
         message->clear();
       }
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
     case (HousekeepingMessage::UPDATE_SNAPSHOT_VARIABLE): {
       store_address_t storeId;
@@ -561,7 +561,7 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(CommandMessage* me
       if (clearMessage) {
         message->clear();
       }
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
 
     default:
@@ -569,7 +569,7 @@ ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(CommandMessage* me
   }
 
   CommandMessage reply;
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     HousekeepingMessage::setHkRequestFailureReply(&reply, sid, result);
   } else {
     HousekeepingMessage::setHkRequestSuccessReply(&reply, sid);
@@ -586,7 +586,7 @@ ReturnValue_t LocalDataPoolManager::printPoolEntry(lp_id_t localPoolId) {
     return localpool::POOL_ENTRY_NOT_FOUND;
   }
   poolIter->second->print();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 MutexIF* LocalDataPoolManager::getMutexHandle() { return mutex; }
@@ -609,7 +609,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
   size_t serializedSize = 0;
   ReturnValue_t result =
       serializeHkPacketIntoStore(hkPacket, storeId, forDownlink, &serializedSize);
-  if (result != HasReturnvaluesIF::RETURN_OK or serializedSize == 0) {
+  if (result != returnvalue::OK or serializedSize == 0) {
     return result;
   }
 
@@ -647,7 +647,7 @@ ReturnValue_t LocalDataPoolManager::serializeHkPacketIntoStore(HousekeepingPacke
   uint8_t* dataPtr = nullptr;
   const size_t maxSize = hkPacket.getSerializedSize();
   ReturnValue_t result = ipcStore->getFreeElement(&storeId, maxSize, &dataPtr);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -687,7 +687,7 @@ void LocalDataPoolManager::performPeriodicHkGeneration(HkReceiver& receiver) {
   }
 
   ReturnValue_t result = generateHousekeepingPacket(sid, dataSet, true);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     /* Configuration error */
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "LocalDataPoolManager::performPeriodicHkOperation: HK generation failed."
@@ -718,7 +718,7 @@ ReturnValue_t LocalDataPoolManager::togglePeriodicGeneration(sid_t sid, bool ena
   }
 
   LocalPoolDataSetAttorney::setReportingEnabled(*dataSet, enable);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid, float newCollectionInterval,
@@ -744,7 +744,7 @@ ReturnValue_t LocalDataPoolManager::changeCollectionInterval(sid_t sid, float ne
   }
 
   periodicHelper->changeCollectionInterval(newCollectionInterval);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid, bool isDiagnostics) {
@@ -772,24 +772,22 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid, bool i
   uint8_t* storePtr = nullptr;
   store_address_t storeId;
   ReturnValue_t result = ipcStore->getFreeElement(&storeId, expectedSize, &storePtr);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     printWarningOrError(sif::OutputTypes::OUT_ERROR, "generateSetStructurePacket",
-                        HasReturnvaluesIF::RETURN_FAILED,
-                        "Could not get free element from IPC store.");
+                        returnvalue::FAILED, "Could not get free element from IPC store.");
     return result;
   }
 
   // Serialize set packet into store.
   size_t size = 0;
   result = setPacket.serialize(&storePtr, &size, expectedSize, SerializeIF::Endianness::BIG);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     ipcStore->deleteData(storeId);
     return result;
   }
   if (expectedSize != size) {
     printWarningOrError(sif::OutputTypes::OUT_WARNING, "generateSetStructurePacket",
-                        HasReturnvaluesIF::RETURN_FAILED,
-                        "Expected size is not equal to serialized size");
+                        returnvalue::FAILED, "Expected size is not equal to serialized size");
   }
 
   // Send structure reporting reply.
@@ -801,7 +799,7 @@ ReturnValue_t LocalDataPoolManager::generateSetStructurePacket(sid_t sid, bool i
   }
 
   result = hkQueue->reply(&reply);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     ipcStore->deleteData(storeId);
   }
   return result;
@@ -827,7 +825,7 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
       errorPrint = "Dataset not found";
     } else if (error == POOLOBJECT_NOT_FOUND) {
       errorPrint = "Pool Object not found";
-    } else if (error == HasReturnvaluesIF::RETURN_FAILED) {
+    } else if (error == returnvalue::FAILED) {
       if (outputType == sif::OutputTypes::OUT_WARNING) {
         errorPrint = "Generic Warning";
       } else {

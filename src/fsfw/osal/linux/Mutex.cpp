@@ -82,9 +82,9 @@ ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType, uint32_t timeoutMs) {
       return CURR_THREAD_ALREADY_OWNS_MUTEX;
     case 0:
       // Success
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   };
 }
 
@@ -103,8 +103,8 @@ ReturnValue_t Mutex::unlockMutex() {
       return CURR_THREAD_DOES_NOT_OWN_MUTEX;
     case 0:
       // Success
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   };
 }

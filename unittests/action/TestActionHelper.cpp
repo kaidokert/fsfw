@@ -20,12 +20,12 @@ TEST_CASE("Action Helper", "[action]") {
   StorageManagerIF* ipcStore = tglob::getIpcStoreHandle();
   REQUIRE(ipcStore != nullptr);
   ipcStore->addData(&paramAddress, testParams.data(), 3);
-  REQUIRE(actionHelper.initialize() == result::OK);
+  REQUIRE(actionHelper.initialize() == returnvalue::OK);
 
   SECTION("Simple tests") {
     ActionMessage::setCommand(&actionMessage, testActionId, paramAddress);
     CHECK(not testDhMock.executeActionCalled);
-    REQUIRE(actionHelper.handleActionMessage(&actionMessage) == result::OK);
+    REQUIRE(actionHelper.handleActionMessage(&actionMessage) == returnvalue::OK);
     CHECK(testDhMock.executeActionCalled);
     // No message is sent if everything is alright.
     CHECK(not testMqMock.wasMessageSent());
@@ -58,7 +58,7 @@ TEST_CASE("Action Helper", "[action]") {
     step += 1;
     CHECK(testMqMock.wasMessageSent());
     CommandMessage testMessage;
-    REQUIRE(testMqMock.getNextSentMessage(testMessage) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(testMqMock.getNextSentMessage(testMessage) == returnvalue::OK);
     REQUIRE(testMessage.getCommand() == static_cast<uint32_t>(ActionMessage::STEP_FAILED));
     REQUIRE(testMessage.getParameter() == static_cast<uint32_t>(testActionId));
     uint32_t parameter2 = ((uint32_t)step << 16) | (uint32_t)status;
@@ -72,7 +72,7 @@ TEST_CASE("Action Helper", "[action]") {
     actionHelper.finish(false, testMqMock.getId(), testActionId, status);
     CHECK(testMqMock.wasMessageSent());
     CommandMessage testMessage;
-    REQUIRE(testMqMock.getNextSentMessage(testMessage) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(testMqMock.getNextSentMessage(testMessage) == returnvalue::OK);
     REQUIRE(testMessage.getCommand() == static_cast<uint32_t>(ActionMessage::COMPLETION_FAILED));
     REQUIRE(ActionMessage::getActionId(&testMessage) == testActionId);
     REQUIRE(ActionMessage::getReturnCode(&testMessage) == static_cast<uint32_t>(status));
@@ -81,14 +81,14 @@ TEST_CASE("Action Helper", "[action]") {
   SECTION("Handle failed") {
     store_address_t toLongParamAddress = store_address_t::invalid();
     std::array<uint8_t, 5> toLongData = {5, 4, 3, 2, 1};
-    REQUIRE(ipcStore->addData(&toLongParamAddress, toLongData.data(), 5) == result::OK);
+    REQUIRE(ipcStore->addData(&toLongParamAddress, toLongData.data(), 5) == returnvalue::OK);
     ActionMessage::setCommand(&actionMessage, testActionId, toLongParamAddress);
     CHECK(not testDhMock.executeActionCalled);
-    REQUIRE(actionHelper.handleActionMessage(&actionMessage) == result::OK);
+    REQUIRE(actionHelper.handleActionMessage(&actionMessage) == returnvalue::OK);
     REQUIRE(ipcStore->getData(toLongParamAddress).first ==
             static_cast<uint32_t>(StorageManagerIF::DATA_DOES_NOT_EXIST));
     CommandMessage testMessage;
-    REQUIRE(testMqMock.getNextSentMessage(testMessage) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(testMqMock.getNextSentMessage(testMessage) == returnvalue::OK);
     REQUIRE(testMessage.getCommand() == static_cast<uint32_t>(ActionMessage::STEP_FAILED));
     REQUIRE(ActionMessage::getReturnCode(&testMessage) == 0xAFFE);
     REQUIRE(ActionMessage::getStep(&testMessage) == 0);
@@ -98,9 +98,9 @@ TEST_CASE("Action Helper", "[action]") {
   SECTION("Missing IPC Data") {
     ActionMessage::setCommand(&actionMessage, testActionId, store_address_t::invalid());
     CHECK(not testDhMock.executeActionCalled);
-    REQUIRE(actionHelper.handleActionMessage(&actionMessage) == result::OK);
+    REQUIRE(actionHelper.handleActionMessage(&actionMessage) == returnvalue::OK);
     CommandMessage testMessage;
-    REQUIRE(testMqMock.getNextSentMessage(testMessage) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(testMqMock.getNextSentMessage(testMessage) == returnvalue::OK);
     REQUIRE(testMessage.getCommand() == static_cast<uint32_t>(ActionMessage::STEP_FAILED));
     REQUIRE(ActionMessage::getReturnCode(&testMessage) ==
             static_cast<uint32_t>(StorageManagerIF::ILLEGAL_STORAGE_ID));

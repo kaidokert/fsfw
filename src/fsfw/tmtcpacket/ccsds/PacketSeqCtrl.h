@@ -50,7 +50,7 @@ struct PacketSeqCtrl : public SerializeIF {
     *size -= 2;
     seqFlags = static_cast<ccsds::SequenceFlags>((highByte >> 6) & 0b11);
     seqCount = ((highByte << 8) | lowByte) & 0x3FFF;
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   ccsds::SequenceFlags seqFlags = ccsds::SequenceFlags::CONTINUATION;

@@ -7,7 +7,7 @@
 
 TEST_CASE("Keep Alive PDU", "[cfdp][pdu]") {
   using namespace cfdp;
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   std::array<uint8_t, 256> kaBuffer = {};
   uint8_t* buffer = kaBuffer.data();
   size_t sz = 0;
@@ -21,12 +21,12 @@ TEST_CASE("Keep Alive PDU", "[cfdp][pdu]") {
   SECTION("Serialize") {
     KeepAlivePduSerializer serializer(pduConf, progress);
     result = serializer.serialize(&buffer, &sz, kaBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(kaBuffer[10] == cfdp::FileDirectives::KEEP_ALIVE);
     uint32_t fsRaw = 0;
     result = SerializeAdapter::deSerialize(&fsRaw, kaBuffer.data() + 11, nullptr,
                                            SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(fsRaw == 0x50);
     REQUIRE(sz == 15);
     REQUIRE(serializer.getWholePduSize() == 15);
@@ -37,33 +37,33 @@ TEST_CASE("Keep Alive PDU", "[cfdp][pdu]") {
     buffer = kaBuffer.data();
     sz = 0;
     result = serializer.serialize(&buffer, &sz, kaBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(serializer.getWholePduSize() == 19);
     REQUIRE(serializer.getPduDataFieldLen() == 9);
     uint64_t fsRawLarge = 0;
     result = SerializeAdapter::deSerialize(&fsRawLarge, kaBuffer.data() + 11, nullptr,
                                            SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(fsRawLarge == 0x50);
 
     for (size_t invalidMaxSz = 0; invalidMaxSz < sz; invalidMaxSz++) {
       buffer = kaBuffer.data();
       sz = 0;
       result = serializer.serialize(&buffer, &sz, invalidMaxSz, SerializeIF::Endianness::NETWORK);
-      REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result != returnvalue::OK);
     }
   }
 
   SECTION("Deserialize") {
     KeepAlivePduSerializer serializer(pduConf, progress);
     result = serializer.serialize(&buffer, &sz, kaBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     // Set another file size
     progress.setFileSize(200, false);
     KeepAlivePduDeserializer deserializer(kaBuffer.data(), kaBuffer.size(), progress);
     result = deserializer.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     auto& progRef = deserializer.getProgress();
     // Should have been overwritten
     REQUIRE(progRef.getSize() == 0x50);
@@ -72,9 +72,9 @@ TEST_CASE("Keep Alive PDU", "[cfdp][pdu]") {
     // invalid max size
     for (size_t invalidMaxSz = 0; invalidMaxSz < sz; invalidMaxSz++) {
       ReturnValue_t setResult = deserializer.setData(kaBuffer.data(), invalidMaxSz);
-      if (setResult == HasReturnvaluesIF::RETURN_OK) {
+      if (setResult == returnvalue::OK) {
         result = deserializer.parseData();
-        REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+        REQUIRE(result != returnvalue::OK);
       }
     }
   }

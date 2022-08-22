@@ -2,7 +2,7 @@
 #define FSFW_DATAPOOL_READCOMMITIF_H_
 
 #include "../ipc/MutexIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 
 /**
  * @brief 	Common interface for all software objects which employ read-commit

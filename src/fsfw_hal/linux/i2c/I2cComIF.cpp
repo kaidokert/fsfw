@@ -52,16 +52,16 @@ ReturnValue_t I2cComIF::initializeInterface(CookieIF* cookie) {
                  << i2cAddress << "to I2C device "
                  << "map" << std::endl;
 #endif
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
   sif::error << "I2cComIF::initializeInterface: Device with address " << i2cAddress
              << "already in use" << std::endl;
 #endif
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t I2cComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, size_t sendLen) {
@@ -73,11 +73,11 @@ ReturnValue_t I2cComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, s
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "I2cComIF::sendMessage: Send Data is nullptr" << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   if (sendLen == 0) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   I2cCookie* i2cCookie = dynamic_cast<I2cCookie*>(cookie);
@@ -95,16 +95,16 @@ ReturnValue_t I2cComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, s
     sif::error << "I2cComIF::sendMessage: i2cAddress of Cookie not "
                << "registered in i2cDeviceMap" << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   deviceFile = i2cCookie->getDeviceFile();
   UnixFileGuard fileHelper(deviceFile, &fd, O_RDWR, "I2cComIF::sendMessage");
-  if (fileHelper.getOpenResult() != HasReturnvaluesIF::RETURN_OK) {
+  if (fileHelper.getOpenResult() != returnvalue::OK) {
     return fileHelper.getOpenResult();
   }
   result = openDevice(deviceFile, i2cAddress, &fd);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -114,17 +114,17 @@ ReturnValue_t I2cComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, s
                   "device with error code "
                << errno << ". Error description: " << strerror(errno) << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
 #if FSFW_HAL_I2C_WIRETAPPING == 1
   sif::info << "Sent I2C data to bus " << deviceFile << ":" << std::endl;
   arrayprinter::print(sendData, sendLen);
 #endif
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
-ReturnValue_t I2cComIF::getSendSuccess(CookieIF* cookie) { return HasReturnvaluesIF::RETURN_OK; }
+ReturnValue_t I2cComIF::getSendSuccess(CookieIF* cookie) { return returnvalue::OK; }
 
 ReturnValue_t I2cComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLen) {
   ReturnValue_t result;
@@ -132,7 +132,7 @@ ReturnValue_t I2cComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLe
   std::string deviceFile;
 
   if (requestLen == 0) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   I2cCookie* i2cCookie = dynamic_cast<I2cCookie*>(cookie);
@@ -152,16 +152,16 @@ ReturnValue_t I2cComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLe
                << "registered in i2cDeviceMap" << std::endl;
 #endif
     i2cDeviceMapIter->second.replyLen = 0;
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   deviceFile = i2cCookie->getDeviceFile();
   UnixFileGuard fileHelper(deviceFile, &fd, O_RDWR, "I2cComIF::requestReceiveMessage");
-  if (fileHelper.getOpenResult() != HasReturnvaluesIF::RETURN_OK) {
+  if (fileHelper.getOpenResult() != returnvalue::OK) {
     return fileHelper.getOpenResult();
   }
   result = openDevice(deviceFile, i2cAddress, &fd);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     i2cDeviceMapIter->second.replyLen = 0;
     return result;
   }
@@ -182,7 +182,7 @@ ReturnValue_t I2cComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLe
     sif::debug << "I2cComIF::requestReceiveMessage: Read " << readLen << " of " << requestLen
                << " bytes" << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
 #if FSFW_HAL_I2C_WIRETAPPING == 1
@@ -191,7 +191,7 @@ ReturnValue_t I2cComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLe
 #endif
 
   i2cDeviceMapIter->second.replyLen = requestLen;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t I2cComIF::readReceivedMessage(CookieIF* cookie, uint8_t** buffer, size_t* size) {
@@ -210,12 +210,12 @@ ReturnValue_t I2cComIF::readReceivedMessage(CookieIF* cookie, uint8_t** buffer, 
     sif::error << "I2cComIF::readReceivedMessage: i2cAddress of Cookie not "
                << "found in i2cDeviceMap" << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   *buffer = i2cDeviceMapIter->second.replyBuffer.data();
   *size = i2cDeviceMapIter->second.replyLen;
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t I2cComIF::openDevice(std::string deviceFile, address_t i2cAddress,
@@ -231,7 +231,7 @@ ReturnValue_t I2cComIF::openDevice(std::string deviceFile, address_t i2cAddress,
     sif::printWarning("Error description: %s\n", strerror(errno));
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

@@ -16,7 +16,7 @@ size_t MetadataPduCreator::getSerializedSize() const {
 ReturnValue_t MetadataPduCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                             Endianness streamEndianness) const {
   ReturnValue_t result = FileDirectiveCreator::serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (*size + 1 >= maxSize) {
@@ -26,15 +26,15 @@ ReturnValue_t MetadataPduCreator::serialize(uint8_t **buffer, size_t *size, size
   *buffer += 1;
   *size += 1;
   result = info.getFileSize().serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = info.getSourceFileName().serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = info.getDestFileName().serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -44,7 +44,7 @@ ReturnValue_t MetadataPduCreator::serialize(uint8_t **buffer, size_t *size, size
     info.getOptions(&optsArray, &optsLen, nullptr);
     for (size_t idx = 0; idx < optsLen; idx++) {
       result = optsArray[idx]->serialize(buffer, size, maxSize, streamEndianness);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
     }

@@ -23,7 +23,7 @@ void* FixedTimeslotTask::taskEntryPoint(void* arg) {
 ReturnValue_t FixedTimeslotTask::startTask() {
   started = true;
   posixThread.createTask(&taskEntryPoint, this);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {

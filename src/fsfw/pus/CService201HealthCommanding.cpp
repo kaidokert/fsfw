@@ -18,7 +18,7 @@ ReturnValue_t CService201HealthCommanding::isValidSubservice(uint8_t subservice)
     case (Subservice::COMMAND_SET_HEALTH):
     case (Subservice::COMMAND_ANNOUNCE_HEALTH):
     case (Subservice::COMMAND_ANNOUNCE_HEALTH_ALL):
-      return RETURN_OK;
+      return returnvalue::OK;
     default:
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::error << "Invalid Subservice" << std::endl;
@@ -48,19 +48,19 @@ ReturnValue_t CService201HealthCommanding::checkInterfaceAndAcquireMessageQueue(
   }
 
   *messageQueueToSet = destination->getCommandQueue();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CService201HealthCommanding::prepareCommand(CommandMessage *message,
                                                           uint8_t subservice, const uint8_t *tcData,
                                                           size_t tcDataLen, uint32_t *state,
                                                           object_id_t objectId) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   switch (subservice) {
     case (Subservice::COMMAND_SET_HEALTH): {
       HealthSetCommand healthCommand;
       result = healthCommand.deSerialize(&tcData, &tcDataLen, SerializeIF::Endianness::BIG);
-      if (result != RETURN_OK) {
+      if (result != returnvalue::OK) {
         break;
       }
       HealthMessage::setHealthMessage(message, HealthMessage::HEALTH_SET,
@@ -77,7 +77,7 @@ ReturnValue_t CService201HealthCommanding::prepareCommand(CommandMessage *messag
     }
     default: {
       // Should never happen, subservice was already checked
-      result = RETURN_FAILED;
+      result = returnvalue::FAILED;
     }
   }
   return result;

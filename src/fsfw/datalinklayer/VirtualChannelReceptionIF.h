@@ -11,7 +11,7 @@
 #include "ClcwIF.h"
 #include "TcTransferFrame.h"
 #include "dllConf.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 /**
  * This is the interface for Virtual Channel reception classes.
@@ -33,13 +33,13 @@ class VirtualChannelReceptionIF {
    * Handling the Frame includes forwarding to higher-level procedures.
    * @param frame	The Tc Transfer Frame that was received and checked.
    * @param clcw	Any changes to the CLCW value are forwarded by using this parameter.
-   * @return The return Value shall indicate successful processing with @c RETURN_OK.
+   * @return The return Value shall indicate successful processing with @c returnvalue::OK.
    */
   virtual ReturnValue_t frameAcceptanceAndReportingMechanism(TcTransferFrame* frame,
                                                              ClcwIF* clcw) = 0;
   /**
    * If any other System Objects are required for operation they shall be initialized here.
-   * @return	@c RETURN_OK for successful initialization.
+   * @return	@c returnvalue::OK for successful initialization.
    */
   virtual ReturnValue_t initialize() = 0;
   /**

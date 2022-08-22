@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 class SpacePacketReader;
 
@@ -22,8 +22,8 @@ class CcsdsPacketCheckIF {
    * This is the actual method to formally check a certain Packet.
    * The packet's Application Data can not be checked here.
    * @param current_packet The packet to check
-   * @return	- @c RETURN_OK on success.
-   *            - @c INCORRECT_CHECKSUM if checksum is invalid.
+   * @return	- @c returnvalue::OK on success.
+   * 		- @c INCORRECT_CHECKSUM if checksum is invalid.
    * 		- @c ILLEGAL_APID if APID does not match.
    */
   virtual ReturnValue_t checkPacket(const SpacePacketReader& currentPacket, size_t packetLen) = 0;

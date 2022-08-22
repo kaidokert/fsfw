@@ -8,5 +8,5 @@ PusDistributorMock::PusDistributorMock(object_id_t registeredId)
 ReturnValue_t PusDistributorMock::registerService(const AcceptsTelecommandsIF& service) {
   registerCallCount++;
   registeredServies.push_back(&service);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

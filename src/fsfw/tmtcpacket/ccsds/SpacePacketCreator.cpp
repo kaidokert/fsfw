@@ -23,18 +23,18 @@ uint16_t SpacePacketCreator::getPacketDataLen() const { return params.dataLen; }
 ReturnValue_t SpacePacketCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                             SerializeIF::Endianness streamEndianness) const {
   if (not isValid()) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   uint16_t packetIdAndVersion =
       (static_cast<uint16_t>(params.version) << 13) | params.packetId.raw();
   ReturnValue_t result =
       SerializeAdapter::serialize(&packetIdAndVersion, buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   uint16_t pscRaw = params.packetSeqCtrl.raw();
   result = SerializeAdapter::serialize(&pscRaw, buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return SerializeAdapter::serialize(&params.dataLen, buffer, size, maxSize, streamEndianness);
@@ -50,7 +50,7 @@ size_t SpacePacketCreator::getSerializedSize() const { return ccsds::HEADER_LEN;
 
 ReturnValue_t SpacePacketCreator::deSerialize(const uint8_t **buffer, size_t *size,
                                               SerializeIF::Endianness streamEndianness) {
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 bool SpacePacketCreator::isValid() const { return valid; }
 

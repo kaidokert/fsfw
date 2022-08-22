@@ -26,7 +26,7 @@ TcpTmTcBridge::TcpTmTcBridge(object_id_t objectId, object_id_t tcDestination, ob
 
 ReturnValue_t TcpTmTcBridge::initialize() {
   ReturnValue_t result = TmTcBridge::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "TcpTmTcBridge::initialize: TmTcBridge initialization failed!" << std::endl;
 #else
@@ -35,7 +35,7 @@ ReturnValue_t TcpTmTcBridge::initialize() {
     return result;
   }
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 TcpTmTcBridge::~TcpTmTcBridge() {
@@ -48,21 +48,20 @@ ReturnValue_t TcpTmTcBridge::handleTm() {
   // Simply store the telemetry in the FIFO, the server will use it to access the TM
   MutexGuard guard(mutex, timeoutType, mutexTimeoutMs);
   TmTcMessage message;
-  ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t status = returnvalue::OK;
   for (ReturnValue_t result = tmTcReceptionQueue->receiveMessage(&message);
-       result == HasReturnvaluesIF::RETURN_OK;
-       result = tmTcReceptionQueue->receiveMessage(&message)) {
+       result == returnvalue::OK; result = tmTcReceptionQueue->receiveMessage(&message)) {
     status = storeDownlinkData(&message);
-    if (status != HasReturnvaluesIF::RETURN_OK) {
+    if (status != returnvalue::OK) {
       break;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t TcpTmTcBridge::sendTm(const uint8_t *data, size_t dataLen) {
   // Not used. The Server uses the FIFO to access and send the telemetry.
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void TcpTmTcBridge::setMutexProperties(MutexIF::TimeoutType timeoutType, dur_millis_t timeoutMs) {

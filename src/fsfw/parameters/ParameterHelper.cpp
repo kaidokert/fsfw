@@ -10,10 +10,10 @@ ParameterHelper::~ParameterHelper() {}
 ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage* message) {
   if (storage == nullptr) {
     // ParameterHelper was not initialized
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
   switch (message->getCommand()) {
     case ParameterMessage::CMD_PARAMETER_DUMP: {
       ParameterWrapper description;
@@ -21,7 +21,7 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage* message) {
       uint8_t uniqueIdentifier =
           HasParametersIF::getUniqueIdentifierId(ParameterMessage::getParameterId(message));
       result = owner->getParameter(domain, uniqueIdentifier, &description, &description, 0);
-      if (result == HasReturnvaluesIF::RETURN_OK) {
+      if (result == returnvalue::OK) {
         result = sendParameter(message->getSender(), ParameterMessage::getParameterId(message),
                                &description);
       }
@@ -42,7 +42,7 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage* message) {
 
       ConstStorageAccessor accessor(storeId);
       result = storage->getData(storeId, accessor);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "ParameterHelper::handleParameterMessage: Getting"
                    << " store data failed for load command." << std::endl;
@@ -52,19 +52,19 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage* message) {
 
       ParameterWrapper streamWrapper;
       result = streamWrapper.set(type, rows, columns, accessor.data(), accessor.size());
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
 
       ParameterWrapper ownerWrapper;
       result =
           owner->getParameter(domain, uniqueIdentifier, &ownerWrapper, &streamWrapper, linearIndex);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
 
       result = ownerWrapper.copyFrom(&streamWrapper, linearIndex);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
 
@@ -73,14 +73,14 @@ ReturnValue_t ParameterHelper::handleParameterMessage(CommandMessage* message) {
       break;
     }
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     rejectCommand(message->getSender(), result, message->getCommand());
   }
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
@@ -91,7 +91,7 @@ ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
   store_address_t address;
 
   ReturnValue_t result = storage->getFreeElement(&address, serializedSize, &storeElement);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -100,7 +100,7 @@ ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
   result = description->serialize(&storeElement, &storeElementSize, serializedSize,
                                   SerializeIF::Endianness::BIG);
 
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     storage->deleteData(address);
     return result;
   }
@@ -111,7 +111,7 @@ ReturnValue_t ParameterHelper::sendParameter(MessageQueueId_t to, uint32_t id,
 
   MessageQueueSenderIF::sendMessage(to, &reply, ownerQueueId);
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t ParameterHelper::initialize() {
@@ -121,7 +121,7 @@ ReturnValue_t ParameterHelper::initialize() {
   if (storage == nullptr) {
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void ParameterHelper::rejectCommand(MessageQueueId_t to, ReturnValue_t reason,

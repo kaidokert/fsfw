@@ -77,7 +77,7 @@ class VirtualChannelReception : public VirtualChannelReceptionIF, public CCSDSRe
    * required.
    * @param frame	The Tc Transfer Frame to handle.
    * @param clcw	Any changes on the CLCW shall be done with this method.
-   * @return Always returns @c RETURN_OK.
+   * @return Always returns @c returnvalue::OK.
    */
   ReturnValue_t handleBDFrame(TcTransferFrame* frame, ClcwIF* clcw);
   /**
@@ -102,13 +102,14 @@ class VirtualChannelReception : public VirtualChannelReceptionIF, public CCSDSRe
    * Helper method to simplify adding a mapChannel during construction.
    * @param mapId	The mapId of the object to add.
    * @param object	Pointer to the MapPacketExtraction object itself.
-   * @return	@c RETURN_OK if the channel was successfully inserted, @c RETURN_FAILED otherwise.
+   * @return	@c returnvalue::OK if the channel was successfully inserted, @c returnvalue::FAILED
+   * otherwise.
    */
   ReturnValue_t addMapChannel(uint8_t mapId, MapPacketExtractionIF* object);
   /**
    * The initialization routine checks the set #slidingWindowWidth and initializes all MAP
    * channels.
-   * @return	@c RETURN_OK on successful initialization, @c RETURN_FAILED otherwise.
+   * @return	@c returnvalue::OK on successful initialization, @c returnvalue::FAILED otherwise.
    */
   ReturnValue_t initialize();
   /**

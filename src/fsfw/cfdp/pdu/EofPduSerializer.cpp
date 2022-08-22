@@ -15,7 +15,7 @@ size_t EofPduSerializer::getSerializedSize() const {
 ReturnValue_t EofPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                           Endianness streamEndianness) const {
   ReturnValue_t result = FileDirectiveCreator::serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (*size + 1 > maxSize) {
@@ -26,7 +26,7 @@ ReturnValue_t EofPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t
   *size += 1;
   uint32_t checksum = info.getChecksum();
   result = SerializeAdapter::serialize(&checksum, buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (info.getFileSize().isLargeFile()) {

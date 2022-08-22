@@ -1,7 +1,7 @@
 #ifndef FSFW_CONTAINER_ARRAYLIST_H_
 #define FSFW_CONTAINER_ARRAYLIST_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../serialize/SerializeAdapter.h"
 #include "../serialize/SerializeIF.h"
 
@@ -183,7 +183,7 @@ class ArrayList {
    * @param entry
    * @return
    *          -@c FULL if the List is full
-   *          -@c RETURN_OK else
+   *          -@c returnvalue::OK else
    */
   ReturnValue_t insert(T entry) {
     if (size >= maxSize_) {
@@ -191,7 +191,7 @@ class ArrayList {
     }
     entries[size] = entry;
     ++size;
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   /**

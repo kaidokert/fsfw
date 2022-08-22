@@ -29,7 +29,7 @@ class AbsLimitMonitor : public MonitorBase<T> {
         return MonitoringIF::OUT_OF_RANGE;
       }
     }
-    return HasReturnvaluesIF::RETURN_OK;  // We're not out of range.
+    return returnvalue::OK;  // We're not out of range.
   }
 
   virtual ReturnValue_t getParameter(uint8_t domainId, uint16_t parameterId,
@@ -49,7 +49,7 @@ class AbsLimitMonitor : public MonitorBase<T> {
       default:
         return this->INVALID_IDENTIFIER_ID;
     }
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   bool isOutOfLimits() {
     if (this->oldState == MonitoringIF::OUT_OF_RANGE) {

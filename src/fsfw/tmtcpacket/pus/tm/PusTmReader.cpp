@@ -51,10 +51,10 @@ TimeReaderIF *PusTmReader::getTimeReader() { return timeReader; }
 ReturnValue_t PusTmReader::parseData(bool crcCheck) {
   // Time reader is required to read the time stamp length at run-time
   if (pointers.spHeaderStart == nullptr or spReader.isNull() or timeReader == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   ReturnValue_t result = spReader.checkSize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t currentOffset = SpacePacketReader::getHeaderLen();
@@ -62,7 +62,7 @@ ReturnValue_t PusTmReader::parseData(bool crcCheck) {
   currentOffset += PusTmIF::MIN_SEC_HEADER_LEN;
   size_t minTimestampLen = spReader.getFullPacketLen() - currentOffset;
   result = timeReader->readTimeStamp(pointers.spHeaderStart + currentOffset, minTimestampLen);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t timestampLen = timeReader->getTimestampSize();
@@ -84,7 +84,7 @@ ReturnValue_t PusTmReader::parseData(bool crcCheck) {
       return PusIF::INVALID_CRC_16;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 bool PusTmReader::isNull() const { return spReader.isNull() or pointers.secHeaderStart == nullptr; }
 

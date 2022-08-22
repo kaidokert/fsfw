@@ -22,12 +22,9 @@ class UartComIF : public DeviceCommunicationIF, public SystemObject {
  public:
   static constexpr uint8_t uartRetvalId = CLASS_ID::HAL_UART;
 
-  static constexpr ReturnValue_t UART_READ_FAILURE =
-      HasReturnvaluesIF::makeReturnCode(uartRetvalId, 1);
-  static constexpr ReturnValue_t UART_READ_SIZE_MISSMATCH =
-      HasReturnvaluesIF::makeReturnCode(uartRetvalId, 2);
-  static constexpr ReturnValue_t UART_RX_BUFFER_TOO_SMALL =
-      HasReturnvaluesIF::makeReturnCode(uartRetvalId, 3);
+  static constexpr ReturnValue_t UART_READ_FAILURE = returnvalue::makeCode(uartRetvalId, 1);
+  static constexpr ReturnValue_t UART_READ_SIZE_MISSMATCH = returnvalue::makeCode(uartRetvalId, 2);
+  static constexpr ReturnValue_t UART_RX_BUFFER_TOO_SMALL = returnvalue::makeCode(uartRetvalId, 3);
 
   UartComIF(object_id_t objectId);
 

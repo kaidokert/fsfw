@@ -30,7 +30,7 @@ ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer_, size_t*
   if (serializeLength) {
     ReturnValue_t result =
         SerializeAdapter::serialize(&bufferLength, buffer_, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
   }
@@ -46,11 +46,11 @@ ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer_, size_t*
     // set if non-const buffer is set.
     std::memcpy(*buffer_, this->buffer, bufferLength);
   } else {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   *size += bufferLength;
   (*buffer_) += bufferLength;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <typename count_t>
@@ -66,14 +66,14 @@ template <typename count_t>
 ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer_, size_t* size,
                                                         Endianness streamEndianness) {
   if (this->buffer == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   if (serializeLength) {
     count_t lengthField = 0;
     ReturnValue_t result =
         SerializeAdapter::deSerialize(&lengthField, buffer_, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     if (lengthField > bufferLength) {
@@ -86,7 +86,7 @@ ReturnValue_t SerialBufferAdapter<count_t>::deSerialize(const uint8_t** buffer_,
     *size -= bufferLength;
     std::memcpy(this->buffer, *buffer_, bufferLength);
     (*buffer_) += bufferLength;
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     return STREAM_TOO_SHORT;
   }

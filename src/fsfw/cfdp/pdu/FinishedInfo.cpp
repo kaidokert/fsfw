@@ -45,14 +45,14 @@ ReturnValue_t FinishedInfo::setFilestoreResponsesArray(FilestoreResponseTlv** fs
   if (maxFsResponsesLen != nullptr) {
     this->fsResponsesMaxLen = *maxFsResponsesLen;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t FinishedInfo::getFilestoreResonses(FilestoreResponseTlv*** fsResponses,
                                                  size_t* fsResponsesLen,
                                                  size_t* fsResponsesMaxLen) {
   if (fsResponses == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   *fsResponses = this->fsResponses;
   if (fsResponsesLen != nullptr) {
@@ -61,7 +61,7 @@ ReturnValue_t FinishedInfo::getFilestoreResonses(FilestoreResponseTlv*** fsRespo
   if (fsResponsesMaxLen != nullptr) {
     *fsResponsesMaxLen = this->fsResponsesMaxLen;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void FinishedInfo::setFaultLocation(EntityIdTlv* faultLocation) {
@@ -70,10 +70,10 @@ void FinishedInfo::setFaultLocation(EntityIdTlv* faultLocation) {
 
 ReturnValue_t FinishedInfo::getFaultLocation(EntityIdTlv** faultLocation) {
   if (this->faultLocation == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   *faultLocation = this->faultLocation;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 cfdp::ConditionCode FinishedInfo::getConditionCode() const { return conditionCode; }

@@ -35,7 +35,7 @@ CountingSemaphore& CountingSemaphore::operator=(CountingSemaphore&& other) {
 
 ReturnValue_t CountingSemaphore::release() {
   ReturnValue_t result = checkCount(&handle, maxCount);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return CountingSemaphore::release(&this->handle);
@@ -44,7 +44,7 @@ ReturnValue_t CountingSemaphore::release() {
 ReturnValue_t CountingSemaphore::release(sem_t* handle) {
   int result = sem_post(handle);
   if (result == 0) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   switch (errno) {
@@ -61,7 +61,7 @@ ReturnValue_t CountingSemaphore::release(sem_t* handle) {
     }
 
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 

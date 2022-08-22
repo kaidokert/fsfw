@@ -1,7 +1,7 @@
 #ifndef POLLINGSEQUENCEFACTORY_H_
 #define POLLINGSEQUENCEFACTORY_H_
 
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include <fsfw/returnvalues/returnvalue.h>
 
 class FixedTimeslotTaskIF;
 

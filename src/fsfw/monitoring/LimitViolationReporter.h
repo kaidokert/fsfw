@@ -8,7 +8,7 @@
 #define LIMITVIOLATIONREPORTER_H_
 
 #include "../ipc/MessageQueueSenderIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../serialize/SerializeIF.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "monitoringConf.h"

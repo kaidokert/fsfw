@@ -3,7 +3,7 @@
 
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/objectmanager/SystemObject.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
 #include "fsfw/tmtcservices/AcceptsVerifyMessageIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
@@ -41,8 +41,7 @@
  */
 class Service1TelecommandVerification : public AcceptsVerifyMessageIF,
                                         public SystemObject,
-                                        public ExecutableObjectIF,
-                                        public HasReturnvaluesIF {
+                                        public ExecutableObjectIF {
  public:
   static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_1;
 

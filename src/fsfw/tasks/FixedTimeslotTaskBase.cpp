@@ -20,8 +20,8 @@ ReturnValue_t FixedTimeslotTaskBase::addSlot(object_id_t execId, ExecutableObjec
 #else
     sif::printError("Component 0x%08x not found, not adding it to PST\n");
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   pollingSeqTable.addSlot(execId, slotTimeMs, executionStep, execObj, this);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

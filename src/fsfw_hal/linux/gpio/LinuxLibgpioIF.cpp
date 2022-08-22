@@ -23,30 +23,30 @@ ReturnValue_t LinuxLibgpioIF::addGpios(GpioCookie* gpioCookie) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "LinuxLibgpioIF::addGpios: Invalid cookie" << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   GpioMap mapToAdd = gpioCookie->getGpioMap();
 
   /* Check whether this ID already exists in the map and remove duplicates */
   result = checkForConflicts(mapToAdd);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   result = configureGpios(mapToAdd);
-  if (result != RETURN_OK) {
-    return RETURN_FAILED;
+  if (result != returnvalue::OK) {
+    return returnvalue::FAILED;
   }
 
   /* Register new GPIOs in gpioMap */
   gpioMap.insert(mapToAdd.begin(), mapToAdd.end());
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LinuxLibgpioIF::configureGpios(GpioMap& mapToAdd) {
-  ReturnValue_t result = RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   for (auto& gpioConfig : mapToAdd) {
     auto& gpioType = gpioConfig.second->gpioType;
     switch (gpioType) {
@@ -86,7 +86,7 @@ ReturnValue_t LinuxLibgpioIF::configureGpios(GpioMap& mapToAdd) {
                                gpioCallback->initValue, gpioCallback->callbackArgs);
       }
     }
-    if (result != RETURN_OK) {
+    if (result != returnvalue::OK) {
       return GPIO_INIT_FAILED;
     }
   }
@@ -102,7 +102,7 @@ ReturnValue_t LinuxLibgpioIF::configureGpioByLabel(gpioId_t gpioId,
     sif::warning << "LinuxLibgpioIF::configureGpioByLabel: Failed to open gpio from gpio "
                  << "group with label " << label << ". Gpio ID: " << gpioId << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   std::string failOutput = "label: " + label;
   return configureRegularGpio(gpioId, chip, gpioByLabel, failOutput);
@@ -116,7 +116,7 @@ ReturnValue_t LinuxLibgpioIF::configureGpioByChip(gpioId_t gpioId, GpiodRegularB
     sif::warning << "LinuxLibgpioIF::configureGpioByChip: Failed to open chip " << chipname
                  << ". Gpio ID: " << gpioId << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   std::string failOutput = "chipname: " + chipname;
   return configureRegularGpio(gpioId, chip, gpioByChip, failOutput);
@@ -132,7 +132,7 @@ ReturnValue_t LinuxLibgpioIF::configureGpioByLineName(gpioId_t gpioId,
       gpiod_ctxless_find_line(lineName.c_str(), chipname, MAX_CHIPNAME_LENGTH, &lineOffset);
   if (result != LINE_FOUND) {
     parseFindeLineResult(result, lineName);
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   gpioByLineName.lineNum = static_cast<int>(lineOffset);
@@ -143,7 +143,7 @@ ReturnValue_t LinuxLibgpioIF::configureGpioByLineName(gpioId_t gpioId,
     sif::warning << "LinuxLibgpioIF::configureGpioByLineName: Failed to open chip " << chipname
                  << ". <Gpio ID: " << gpioId << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   std::string failOutput = "line name: " + lineName;
   return configureRegularGpio(gpioId, chip, gpioByLineName, failOutput);
@@ -168,7 +168,7 @@ ReturnValue_t LinuxLibgpioIF::configureRegularGpio(gpioId_t gpioId, struct gpiod
     sif::warning << "Check if Linux GPIO configuration has changed. " << std::endl;
 #endif
     gpiod_chip_close(chip);
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   direction = regularGpio.direction;
@@ -202,7 +202,7 @@ ReturnValue_t LinuxLibgpioIF::configureRegularGpio(gpioId_t gpioId, struct gpiod
             lineNum, gpioId);
 #endif
         gpiod_line_release(lineHandle);
-        return RETURN_FAILED;
+        return returnvalue::FAILED;
       }
   }
   /**
@@ -210,7 +210,7 @@ ReturnValue_t LinuxLibgpioIF::configureRegularGpio(gpioId_t gpioId, struct gpiod
    * read states of GPIOs.
    */
   regularGpio.lineHandle = lineHandle;
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LinuxLibgpioIF::pullHigh(gpioId_t gpioId) {
@@ -238,7 +238,7 @@ ReturnValue_t LinuxLibgpioIF::pullHigh(gpioId_t gpioId) {
     }
     gpioCallback->callback(gpioMapIter->first, gpio::GpioOperation::WRITE, gpio::Levels::HIGH,
                            gpioCallback->callbackArgs);
-    return RETURN_OK;
+    return returnvalue::OK;
   }
   return GPIO_TYPE_FAILURE;
 }
@@ -270,7 +270,7 @@ ReturnValue_t LinuxLibgpioIF::pullLow(gpioId_t gpioId) {
     }
     gpioCallback->callback(gpioMapIter->first, gpio::GpioOperation::WRITE, gpio::Levels::LOW,
                            gpioCallback->callbackArgs);
-    return RETURN_OK;
+    return returnvalue::OK;
   }
   return GPIO_TYPE_FAILURE;
 }
@@ -291,7 +291,7 @@ ReturnValue_t LinuxLibgpioIF::driveGpio(gpioId_t gpioId, GpiodRegularBase& regul
     return DRIVE_GPIO_FAILURE;
   }
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LinuxLibgpioIF::readGpio(gpioId_t gpioId, int* gpioState) {
@@ -321,14 +321,14 @@ ReturnValue_t LinuxLibgpioIF::readGpio(gpioId_t gpioId, int* gpioState) {
     }
     gpioCallback->callback(gpioMapIter->first, gpio::GpioOperation::READ, gpio::Levels::NONE,
                            gpioCallback->callbackArgs);
-    return RETURN_OK;
+    return returnvalue::OK;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LinuxLibgpioIF::checkForConflicts(GpioMap& mapToAdd) {
-  ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t status = returnvalue::OK;
+  ReturnValue_t result = returnvalue::OK;
   for (auto& gpioConfig : mapToAdd) {
     switch (gpioConfig.second->gpioType) {
       case (gpio::GpioTypes::GPIO_REGULAR_BY_CHIP):
@@ -340,7 +340,7 @@ ReturnValue_t LinuxLibgpioIF::checkForConflicts(GpioMap& mapToAdd) {
         }
         // Check for conflicts and remove duplicates if necessary
         result = checkForConflictsById(gpioConfig.first, gpioConfig.second->gpioType, mapToAdd);
-        if (result != HasReturnvaluesIF::RETURN_OK) {
+        if (result != returnvalue::OK) {
           status = result;
         }
         break;
@@ -352,7 +352,7 @@ ReturnValue_t LinuxLibgpioIF::checkForConflicts(GpioMap& mapToAdd) {
         }
         // Check for conflicts and remove duplicates if necessary
         result = checkForConflictsById(gpioConfig.first, gpioConfig.second->gpioType, mapToAdd);
-        if (result != HasReturnvaluesIF::RETURN_OK) {
+        if (result != returnvalue::OK) {
           status = result;
         }
         break;
@@ -426,7 +426,7 @@ ReturnValue_t LinuxLibgpioIF::checkForConflictsById(gpioId_t gpioIdToCheck,
     mapToAdd.erase(gpioIdToCheck);
     return GPIO_DUPLICATE_DETECTED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void LinuxLibgpioIF::parseFindeLineResult(int result, std::string& lineName) {

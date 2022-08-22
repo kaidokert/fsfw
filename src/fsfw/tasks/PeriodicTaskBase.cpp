@@ -29,13 +29,13 @@ ReturnValue_t PeriodicTaskBase::addComponent(ExecutableObjectIF* object) {
 
 ReturnValue_t PeriodicTaskBase::initObjsAfterTaskCreation() {
   std::set<ExecutableObjectIF*> uniqueObjects;
-  ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t status = returnvalue::OK;
   uint32_t count = 0;
   for (const auto& obj : objectList) {
     // Ensure that each unique object is initialized once.
     if (uniqueObjects.find(obj.first) == uniqueObjects.end()) {
       ReturnValue_t result = obj.first->initializeAfterTaskCreation();
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         count++;
         status = result;
       }
@@ -62,10 +62,10 @@ ReturnValue_t PeriodicTaskBase::addComponent(ExecutableObjectIF* object, uint8_t
         "PeriodicTask::addComponent: Invalid object. Make sure it "
         "implements ExecutableObjectIF!\n");
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   objectList.push_back({object, opCode});
   object->setTaskIF(this);
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

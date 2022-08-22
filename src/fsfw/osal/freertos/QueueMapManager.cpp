@@ -34,12 +34,12 @@ ReturnValue_t QueueMapManager::addMessageQueue(QueueHandle_t queue, MessageQueue
         "QueueMapManager::addMessageQueue This ID is already "
         "inside the map!\n");
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (id != nullptr) {
     *id = currentId;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 QueueHandle_t QueueMapManager::getMessageQueue(MessageQueueId_t messageQueueId) const {

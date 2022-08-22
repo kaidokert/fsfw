@@ -24,7 +24,7 @@ ReturnValue_t PusPacketChecker::checkPacket(const PusTcReader& pusPacket, size_t
   if (pusPacket.getPusVersion() != pusVersion) {
     return tmtcdistrib::INVALID_PUS_VERSION;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 uint16_t PusPacketChecker::getApid() const { return apid; }

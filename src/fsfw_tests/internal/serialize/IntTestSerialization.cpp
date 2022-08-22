@@ -13,18 +13,18 @@ std::array<uint8_t, 512> testserialize::test_array = {0};
 ReturnValue_t testserialize::test_serialization() {
   // Here, we test all serialization tools. First test basic cases.
   ReturnValue_t result = test_endianness_tools();
-  if (result != result::OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = test_autoserialization();
-  if (result != result::OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = test_serial_buffer_adapter();
-  if (result != result::OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
-  return result::OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t testserialize::test_endianness_tools() {
@@ -48,7 +48,7 @@ ReturnValue_t testserialize::test_endianness_tools() {
   if (test_array[0] != 0 and test_array[1] != 1) {
     return unitt::put_error(id);
   }
-  return result::OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t testserialize::test_autoserialization() {
@@ -152,7 +152,7 @@ ReturnValue_t testserialize::test_autoserialization() {
   }
 
   // Check overflow
-  return result::OK;
+  return returnvalue::OK;
 }
 
 // TODO: Also test for constant buffers.
@@ -205,5 +205,5 @@ ReturnValue_t testserialize::test_serial_buffer_adapter() {
   if (testUint16 != 16) {
     return unitt::put_error(id);
   }
-  return result::OK;
+  return returnvalue::OK;
 }

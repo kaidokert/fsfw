@@ -15,7 +15,7 @@ TestTask::TestTask(object_id_t objectId) : SystemObject(objectId), testMode(test
 TestTask::~TestTask() = default;
 
 ReturnValue_t TestTask::performOperation(uint8_t operationCode) {
-  ReturnValue_t result = RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   testLock->lockMutex(MutexIF::TimeoutType::WAITING, 20);
   if (oneShotAction) {
     // Add code here which should only be run once
@@ -40,23 +40,23 @@ ReturnValue_t TestTask::performOperation(uint8_t operationCode) {
 
 ReturnValue_t TestTask::performOneShotAction() {
   /* Everything here will only be performed once. */
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t TestTask::performPeriodicAction() {
   /* This is performed each task cycle */
-  ReturnValue_t result = RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   return result;
 }
 
 ReturnValue_t TestTask::performActionA() {
   /* This is performed each alternating task cycle */
-  ReturnValue_t result = RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   return result;
 }
 
 ReturnValue_t TestTask::performActionB() {
   /* This is performed each alternating task cycle */
-  ReturnValue_t result = RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   return result;
 }

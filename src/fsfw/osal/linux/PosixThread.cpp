@@ -29,16 +29,16 @@ ReturnValue_t PosixThread::sleep(uint64_t ns) {
     switch (errno) {
       case EINTR:
         // The nanosleep() function was interrupted by a signal.
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
       case EINVAL:
         // The rqtp argument specified a nanosecond value less than zero or
         //  greater than or equal to 1000 million.
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
       default:
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void PosixThread::suspend() {

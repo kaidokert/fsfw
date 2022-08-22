@@ -25,7 +25,7 @@ ReturnValue_t VerificationReporter::sendFailureReport(VerifFailureParams params)
                                  params.errorCode, params.step, params.errorParam1,
                                  params.errorParam2);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
-  if (status != HasReturnvaluesIF::RETURN_OK) {
+  if (status != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "VerificationReporter::sendSuccessReport: Error writing "
                << "to queue. Code: " << std::hex << status << std::dec << std::endl;
@@ -36,9 +36,9 @@ ReturnValue_t VerificationReporter::sendFailureReport(VerifFailureParams params)
 
 ReturnValue_t VerificationReporter::sendSuccessReport(VerifSuccessParams params) {
   PusVerificationMessage message(params.reportId, params.ackFlags, params.tcPacketId, params.tcPsc,
-                                 result::OK, params.step);
+                                 returnvalue::OK, params.step);
   ReturnValue_t status = MessageQueueSenderIF::sendMessage(acknowledgeQueue, &message);
-  if (status != HasReturnvaluesIF::RETURN_OK) {
+  if (status != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "VerificationReporter::sendSuccessReport: Error writing "
                << "to queue. Code: " << std::hex << status << std::dec << std::endl;

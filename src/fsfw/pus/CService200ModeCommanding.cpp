@@ -20,7 +20,7 @@ ReturnValue_t CService200ModeCommanding::isValidSubservice(uint8_t subservice) {
     case (Subservice::COMMAND_MODE_COMMAND):
     case (Subservice::COMMAND_MODE_READ):
     case (Subservice::COMMAND_MODE_ANNCOUNCE):
-      return RETURN_OK;
+      return returnvalue::OK;
     default:
       return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
   }
@@ -41,13 +41,13 @@ ReturnValue_t CService200ModeCommanding::getMessageQueueAndObject(uint8_t subser
 
 ReturnValue_t CService200ModeCommanding::checkInterfaceAndAcquireMessageQueue(
     MessageQueueId_t *messageQueueToSet, object_id_t *objectId) {
-  HasModesIF *destination = ObjectManager::instance()->get<HasModesIF>(*objectId);
+  auto *destination = ObjectManager::instance()->get<HasModesIF>(*objectId);
   if (destination == nullptr) {
     return CommandingServiceBase::INVALID_OBJECT;
   }
 
   *messageQueueToSet = destination->getCommandQueue();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t CService200ModeCommanding::prepareCommand(CommandMessage *message, uint8_t subservice,
@@ -56,7 +56,7 @@ ReturnValue_t CService200ModeCommanding::prepareCommand(CommandMessage *message,
   ModePacket modeCommandPacket;
   ReturnValue_t result =
       modeCommandPacket.deSerialize(&tcData, &tcDataLen, SerializeIF::Endianness::BIG);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -70,7 +70,7 @@ ReturnValue_t CService200ModeCommanding::handleReply(const CommandMessage *reply
                                                      CommandMessage *optionalNextCommand,
                                                      object_id_t objectId, bool *isStep) {
   Command_t replyId = reply->getCommand();
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
   switch (replyId) {
     case (ModeMessage::REPLY_MODE_REPLY): {
       result = prepareModeReply(reply, objectId);
@@ -88,7 +88,7 @@ ReturnValue_t CService200ModeCommanding::handleReply(const CommandMessage *reply
       result = INVALID_REPLY;
       break;
     default:
-      result = RETURN_FAILED;
+      result = returnvalue::FAILED;
   }
   return result;
 }
@@ -103,9 +103,9 @@ ReturnValue_t CService200ModeCommanding::prepareWrongModeReply(const CommandMess
                                                                object_id_t objectId) {
   ModePacket wrongModeReply(objectId, ModeMessage::getMode(reply), ModeMessage::getSubmode(reply));
   ReturnValue_t result = sendTmPacket(Subservice::REPLY_WRONG_MODE_REPLY, wrongModeReply);
-  if (result == RETURN_OK) {
+  if (result == returnvalue::OK) {
     // We want to produce an error here in any case because the mode was not correct
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   return result;
 }
@@ -114,9 +114,9 @@ ReturnValue_t CService200ModeCommanding::prepareCantReachModeReply(const Command
                                                                    object_id_t objectId) {
   CantReachModePacket cantReachModePacket(objectId, ModeMessage::getCantReachModeReason(reply));
   ReturnValue_t result = sendTmPacket(Subservice::REPLY_CANT_REACH_MODE, cantReachModePacket);
-  if (result == RETURN_OK) {
+  if (result == returnvalue::OK) {
     // We want to produce an error here in any case because the mode was not reached
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   return result;
 }

@@ -30,7 +30,7 @@ ReturnValue_t TestAssembly::commandChildren(Mode_t mode, Submode_t submode) {
 #else
   sif::printInfo("TestAssembly: Received command to go to mode %d submode %d\n", mode, submode);
 #endif
-  ReturnValue_t result = RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   if (mode == MODE_OFF) {
     commandTable[0].setMode(MODE_OFF);
     commandTable[0].setSubmode(SUBMODE_NONE);
@@ -113,14 +113,14 @@ ReturnValue_t TestAssembly::isModeCombinationValid(Mode_t mode, Submode_t submod
   switch (mode) {
     case MODE_OFF:
       if (submode == SUBMODE_NONE) {
-        return RETURN_OK;
+        return returnvalue::OK;
       } else {
         return INVALID_SUBMODE;
       }
     case DeviceHandlerIF::MODE_NORMAL:
     case MODE_ON:
       if (submode < 3) {
-        return RETURN_OK;
+        return returnvalue::OK;
       } else {
         return INVALID_SUBMODE;
       }
@@ -130,24 +130,24 @@ ReturnValue_t TestAssembly::isModeCombinationValid(Mode_t mode, Submode_t submod
 
 ReturnValue_t TestAssembly::initialize() {
   ReturnValue_t result = AssemblyBase::initialize();
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   handler0 = ObjectManager::instance()->get<TestDevice>(deviceHandler0Id);
   handler1 = ObjectManager::instance()->get<TestDevice>(deviceHandler1Id);
   if ((handler0 == nullptr) or (handler1 == nullptr)) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   handler0->setParentQueue(this->getCommandQueue());
   handler1->setParentQueue(this->getCommandQueue());
 
   result = registerChild(deviceHandler0Id);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = registerChild(deviceHandler1Id);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return result;
@@ -160,11 +160,11 @@ ReturnValue_t TestAssembly::checkChildrenStateOn(Mode_t wantedMode, Submode_t wa
         return NOT_ENOUGH_CHILDREN_IN_CORRECT_STATE;
       }
     }
-    return RETURN_OK;
+    return returnvalue::OK;
   } else if (submode == submodes::SINGLE) {
     for (const auto& info : childrenMap) {
       if (info.second.mode == wantedMode and info.second.mode != wantedSubmode) {
-        return RETURN_OK;
+        return returnvalue::OK;
       }
     }
   }

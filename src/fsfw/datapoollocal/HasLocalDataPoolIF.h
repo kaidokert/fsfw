@@ -110,10 +110,10 @@ class HasLocalDataPoolIF {
    * These function can be implemented by pool owner, if they are required
    * and used by the housekeeping message interface.
    * */
-  virtual ReturnValue_t addDataSet(sid_t sid) { return HasReturnvaluesIF::RETURN_FAILED; };
-  virtual ReturnValue_t removeDataSet(sid_t sid) { return HasReturnvaluesIF::RETURN_FAILED; };
+  virtual ReturnValue_t addDataSet(sid_t sid) { return returnvalue::FAILED; };
+  virtual ReturnValue_t removeDataSet(sid_t sid) { return returnvalue::FAILED; };
   virtual ReturnValue_t changeCollectionInterval(sid_t sid, float newIntervalSeconds) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   };
 
   /**

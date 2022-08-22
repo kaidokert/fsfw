@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/serialize/SerializeIF.h"
 
 /**

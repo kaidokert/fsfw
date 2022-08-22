@@ -16,7 +16,7 @@ void FinishPduSerializer::updateDirectiveFieldLen() {
 ReturnValue_t FinishPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                              Endianness streamEndianness) const {
   ReturnValue_t result = FileDirectiveCreator::serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (*size + 1 >= maxSize) {
@@ -33,13 +33,13 @@ ReturnValue_t FinishPduSerializer::serialize(uint8_t **buffer, size_t *size, siz
     finishInfo.getFilestoreResonses(&fsResponsesArray, &fsResponsesArrayLen, nullptr);
     for (size_t idx = 0; idx < fsResponsesArrayLen; idx++) {
       result = fsResponsesArray[idx]->serialize(buffer, size, maxSize, streamEndianness);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
     }
   }
   EntityIdTlv *entityId = nullptr;
-  if (finishInfo.getFaultLocation(&entityId) == HasReturnvaluesIF::RETURN_OK) {
+  if (finishInfo.getFaultLocation(&entityId) == returnvalue::OK) {
     result = entityId->serialize(buffer, size, maxSize, streamEndianness);
   }
   return result;

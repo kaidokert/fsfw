@@ -5,7 +5,7 @@
 #include "ActionMessage.h"
 #include "SimpleActionHelper.h"
 #include "fsfw/ipc/MessageQueueIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 /**
  * @brief
@@ -53,7 +53,7 @@ class HasActionsIF {
    *
    * @return
    * -@c EXECUTION_FINISHED Finish reply will be generated
-   * -@c Not RETURN_OK Step failure reply will be generated
+   * -@c Not returnvalue::OK Step failure reply will be generated
    */
   virtual ReturnValue_t executeAction(ActionId_t actionId, MessageQueueId_t commandedBy,
                                       const uint8_t* data, size_t size) = 0;

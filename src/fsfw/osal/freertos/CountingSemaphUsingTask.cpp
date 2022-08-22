@@ -65,7 +65,7 @@ ReturnValue_t CountingSemaphoreUsingTask::acquireWithTickTimeout(TimeoutType tim
   // Decrement notfication value without resetting it.
   BaseType_t oldCount = ulTaskNotifyTake(pdFALSE, timeoutTicks);
   if (getSemaphoreCounter() == oldCount - 1) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     return SemaphoreIF::SEMAPHORE_TIMEOUT;
   }
@@ -81,10 +81,10 @@ ReturnValue_t CountingSemaphoreUsingTask::release() {
 ReturnValue_t CountingSemaphoreUsingTask::release(TaskHandle_t taskToNotify) {
   BaseType_t returncode = xTaskNotifyGive(taskToNotify);
   if (returncode == pdPASS) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     // This should never happen.
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 }
 
@@ -99,7 +99,7 @@ TaskHandle_t CountingSemaphoreUsingTask::getTaskHandle() { return handle; }
 ReturnValue_t CountingSemaphoreUsingTask::releaseFromISR(TaskHandle_t taskToNotify,
                                                          BaseType_t* higherPriorityTaskWoken) {
   vTaskNotifyGiveFromISR(taskToNotify, higherPriorityTaskWoken);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 uint8_t CountingSemaphoreUsingTask::getSemaphoreCounterFromISR(

@@ -6,7 +6,7 @@
 #include "PusDistributorIF.h"
 #include "PusPacketChecker.h"
 #include "TcDistributorBase.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/tmtcpacket/pus/tc.h"
 #include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
 #include "fsfw/tmtcservices/VerificationReporter.h"

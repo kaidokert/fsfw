@@ -152,7 +152,7 @@ ReturnValue_t Sgp4Propagator::initialize(const uint8_t* line1, const uint8_t* li
     return MAKE_RETURN_CODE(result);
   } else {
     initialized = true;
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 }
 
@@ -195,6 +195,6 @@ ReturnValue_t Sgp4Propagator::propagate(double* position, double* velocity, time
   if (result != 0) {
     return MAKE_RETURN_CODE(result || 0xB0);
   } else {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 }

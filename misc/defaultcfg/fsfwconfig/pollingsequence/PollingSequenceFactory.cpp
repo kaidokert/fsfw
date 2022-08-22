@@ -11,15 +11,15 @@ ReturnValue_t pst::pollingSequenceInitDefault(
 
 	/* Add polling sequence table here */
 
-	if (thisSequence->checkSequence() == HasReturnvaluesIF::RETURN_OK) {
-		return HasReturnvaluesIF::RETURN_OK;
+	if (thisSequence->checkSequence() == returnvalue::OK) {
+		return returnvalue::OK;
 	}
 	else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 		sif::error << "pst::pollingSequenceInitDefault: Sequence invalid!"
 		        << std::endl;
 #endif
-		return HasReturnvaluesIF::RETURN_FAILED;
+		return returnvalue::FAILED;
 	}
 }
 

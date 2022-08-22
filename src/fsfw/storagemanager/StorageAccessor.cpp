@@ -26,7 +26,7 @@ ReturnValue_t StorageAccessor::getDataCopy(uint8_t* pointer, size_t maxSize) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "StorageAccessor: Not initialized!" << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (size_ > maxSize) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -34,10 +34,10 @@ ReturnValue_t StorageAccessor::getDataCopy(uint8_t* pointer, size_t maxSize) {
                   "enough"
                << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   std::copy(dataPointer, dataPointer + size_, pointer);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 uint8_t* StorageAccessor::data() {
@@ -54,7 +54,7 @@ ReturnValue_t StorageAccessor::write(uint8_t* data, size_t size, uint16_t offset
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "StorageAccessor: Not initialized!" << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (offset + size > size_) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -62,10 +62,10 @@ ReturnValue_t StorageAccessor::write(uint8_t* data, size_t size, uint16_t offset
                   "entry!"
                << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   std::copy(data, data + size, dataPointer + offset);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void StorageAccessor::assignConstPointer() { constDataPointer = dataPointer; }

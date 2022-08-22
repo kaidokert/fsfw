@@ -5,7 +5,7 @@
 
 cfdp::VarLenField::VarLenField(cfdp::WidthInBytes width, size_t value) : VarLenField() {
   ReturnValue_t result = this->setValue(width, value);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_DISABLE_PRINTOUT == 0
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "cfdp::VarLenField: Setting value failed" << std::endl;
@@ -24,21 +24,21 @@ ReturnValue_t cfdp::VarLenField::setValue(cfdp::WidthInBytes widthInBytes, size_
   switch (widthInBytes) {
     case (cfdp::WidthInBytes::ONE_BYTE): {
       if (value_ > UINT8_MAX) {
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
       }
       this->value.oneByte = value_;
       break;
     }
     case (cfdp::WidthInBytes::TWO_BYTES): {
       if (value_ > UINT16_MAX) {
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
       }
       this->value.twoBytes = value_;
       break;
     }
     case (cfdp::WidthInBytes::FOUR_BYTES): {
       if (value_ > UINT32_MAX) {
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
       }
       this->value.fourBytes = value_;
       break;
@@ -48,7 +48,7 @@ ReturnValue_t cfdp::VarLenField::setValue(cfdp::WidthInBytes widthInBytes, size_
     }
   }
   this->width = widthInBytes;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 size_t cfdp::VarLenField::getValue() const {
@@ -76,7 +76,7 @@ ReturnValue_t cfdp::VarLenField::serialize(uint8_t **buffer, size_t *size, size_
       **buffer = value.oneByte;
       *size += 1;
       *buffer += 1;
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
     case (cfdp::WidthInBytes::TWO_BYTES): {
       return SerializeAdapter::serialize(&value.twoBytes, buffer, size, maxSize, streamEndianness);
@@ -85,7 +85,7 @@ ReturnValue_t cfdp::VarLenField::serialize(uint8_t **buffer, size_t *size, size_
       return SerializeAdapter::serialize(&value.fourBytes, buffer, size, maxSize, streamEndianness);
     }
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 }
@@ -104,7 +104,7 @@ ReturnValue_t cfdp::VarLenField::deSerialize(const uint8_t **buffer, size_t *siz
     case (cfdp::WidthInBytes::ONE_BYTE): {
       value.oneByte = **buffer;
       *size += 1;
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
     case (cfdp::WidthInBytes::TWO_BYTES): {
       return SerializeAdapter::deSerialize(&value.twoBytes, buffer, size, streamEndianness);
@@ -113,7 +113,7 @@ ReturnValue_t cfdp::VarLenField::deSerialize(const uint8_t **buffer, size_t *siz
       return SerializeAdapter::deSerialize(&value.fourBytes, buffer, size, streamEndianness);
     }
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 }

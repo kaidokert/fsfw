@@ -22,7 +22,7 @@ ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t max
     return PusIF::INVALID_PUS_VERSION;
   }
   ReturnValue_t result = spCreator.serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   **buffer = pusParams.pusVersion << 4 | pusParams.ackFlags;
@@ -34,7 +34,7 @@ ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t max
   *size += 3;
   result =
       SerializeAdapter::serialize(&pusParams.sourceId, buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (pusParams.dataWrapper.type == ecss::DataTypes::RAW) {
@@ -48,7 +48,7 @@ ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t max
              pusParams.dataWrapper.dataUnion.serializable != nullptr) {
     result = pusParams.dataWrapper.dataUnion.serializable->serialize(buffer, size, maxSize,
                                                                      streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
   }
@@ -67,7 +67,7 @@ size_t PusTcCreator::getSerializedSize() const { return spCreator.getFullPacketL
 
 ReturnValue_t PusTcCreator::deSerialize(const uint8_t **buffer, size_t *size,
                                         SerializeIF::Endianness streamEndianness) {
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 uint16_t PusTcCreator::getPacketIdRaw() const { return spCreator.getPacketIdRaw(); }
@@ -94,14 +94,14 @@ ReturnValue_t PusTcCreator::setRawUserData(const uint8_t *data, size_t len) {
   // TODO: Check length field?
   pusParams.dataWrapper.setRawData({data, len});
   updateSpLengthField();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t PusTcCreator::setSerializableUserData(SerializeIF &serializable) {
   // TODO: Check length field?
   pusParams.dataWrapper.setSerializable(serializable);
   updateSpLengthField();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void PusTcCreator::setup() {

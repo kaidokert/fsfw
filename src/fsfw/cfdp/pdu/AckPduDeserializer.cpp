@@ -5,8 +5,7 @@ AckPduDeserializer::AckPduDeserializer(const uint8_t* pduBuf, size_t maxSize, Ac
 
 ReturnValue_t AckPduDeserializer::parseData() {
   ReturnValue_t result = FileDirectiveReader::parseData();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
-    return result;
+  if (result != returnvalue::OK) {
   }
   size_t currentIdx = FileDirectiveReader::getHeaderSize();
   if (currentIdx + 2 > this->maxSize) {
@@ -15,7 +14,7 @@ ReturnValue_t AckPduDeserializer::parseData() {
   if (not checkAndSetCodes(pointers.rawPtr[currentIdx], pointers.rawPtr[currentIdx + 1])) {
     return cfdp::INVALID_ACK_DIRECTIVE_FIELDS;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 bool AckPduDeserializer::checkAndSetCodes(uint8_t firstByte, uint8_t secondByte) {

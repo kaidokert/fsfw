@@ -16,7 +16,7 @@ HealthDevice::~HealthDevice() { QueueFactory::instance()->deleteMessageQueue(com
 ReturnValue_t HealthDevice::performOperation(uint8_t opCode) {
   CommandMessage command;
   ReturnValue_t result = commandQueue->receiveMessage(&command);
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     result = healthHelper.handleHealthCommand(&command);
   }
   return result;
@@ -24,7 +24,7 @@ ReturnValue_t HealthDevice::performOperation(uint8_t opCode) {
 
 ReturnValue_t HealthDevice::initialize() {
   ReturnValue_t result = SystemObject::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (parentQueue != 0) {
@@ -50,7 +50,7 @@ bool HealthDevice::hasHealthChanged() {
 
 ReturnValue_t HealthDevice::setHealth(HealthState health) {
   healthHelper.setHealth(health);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 HasHealthIF::HealthState HealthDevice::getHealth() { return healthHelper.getHealth(); }

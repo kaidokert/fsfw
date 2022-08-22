@@ -27,7 +27,7 @@ TEST_CASE("CFDP Base", "[cfdp]") {
     serTarget = serBuf.data();
     serSize = 0;
     result = fdSer.serialize(&serTarget, &serSize, serBuf.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     // Only version bits are set
     REQUIRE(serBuf[0] == 0b00100000);
     // PDU data field length is 5 (4 + Directive code octet)
@@ -47,9 +47,9 @@ TEST_CASE("CFDP Base", "[cfdp]") {
     size_t deserSize = 20;
     serSize = 0;
     REQUIRE(fdSer.deSerialize(&deserTarget, &deserSize, SerializeIF::Endianness::NETWORK) ==
-            HasReturnvaluesIF::RETURN_FAILED);
+            returnvalue::FAILED);
     REQUIRE(fdSer.serialize(nullptr, nullptr, 85, SerializeIF::Endianness::NETWORK) ==
-            HasReturnvaluesIF::RETURN_FAILED);
+            returnvalue::FAILED);
     for (uint8_t idx = 0; idx < 8; idx++) {
       serTarget = serBuf.data();
       serSize = 0;
@@ -64,7 +64,7 @@ TEST_CASE("CFDP Base", "[cfdp]") {
     fdDeser.setEndianness(SerializeIF::Endianness::MACHINE);
     REQUIRE(fdDeser.getEndianness() == SerializeIF::Endianness::MACHINE);
     fdDeser.setEndianness(SerializeIF::Endianness::NETWORK);
-    REQUIRE(fdDeser.parseData() == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(fdDeser.parseData() == returnvalue::OK);
     REQUIRE(fdDeser.getFileDirective() == FileDirectives::ACK);
     REQUIRE(fdDeser.getPduDataFieldLen() == 5);
     REQUIRE(fdDeser.getHeaderSize() == 8);
@@ -83,11 +83,11 @@ TEST_CASE("CFDP Base", "[cfdp]") {
     REQUIRE(fss.getSize() == 0);
     fss.setFileSize(0x20, false);
     result = fss.serialize(&buffer, &size, fssBuf.size(), SerializeIF::Endianness::MACHINE);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     uint32_t fileSize = 0;
     result = SerializeAdapter::deSerialize(&fileSize, fssBuf.data(), nullptr,
                                            SerializeIF::Endianness::MACHINE);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(fileSize == 0x20);
   }
 

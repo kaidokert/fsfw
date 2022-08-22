@@ -2,7 +2,7 @@
 #define FSFW_OSAL_COMMON_TCPIPIF_H_
 
 #include "../../platform.h"
-#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "../../returnvalues/returnvalue.h"
 
 #ifdef PLATFORM_WIN
 #include <winsock2.h>

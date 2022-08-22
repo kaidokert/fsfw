@@ -25,7 +25,7 @@ store_address_t ActionMessage::getStoreId(const CommandMessage* message) {
 
 void ActionMessage::setStepReply(CommandMessage* message, ActionId_t fid, uint8_t step,
                                  ReturnValue_t result) {
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     message->setCommand(STEP_SUCCESS);
   } else {
     message->setCommand(STEP_FAILED);

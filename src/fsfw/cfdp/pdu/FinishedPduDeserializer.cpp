@@ -6,7 +6,7 @@ FinishPduDeserializer::FinishPduDeserializer(const uint8_t* pduBuf, size_t maxSi
 
 ReturnValue_t FinishPduDeserializer::parseData() {
   ReturnValue_t result = FileDirectiveReader::parseData();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t currentIdx = FileDirectiveReader::getHeaderSize();
@@ -33,7 +33,7 @@ FinishedInfo& FinishPduDeserializer::getInfo() { return finishedInfo; }
 
 ReturnValue_t FinishPduDeserializer::parseTlvs(size_t remLen, size_t currentIdx, const uint8_t* buf,
                                                cfdp::ConditionCode conditionCode) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   size_t fsResponsesIdx = 0;
   auto endianness = getEndianness();
   FilestoreResponseTlv** fsResponseArray = nullptr;
@@ -60,7 +60,7 @@ ReturnValue_t FinishPduDeserializer::parseTlvs(size_t remLen, size_t currentIdx,
         return cfdp::FINISHED_CANT_PARSE_FS_RESPONSES;
       }
       result = fsResponseArray[fsResponsesIdx]->deSerialize(&buf, &remLen, endianness);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
       fsResponsesIdx += 1;
@@ -72,11 +72,11 @@ ReturnValue_t FinishPduDeserializer::parseTlvs(size_t remLen, size_t currentIdx,
         return cfdp::INVALID_TLV_TYPE;
       }
       result = finishedInfo.getFaultLocation(&faultLocation);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
       result = faultLocation->deSerialize(&buf, &remLen, endianness);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
     } else {

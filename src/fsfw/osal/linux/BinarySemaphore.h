@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_OSAL_LINUX_BINARYSEMPAHORE_H_
 #define FRAMEWORK_OSAL_LINUX_BINARYSEMPAHORE_H_
 
-#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "../../returnvalues/returnvalue.h"
 #include "../../tasks/SemaphoreIF.h"
 
 extern "C" {
@@ -17,7 +17,7 @@ extern "C" {
  * @author 	R. Mueller
  * @ingroup osal
  */
-class BinarySemaphore : public SemaphoreIF, public HasReturnvaluesIF {
+class BinarySemaphore : public SemaphoreIF {
  public:
   static const uint8_t INTERFACE_ID = CLASS_ID::SEMAPHORE_IF;
 
@@ -45,7 +45,7 @@ class BinarySemaphore : public SemaphoreIF, public HasReturnvaluesIF {
    * for a maximum of #timeoutMs or until the semaphore is given back,
    * for example by an ISR or another task.
    * @param timeoutMs
-   * @return -@c RETURN_OK on success
+   * @return -@c returnvalue::OK on success
    *         -@c SemaphoreIF::SEMAPHORE_TIMEOUT on timeout
    */
   ReturnValue_t acquire(TimeoutType timeoutType = TimeoutType::BLOCKING,
@@ -53,7 +53,7 @@ class BinarySemaphore : public SemaphoreIF, public HasReturnvaluesIF {
 
   /**
    * Release the binary semaphore.
-   * @return -@c RETURN_OK on success
+   * @return -@c returnvalue::OK on success
    *         -@c SemaphoreIF::SEMAPHORE_NOT_OWNED if the semaphores is
    *         	already available.
    */

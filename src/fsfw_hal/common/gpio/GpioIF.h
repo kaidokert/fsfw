@@ -2,7 +2,7 @@
 #define COMMON_GPIO_GPIOIF_H_
 
 #include <fsfw/devicehandlers/CookieIF.h>
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include <fsfw/returnvalues/returnvalue.h>
 
 #include "gpioDefinitions.h"
 
@@ -13,7 +13,7 @@ class GpioCookie;
  * 			over GPIOs.
  * @author	J. Meier
  */
-class GpioIF : public HasReturnvaluesIF {
+class GpioIF {
  public:
   virtual ~GpioIF(){};
 
@@ -29,7 +29,7 @@ class GpioIF : public HasReturnvaluesIF {
    * 			functionality to pull a certain GPIO to high logic level.
    *
    * @param gpioId	A unique number which specifies the GPIO to drive.
-   * @return  Returns RETURN_OK for success. This should never return RETURN_FAILED.
+   * @return  Returns returnvalue::OK for success. This should never return returnvalue::FAILED.
    */
   virtual ReturnValue_t pullHigh(gpioId_t gpioId) = 0;
 

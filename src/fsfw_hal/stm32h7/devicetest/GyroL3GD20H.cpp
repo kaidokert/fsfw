@@ -84,7 +84,7 @@ ReturnValue_t GyroL3GD20H::initialize() {
   spiHandle->Init.Mode = SPI_MODE_MASTER;
   if (HAL_SPI_Init(spiHandle) != HAL_OK) {
     sif::printWarning("Error initializing SPI\n");
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   delete mspCfg;
@@ -106,11 +106,11 @@ ReturnValue_t GyroL3GD20H::initialize() {
       return handlePollingTransferInit();
     }
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t GyroL3GD20H::performOperation() {
@@ -125,10 +125,10 @@ ReturnValue_t GyroL3GD20H::performOperation() {
       return handleInterruptSensorRead();
     }
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t GyroL3GD20H::handleDmaTransferInit() {
@@ -162,10 +162,10 @@ ReturnValue_t GyroL3GD20H::handleDmaTransferInit() {
     case (TransferStates::FAILURE): {
       sif::printWarning("Transfer failure\n");
       transferState = TransferStates::FAILURE;
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 
@@ -194,10 +194,10 @@ ReturnValue_t GyroL3GD20H::handleDmaTransferInit() {
     case (TransferStates::FAILURE): {
       sif::printWarning("GyroL3GD20H::initialize: Configuration transfer failure\n");
       transferState = TransferStates::FAILURE;
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 
@@ -228,13 +228,13 @@ ReturnValue_t GyroL3GD20H::handleDmaTransferInit() {
     case (TransferStates::FAILURE): {
       sif::printWarning("GyroL3GD20H::initialize: Configuration transfer failure\n");
       transferState = TransferStates::FAILURE;
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t GyroL3GD20H::handleDmaSensorRead() {
@@ -259,13 +259,13 @@ ReturnValue_t GyroL3GD20H::handleDmaSensorRead() {
     case (TransferStates::FAILURE): {
       sif::printWarning("GyroL3GD20H::handleDmaSensorRead: Sensor read failure\n");
       transferState = TransferStates::FAILURE;
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 HAL_StatusTypeDef GyroL3GD20H::performDmaTransfer(size_t sendSize) {
@@ -298,14 +298,14 @@ ReturnValue_t GyroL3GD20H::handlePollingTransferInit() {
     }
     case (HAL_TIMEOUT): {
       sif::printDebug("GyroL3GD20H::initialize: Polling transfer timeout\n");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     case (HAL_ERROR): {
       sif::printDebug("GyroL3GD20H::initialize: Polling transfer failure\n");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 
@@ -323,14 +323,14 @@ ReturnValue_t GyroL3GD20H::handlePollingTransferInit() {
     }
     case (HAL_TIMEOUT): {
       sif::printDebug("GyroL3GD20H::initialize: Polling transfer timeout\n");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     case (HAL_ERROR): {
       sif::printDebug("GyroL3GD20H::initialize: Polling transfer failure\n");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 
@@ -353,17 +353,17 @@ ReturnValue_t GyroL3GD20H::handlePollingTransferInit() {
     }
     case (HAL_TIMEOUT): {
       sif::printDebug("GyroL3GD20H::initialize: Polling transfer timeout\n");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     case (HAL_ERROR): {
       sif::printDebug("GyroL3GD20H::initialize: Polling transfer failure\n");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t GyroL3GD20H::handlePollingSensorRead() {
@@ -380,17 +380,17 @@ ReturnValue_t GyroL3GD20H::handlePollingSensorRead() {
     }
     case (HAL_TIMEOUT): {
       sif::printDebug("GyroL3GD20H::initialize: Polling transfer timeout\n");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     case (HAL_ERROR): {
       sif::printDebug("GyroL3GD20H::initialize: Polling transfer failure\n");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t GyroL3GD20H::handleInterruptTransferInit() {
@@ -416,7 +416,7 @@ ReturnValue_t GyroL3GD20H::handleInterruptTransferInit() {
     case (HAL_ERROR):
     case (HAL_TIMEOUT): {
       sif::printDebug("GyroL3GD20H::initialize: Initialization failure using interrupts\n");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 
@@ -438,7 +438,7 @@ ReturnValue_t GyroL3GD20H::handleInterruptTransferInit() {
     case (HAL_ERROR):
     case (HAL_TIMEOUT): {
       sif::printDebug("GyroL3GD20H::initialize: Initialization failure using interrupts\n");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 
@@ -465,10 +465,10 @@ ReturnValue_t GyroL3GD20H::handleInterruptTransferInit() {
     case (HAL_ERROR):
     case (HAL_TIMEOUT): {
       sif::printDebug("GyroL3GD20H::initialize: Initialization failure using interrupts\n");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t GyroL3GD20H::handleInterruptSensorRead() {
@@ -489,10 +489,10 @@ ReturnValue_t GyroL3GD20H::handleInterruptSensorRead() {
     case (HAL_ERROR):
     case (HAL_TIMEOUT): {
       sif::printDebug("GyroL3GD20H::initialize: Sensor read failure using interrupts\n");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void GyroL3GD20H::prepareConfigRegs(uint8_t *configRegs) {

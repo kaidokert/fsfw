@@ -11,7 +11,7 @@ ReturnValue_t GpioCookie::addGpio(gpioId_t gpioId, GpioBase* gpioConfig) {
 #else
     sif::printWarning("GpioCookie::addGpio: gpioConfig is nullpointer\n");
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   auto gpioMapIter = gpioMap.find(gpioId);
   if (gpioMapIter == gpioMap.end()) {
@@ -25,9 +25,9 @@ ReturnValue_t GpioCookie::addGpio(gpioId_t gpioId, GpioBase* gpioConfig) {
       sif::printWarning("GpioCookie::addGpio: Failed to add GPIO %d to GPIO map\n", gpioId);
 #endif
 #endif
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -36,7 +36,7 @@ ReturnValue_t GpioCookie::addGpio(gpioId_t gpioId, GpioBase* gpioConfig) {
   sif::printWarning("GpioCookie::addGpio: GPIO already exists in GPIO map\n");
 #endif
 #endif
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 GpioMap GpioCookie::getGpioMap() const { return gpioMap; }

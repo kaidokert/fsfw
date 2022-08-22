@@ -1,7 +1,7 @@
 #ifndef HASMEMORYIF_H_
 #define HASMEMORYIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 
 class HasMemoryIF {
  public:
@@ -30,15 +30,13 @@ class HasMemoryIF {
    * Sets the address of the memory, if possible.
    * startAddress is a proposal for an address, or the base address if multiple addresses are set.
    */
-  virtual ReturnValue_t setAddress(uint32_t* startAddress) {
-    return HasReturnvaluesIF::RETURN_FAILED;
-  }
+  virtual ReturnValue_t setAddress(uint32_t* startAddress) { return returnvalue::FAILED; }
   static bool memAccessWasSuccessful(ReturnValue_t result) {
     switch (result) {
       case DO_IT_MYSELF:
       case POINTS_TO_MEMORY:
       case POINTS_TO_VARIABLE:
-      case HasReturnvaluesIF::RETURN_OK:
+      case returnvalue::OK:
       case ACTIVITY_COMPLETED:
         return true;
       default:

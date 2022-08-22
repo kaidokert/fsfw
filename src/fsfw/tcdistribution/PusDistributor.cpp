@@ -14,7 +14,7 @@ PusDistributor::PusDistributor(uint16_t setApid, object_id_t setObjectId,
       store(store_),
       checker(setApid, ccsds::PacketType::TC),
       ccsdsDistributor(distributor),
-      tcStatus(RETURN_FAILED) {}
+      tcStatus(returnvalue::FAILED) {}
 
 PusDistributor::~PusDistributor() = default;
 
@@ -28,26 +28,26 @@ ReturnValue_t PusDistributor::selectDestination(MessageQueueId_t& destId) {
   const uint8_t* packetPtr = nullptr;
   size_t packetLen = 0;
   ReturnValue_t result = store->getData(currentMessage.getStorageId(), &packetPtr, &packetLen) !=
-                         HasReturnvaluesIF::RETURN_OK;
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+                         returnvalue::OK;
+  if (result != returnvalue::OK) {
     tcStatus = PACKET_LOST;
     return result;
   }
   result = reader.setReadOnlyData(packetPtr, packetLen);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     tcStatus = PACKET_LOST;
     return result;
   }
   // CRC check done by checker
   result = reader.parseDataWithoutCrcCheck();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     tcStatus = PACKET_LOST;
     return result;
   }
 
   if (reader.getFullData() != nullptr) {
     tcStatus = checker.checkPacket(reader, reader.getFullPacketLen());
-    if (tcStatus != HasReturnvaluesIF::RETURN_OK) {
+    if (tcStatus != returnvalue::OK) {
       checkerFailurePrinter();
     }
     uint8_t pusId = reader.getService();
@@ -92,13 +92,13 @@ ReturnValue_t PusDistributor::registerService(const AcceptsTelecommandsIF& servi
 #endif
     return SERVICE_ID_ALREADY_EXISTS;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 MessageQueueId_t PusDistributor::getRequestQueue() const { return tcQueue->getId(); }
 
 ReturnValue_t PusDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
-  if (queueStatus != RETURN_OK) {
+  if (queueStatus != returnvalue::OK) {
     tcStatus = queueStatus;
   }
   if (tcStatus != RETURN_OK) {
@@ -106,7 +106,7 @@ ReturnValue_t PusDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
     // A failed packet is deleted immediately after reporting,
     // otherwise it will block memory.
     store->deleteData(currentMessage.getStorageId());
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   } else {
     verifyChannel->sendSuccessReport({tcverif::ACCEPTANCE_SUCCESS, reader});
     return RETURN_OK;

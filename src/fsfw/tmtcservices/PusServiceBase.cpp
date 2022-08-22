@@ -25,14 +25,14 @@ PusServiceBase::~PusServiceBase() {
 ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
   handleRequestQueue();
   ReturnValue_t result = performService();
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "PusService " << psbParams.serviceId << ": performService returned with "
                << static_cast<uint16_t>(result) << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void PusServiceBase::setTaskIF(PeriodicTaskIF* taskHandle_) { this->taskHandle = taskHandle_; }
@@ -44,7 +44,7 @@ void PusServiceBase::handleRequestQueue() {
     ReturnValue_t status = psbParams.reqQueue->receiveMessage(&message);
     if (status == MessageQueueIF::EMPTY) {
       break;
-    } else if (status != HasReturnvaluesIF::RETURN_OK) {
+    } else if (status != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::error << "PusServiceBase::performOperation: Service " << psbParams.serviceId
                  << ": Error receiving packet. Code: " << std::hex << status << std::dec
@@ -57,7 +57,7 @@ void PusServiceBase::handleRequestQueue() {
       break;
     }
     result = tc::prepareTcReader(*psbParams.tcPool, message.getStorageId(), currentPacket);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       // We were not even able to retrieve the TC, so we can not retrieve any TC properties either
       // without segfaulting
       auto verifParams = VerifFailureParams(tcverif::START_FAILURE, 0, 0, result);
@@ -67,7 +67,7 @@ void PusServiceBase::handleRequestQueue() {
       continue;
     }
     result = handleRequest(currentPacket.getSubService());
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       psbParams.verifReporter->sendSuccessReport(
           VerifSuccessParams(tcverif::COMPLETION_SUCCESS, currentPacket));
     } else {
@@ -93,7 +93,7 @@ MessageQueueId_t PusServiceBase::getRequestQueue() const {
 
 ReturnValue_t PusServiceBase::initialize() {
   ReturnValue_t result = SystemObject::initialize();
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (psbParams.reqQueue == nullptr) {
@@ -131,7 +131,7 @@ ReturnValue_t PusServiceBase::initialize() {
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void PusServiceBase::setTcPool(StorageManagerIF& tcPool) { psbParams.tcPool = &tcPool; }
@@ -143,7 +143,7 @@ void PusServiceBase::setErrorReporter(InternalErrorReporterIF& errReporter_) {
 ReturnValue_t PusServiceBase::initializeTmHelpers(TmSendHelper& tmSendHelper,
                                                   TmStoreHelper& tmStoreHelper) {
   ReturnValue_t result = initializeTmSendHelper(tmSendHelper);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return initializeTmStoreHelper(tmStoreHelper);
@@ -164,7 +164,7 @@ ReturnValue_t PusServiceBase::initializeTmSendHelper(TmSendHelper& tmSendHelper)
   } else {
     tmSendHelper.setInternalErrorReporter(*psbParams.errReporter);
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t PusServiceBase::initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const {
@@ -186,7 +186,7 @@ ReturnValue_t PusServiceBase::initializeTmStoreHelper(TmStoreHelper& tmStoreHelp
   // Generally, all TM packets will pass through a layer where the sequence count is set.
   // This avoids duplicate calculation of the CRC16
   tmStoreHelper.disableCrcCalculation();
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void PusServiceBase::setVerificationReporter(VerificationReporterIF& reporter) {

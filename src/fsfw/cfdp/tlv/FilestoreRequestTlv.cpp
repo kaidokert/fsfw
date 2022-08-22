@@ -16,11 +16,11 @@ void FilestoreRequestTlv::setSecondFileName(cfdp::Lv *secondFileName) {
 ReturnValue_t FilestoreRequestTlv::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                              Endianness streamEndianness) const {
   ReturnValue_t result = commonSerialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = firstFileName.serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (requiresSecondFileName()) {
@@ -30,13 +30,13 @@ ReturnValue_t FilestoreRequestTlv::serialize(uint8_t **buffer, size_t *size, siz
     }
     secondFileName->serialize(buffer, size, maxSize, streamEndianness);
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t FilestoreRequestTlv::deSerialize(const uint8_t **buffer, size_t *size,
                                                Endianness streamEndianness) {
   ReturnValue_t result = commonDeserialize(buffer, size, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return deSerializeFromValue(buffer, size, streamEndianness);
@@ -63,13 +63,13 @@ ReturnValue_t FilestoreRequestTlv::deSerializeFromValue(const uint8_t **buffer, 
   *buffer += 1;
   *size -= 1;
   ReturnValue_t result = firstFileName.deSerialize(buffer, size, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (requiresSecondFileName()) {
     if (secondFileName == nullptr) {
       secondFileNameMissing();
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     result = secondFileName->deSerialize(buffer, size, streamEndianness);
   }

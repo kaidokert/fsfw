@@ -18,7 +18,7 @@ void KeepAlivePduSerializer::updateDirectiveFieldLen() {
 ReturnValue_t KeepAlivePduSerializer::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                                 Endianness streamEndianness) const {
   ReturnValue_t result = FileDirectiveCreator::serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return progress.serialize(this->getLargeFileFlag(), buffer, size, maxSize, streamEndianness);

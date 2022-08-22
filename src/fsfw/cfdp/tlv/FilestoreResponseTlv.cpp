@@ -32,11 +32,11 @@ ReturnValue_t FilestoreResponseTlv::serialize(uint8_t **buffer, size_t *size, si
                                               Endianness streamEndianness) const {
   ReturnValue_t result =
       commonSerialize(buffer, size, maxSize, streamEndianness, true, this->statusCode);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = firstFileName.serialize(buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (requiresSecondFileName()) {
@@ -61,7 +61,7 @@ ReturnValue_t FilestoreResponseTlv::serialize(uint8_t **buffer, size_t *size, si
 ReturnValue_t FilestoreResponseTlv::deSerialize(const uint8_t **buffer, size_t *size,
                                                 Endianness streamEndianness) {
   ReturnValue_t result = commonDeserialize(buffer, size, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return deSerializeFromValue(buffer, size, streamEndianness);
@@ -75,7 +75,7 @@ ReturnValue_t FilestoreResponseTlv::deSerializeFromValue(const uint8_t **buffer,
   *buffer += 1;
   *size -= 1;
   ReturnValue_t result = firstFileName.deSerialize(buffer, size, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (requiresSecondFileName()) {
@@ -83,7 +83,7 @@ ReturnValue_t FilestoreResponseTlv::deSerializeFromValue(const uint8_t **buffer,
       return cfdp::FILESTORE_REQUIRES_SECOND_FILE;
     }
     result = secondFileName->deSerialize(buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
   }
@@ -98,7 +98,7 @@ ReturnValue_t FilestoreResponseTlv::deSerializeFromValue(const uint8_t **buffer,
     *size -= 1;
     *buffer += 1;
     // Ignore empty filestore message
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   return filestoreMsg->deSerialize(buffer, size, streamEndianness);
 }

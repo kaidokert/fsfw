@@ -74,7 +74,7 @@ class FilestoreTlvBase : public TlvIF {
                                 Endianness streamEndianness, bool isResponse = false,
                                 uint8_t responseStatusCode = 0) const {
     if (buffer == nullptr or size == nullptr) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     if (maxSize < 3) {
       return SerializeIF::BUFFER_TOO_SHORT;
@@ -91,13 +91,13 @@ class FilestoreTlvBase : public TlvIF {
     }
     *buffer += 1;
     *size += 1;
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   ReturnValue_t commonDeserialize(const uint8_t** buffer, size_t* size,
                                   SerializeIF::Endianness streamEndianness) {
     if (buffer == nullptr or size == nullptr) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     if (*size < 3) {
       return SerializeIF::STREAM_TOO_SHORT;
@@ -115,7 +115,7 @@ class FilestoreTlvBase : public TlvIF {
     if (remainingLength == 0) {
       return SerializeIF::STREAM_TOO_SHORT;
     }
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   [[nodiscard]] bool requiresSecondFileName() const {
@@ -153,7 +153,7 @@ class FilestoreTlvBase : public TlvIF {
     size_t serSize = 0;
     uint8_t* valueStart = buffer + 2;
     ReturnValue_t result = this->serialize(&buffer, &serSize, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     tlv.setValue(valueStart, serSize - 2);

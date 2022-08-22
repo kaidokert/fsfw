@@ -13,7 +13,7 @@ ReturnValue_t LocalPoolOwnerBase::initializeHkManager() {
     initialized = true;
     return poolManager.initialize(&queue);
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t LocalPoolOwnerBase::initializeLocalDataPool(localpool::DataPool &localDataPoolMap,
@@ -25,7 +25,7 @@ ReturnValue_t LocalPoolOwnerBase::initializeLocalDataPool(localpool::DataPool &l
 
   localDataPoolMap.emplace(lpool::uint16Vec3Id, &u16VecPoolEntry);
   localDataPoolMap.emplace(lpool::int64Vec2Id, &i64VecPoolEntry);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 LocalPoolObjectBase *LocalPoolOwnerBase::getPoolObjectHandle(lp_id_t localPoolId) {
@@ -46,10 +46,10 @@ LocalPoolObjectBase *LocalPoolOwnerBase::getPoolObjectHandle(lp_id_t localPoolId
 
 ReturnValue_t LocalPoolOwnerBase::reset() {
   resetSubscriptionList();
-  ReturnValue_t status = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t status = returnvalue::OK;
   {
     PoolReadGuard readHelper(&dataset);
-    if (readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
+    if (readHelper.getReadResult() != returnvalue::OK) {
       status = readHelper.getReadResult();
     }
     dataset.localPoolVarUint8.value = 0;
@@ -62,7 +62,7 @@ ReturnValue_t LocalPoolOwnerBase::reset() {
 
   {
     PoolReadGuard readHelper(&testUint32);
-    if (readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
+    if (readHelper.getReadResult() != returnvalue::OK) {
       status = readHelper.getReadResult();
     }
     testUint32.value = 0;
@@ -71,7 +71,7 @@ ReturnValue_t LocalPoolOwnerBase::reset() {
 
   {
     PoolReadGuard readHelper(&testInt64Vec);
-    if (readHelper.getReadResult() != HasReturnvaluesIF::RETURN_OK) {
+    if (readHelper.getReadResult() != returnvalue::OK) {
       status = readHelper.getReadResult();
     }
     testInt64Vec.value[0] = 0;
@@ -116,7 +116,7 @@ ReturnValue_t LocalPoolOwnerBase::initializeHkManagerAfterTaskCreation() {
     initializedAfterTaskCreation = true;
     return poolManager.initializeAfterTaskCreation();
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void LocalPoolOwnerBase::handleChangedPoolVariable(gp_id_t globPoolId, store_address_t storeId,

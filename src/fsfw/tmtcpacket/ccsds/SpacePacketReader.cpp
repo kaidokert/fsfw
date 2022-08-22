@@ -9,12 +9,12 @@ SpacePacketReader::SpacePacketReader(const uint8_t* setAddress, size_t maxSize_)
 
 ReturnValue_t SpacePacketReader::checkSize() const {
   if (isNull()) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (getFullPacketLen() > bufSize) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 SpacePacketReader::~SpacePacketReader() = default;

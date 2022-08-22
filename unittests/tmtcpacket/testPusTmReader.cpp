@@ -22,12 +22,12 @@ TEST_CASE("PUS TM Reader", "[pus-tm-reader]") {
     bool deleteReader = false;
     dataPtr = buf.data();
     serLen = 0;
-    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == returnvalue::OK);
     REQUIRE(not(*readerPtr));
     REQUIRE(readerPtr->isNull());
 
     SECTION("Setter") {
-      REQUIRE(readerPtr->setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(readerPtr->setReadOnlyData(buf.data(), serLen) == returnvalue::OK);
     }
     SECTION("Full Construction") {
       readerPtr = new PusTmReader(&timeStamperAndReader, buf.data(), serLen);
@@ -40,7 +40,7 @@ TEST_CASE("PUS TM Reader", "[pus-tm-reader]") {
     }
     REQUIRE(not *readerPtr);
     REQUIRE(readerPtr->isNull());
-    REQUIRE(readerPtr->parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(readerPtr->parseDataWithCrcCheck() == returnvalue::OK);
     REQUIRE(not readerPtr->isNull());
     REQUIRE(readerPtr->getService() == 17);
     REQUIRE(readerPtr->getSubService() == 2);
@@ -62,9 +62,9 @@ TEST_CASE("PUS TM Reader", "[pus-tm-reader]") {
   }
 
   SECTION("Invalid CRC") {
-    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == returnvalue::OK);
     buf[20] = 0;
-    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == returnvalue::OK);
     REQUIRE(reader.parseDataWithCrcCheck() == PusIF::INVALID_CRC_16);
   }
 
@@ -74,18 +74,18 @@ TEST_CASE("PUS TM Reader", "[pus-tm-reader]") {
   }
 
   SECTION("Invalid CRC ignored") {
-    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == returnvalue::OK);
     buf[20] = 0;
-    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
-    REQUIRE(reader.parseDataWithoutCrcCheck() == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == returnvalue::OK);
+    REQUIRE(reader.parseDataWithoutCrcCheck() == returnvalue::OK);
   }
 
   SECTION("Read with source data") {
     std::array<uint8_t, 3> data{1, 2, 3};
     creator.setRawUserData(data.data(), data.size());
-    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
-    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
-    REQUIRE(reader.parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == returnvalue::OK);
+    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == returnvalue::OK);
+    REQUIRE(reader.parseDataWithCrcCheck() == returnvalue::OK);
     REQUIRE(reader.getUserDataLen() == 3);
     const uint8_t* roData = reader.getUserData();
     REQUIRE(roData[0] == 1);
@@ -94,7 +94,7 @@ TEST_CASE("PUS TM Reader", "[pus-tm-reader]") {
   }
 
   SECTION("Invalid stream lengths") {
-    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == returnvalue::OK);
     for (size_t i = 0; i < serLen - 1; i++) {
       REQUIRE(reader.setReadOnlyData(buf.data(), i) == SerializeIF::STREAM_TOO_SHORT);
     }
@@ -102,8 +102,8 @@ TEST_CASE("PUS TM Reader", "[pus-tm-reader]") {
 
   SECTION("Reading timestamp fails") {
     timeStamperAndReader.nextDeserFails = true;
-    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
-    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
-    REQUIRE(reader.parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_FAILED);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == returnvalue::OK);
+    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == returnvalue::OK);
+    REQUIRE(reader.parseDataWithCrcCheck() == returnvalue::FAILED);
   }
 }

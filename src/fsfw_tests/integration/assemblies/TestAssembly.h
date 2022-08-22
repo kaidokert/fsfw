@@ -22,7 +22,7 @@ class TestAssembly : public AssemblyBase {
    * @param mode
    * @param submode
    * @return
-   *    - @c RETURN_OK if ok
+   *    - @c returnvalue::OK if ok
    *    - @c NEED_SECOND_STEP if children need to be commanded again
    */
   ReturnValue_t commandChildren(Mode_t mode, Submode_t submode) override;

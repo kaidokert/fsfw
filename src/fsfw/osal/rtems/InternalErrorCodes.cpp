@@ -50,7 +50,7 @@ ReturnValue_t InternalErrorCodes::translate(uint8_t code) {
       //	case INTERNAL_ERROR_UNLIMITED_AND_MAXIMUM_IS_0:
       //		return UNLIMITED_AND_MAXIMUM_IS_0;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 

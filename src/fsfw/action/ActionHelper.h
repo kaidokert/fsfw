@@ -36,7 +36,7 @@ class ActionHelper {
    * send to the sender of the message automatically.
    *
    * @param command Pointer to a command message received by the owner
-   * @return HasReturnvaluesIF::RETURN_OK if the message is a action message,
+   * @return returnvalue::OK if the message is a action message,
    *         CommandMessage::UNKNOW_COMMAND if this message ID is unkown
    */
   ReturnValue_t handleActionMessage(CommandMessage* command);
@@ -45,7 +45,7 @@ class ActionHelper {
    * helper function
    * @param queueToUse_   Pointer to the messageQueue to be used, optional
    *                      if queue was set in constructor
-   * @return Returns RETURN_OK if successful
+   * @return Returns returnvalue::OK if successful
    */
   ReturnValue_t initialize(MessageQueueIF* queueToUse_ = nullptr);
   /**
@@ -58,7 +58,7 @@ class ActionHelper {
    * @param result Result of the execution
    */
   void step(uint8_t step, MessageQueueId_t reportTo, ActionId_t commandId,
-            ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
+            ReturnValue_t result = returnvalue::OK);
   /**
    * Function to be called by the owner to send a action completion message
    * @param success   Specify whether action was completed successfully or not.
@@ -67,7 +67,7 @@ class ActionHelper {
    * @param result Result of the execution
    */
   void finish(bool success, MessageQueueId_t reportTo, ActionId_t commandId,
-              ReturnValue_t result = HasReturnvaluesIF::RETURN_OK);
+              ReturnValue_t result = returnvalue::OK);
   /**
    * Function to be called by the owner if an action does report data.
    * Takes a SerializeIF* pointer and serializes it into the IPC store.
@@ -75,7 +75,7 @@ class ActionHelper {
    *                  message to
    * @param replyId ID of the executed command
    * @param data Pointer to the data
-   * @return Returns RETURN_OK if successful, otherwise failure code
+   * @return Returns returnvalue::OK if successful, otherwise failure code
    */
   ReturnValue_t reportData(MessageQueueId_t reportTo, ActionId_t replyId, SerializeIF* data,
                            bool hideSender = false);
@@ -86,7 +86,7 @@ class ActionHelper {
    *                  message to
    * @param replyId ID of the executed command
    * @param data Pointer to the data
-   * @return Returns RETURN_OK if successful, otherwise failure code
+   * @return Returns returnvalue::OK if successful, otherwise failure code
    */
   ReturnValue_t reportData(MessageQueueId_t reportTo, ActionId_t replyId, const uint8_t* data,
                            size_t dataSize, bool hideSender = false);

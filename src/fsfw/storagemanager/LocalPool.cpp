@@ -34,7 +34,7 @@ LocalPool::~LocalPool() = default;
 ReturnValue_t LocalPool::addData(store_address_t* storageId, const uint8_t* data, size_t size,
                                  bool ignoreFault) {
   ReturnValue_t status = reserveSpace(size, storageId, ignoreFault);
-  if (status == RETURN_OK) {
+  if (status == returnvalue::OK) {
     write(*storageId, data, size);
   }
   return status;
@@ -51,7 +51,7 @@ ReturnValue_t LocalPool::getData(store_address_t packetId, const uint8_t** packe
 ReturnValue_t LocalPool::getFreeElement(store_address_t* storageId, const size_t size,
                                         uint8_t** pData, bool ignoreFault) {
   ReturnValue_t status = reserveSpace(size, storageId, ignoreFault);
-  if (status == RETURN_OK) {
+  if (status == returnvalue::OK) {
     *pData = &store[storageId->poolIndex][getRawPosition(*storageId)];
   } else {
     *pData = nullptr;
@@ -60,7 +60,7 @@ ReturnValue_t LocalPool::getFreeElement(store_address_t* storageId, const size_t
 }
 
 ReturnValue_t LocalPool::modifyData(store_address_t storeId, uint8_t** packetPtr, size_t* size) {
-  ReturnValue_t status = RETURN_FAILED;
+  ReturnValue_t status = returnvalue::FAILED;
   if (storeId.poolIndex >= NUMBER_OF_SUBPOOLS) {
     return ILLEGAL_STORAGE_ID;
   }
@@ -72,7 +72,7 @@ ReturnValue_t LocalPool::modifyData(store_address_t storeId, uint8_t** packetPtr
     size_type packetPosition = getRawPosition(storeId);
     *packetPtr = &store[storeId.poolIndex][packetPosition];
     *size = sizeLists[storeId.poolIndex][storeId.packetIndex];
-    status = RETURN_OK;
+    status = returnvalue::OK;
   } else {
     status = DATA_DOES_NOT_EXIST;
   }
@@ -87,7 +87,7 @@ ReturnValue_t LocalPool::deleteData(store_address_t storeId) {
 #endif
 
 #endif
-  ReturnValue_t status = RETURN_OK;
+  ReturnValue_t status = returnvalue::OK;
   size_type pageSize = getSubpoolElementSize(storeId.poolIndex);
   if ((pageSize != 0) and (storeId.packetIndex < numberOfElements[storeId.poolIndex])) {
     uint16_t packetPosition = getRawPosition(storeId);
@@ -136,7 +136,7 @@ ReturnValue_t LocalPool::deleteData(uint8_t* ptr, size_t size, store_address_t* 
 
 ReturnValue_t LocalPool::initialize() {
   ReturnValue_t result = SystemObject::initialize();
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   internalErrorReporter =
@@ -156,7 +156,7 @@ ReturnValue_t LocalPool::initialize() {
       return StorageManagerIF::POOL_TOO_LARGE;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void LocalPool::clearStore() {
@@ -169,7 +169,7 @@ void LocalPool::clearStore() {
 
 ReturnValue_t LocalPool::reserveSpace(size_t size, store_address_t* storeId, bool ignoreFault) {
   ReturnValue_t status = getSubPoolIndex(size, &storeId->poolIndex);
-  if (status != RETURN_OK) {
+  if (status != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "LocalPool( " << std::hex << getObjectId() << std::dec
                << " )::reserveSpace: Packet too large." << std::endl;
@@ -177,15 +177,15 @@ ReturnValue_t LocalPool::reserveSpace(size_t size, store_address_t* storeId, boo
     return status;
   }
   status = findEmpty(storeId->poolIndex, &storeId->packetIndex);
-  while (status != RETURN_OK && spillsToHigherPools) {
+  while (status != returnvalue::OK && spillsToHigherPools) {
     status = getSubPoolIndex(size, &storeId->poolIndex, storeId->poolIndex + 1);
-    if (status != RETURN_OK) {
+    if (status != returnvalue::OK) {
       // We don't find any fitting pool anymore.
       break;
     }
     status = findEmpty(storeId->poolIndex, &storeId->packetIndex);
   }
-  if (status == RETURN_OK) {
+  if (status == returnvalue::OK) {
 #if FSFW_VERBOSE_LEVEL >= 2
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::debug << "Reserve: Pool: " << std::dec << storeId->poolIndex
@@ -232,7 +232,7 @@ ReturnValue_t LocalPool::getSubPoolIndex(size_t packetSize, uint16_t* subpoolInd
 #endif
     if (elementSizes[n] >= packetSize) {
       *subpoolIndex = n;
-      return RETURN_OK;
+      return returnvalue::OK;
     }
   }
   return DATA_TOO_LARGE;
@@ -247,7 +247,7 @@ ReturnValue_t LocalPool::findEmpty(n_pool_elem_t poolIndex, uint16_t* element) {
   for (uint16_t foundElement = 0; foundElement < numberOfElements[poolIndex]; foundElement++) {
     if (sizeLists[poolIndex][foundElement] == STORAGE_FREE) {
       *element = foundElement;
-      status = RETURN_OK;
+      status = returnvalue::OK;
       break;
     }
   }

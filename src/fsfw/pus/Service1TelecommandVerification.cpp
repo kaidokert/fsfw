@@ -32,15 +32,15 @@ MessageQueueId_t Service1TelecommandVerification::getVerificationQueue() {
 ReturnValue_t Service1TelecommandVerification::performOperation(uint8_t operationCode) {
   PusVerificationMessage message;
   ReturnValue_t status = tmQueue->receiveMessage(&message);
-  while (status == HasReturnvaluesIF::RETURN_OK) {
+  while (status == returnvalue::OK) {
     status = sendVerificationReport(&message);
-    if (status != HasReturnvaluesIF::RETURN_OK) {
+    if (status != returnvalue::OK) {
       return status;
     }
     status = tmQueue->receiveMessage(&message);
   }
   if (status == MessageQueueIF::EMPTY) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     return status;
   }
@@ -60,14 +60,14 @@ ReturnValue_t Service1TelecommandVerification::sendVerificationReport(
         "%d detected\n",
         reportId);
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (message->getReportId() % 2 == 0) {
     result = generateFailureReport(message);
   } else {
     result = generateSuccessReport(message);
   }
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service1TelecommandVerification::sendVerificationReport: "
                   "Sending verification packet failed !"
@@ -84,11 +84,11 @@ ReturnValue_t Service1TelecommandVerification::generateFailureReport(
                        message->getParameter1(), message->getParameter2());
   ReturnValue_t result =
       storeHelper.preparePacket(serviceId, message->getReportId(), packetSubCounter++);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = storeHelper.setSourceDataSerializable(report);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return tmHelper.storeAndSendTmPacket();
@@ -100,11 +100,11 @@ ReturnValue_t Service1TelecommandVerification::generateSuccessReport(
                        message->getTcSequenceControl(), message->getStep());
   ReturnValue_t result =
       storeHelper.preparePacket(serviceId, message->getReportId(), packetSubCounter++);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = storeHelper.setSourceDataSerializable(report);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return tmHelper.storeAndSendTmPacket();

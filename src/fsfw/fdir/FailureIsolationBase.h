@@ -5,13 +5,11 @@
 #include "../health/HealthMessage.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../parameters/HasParametersIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "ConfirmsFailuresIF.h"
 #include "FaultCounter.h"
 
-class FailureIsolationBase : public HasReturnvaluesIF,
-                             public ConfirmsFailuresIF,
-                             public HasParametersIF {
+class FailureIsolationBase : public ConfirmsFailuresIF, public HasParametersIF {
  public:
   static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::FDIR_1;
   static const Event FDIR_CHANGED_STATE =

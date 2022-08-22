@@ -23,17 +23,17 @@ Service5EventReporting::~Service5EventReporting() {
 
 ReturnValue_t Service5EventReporting::performService() {
   EventMessage message;
-  ReturnValue_t status = RETURN_OK;
+  ReturnValue_t status = returnvalue::OK;
   for (uint8_t counter = 0; counter < maxNumberReportsPerCycle; counter++) {
     // Receive messages even if reporting is disabled for now.
     status = eventQueue->receiveMessage(&message);
     if (status == MessageQueueIF::EMPTY) {
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
 
     if (enableEventReport) {
       status = generateEventReport(message);
-      if (status != HasReturnvaluesIF::RETURN_OK) {
+      if (status != returnvalue::OK) {
         return status;
       }
     }
@@ -41,7 +41,7 @@ ReturnValue_t Service5EventReporting::performService() {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
   sif::warning << "Service5EventReporting::generateEventReport: Too many events" << std::endl;
 #endif
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Service5EventReporting::generateEventReport(EventMessage message) {
@@ -50,7 +50,7 @@ ReturnValue_t Service5EventReporting::generateEventReport(EventMessage message) 
   storeHelper.preparePacket(psbParams.serviceId, message.getSeverity(), tmHelper.sendCounter);
   storeHelper.setSourceDataSerializable(report);
   ReturnValue_t result = tmHelper.storeAndSendTmPacket();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "Service5EventReporting::generateEventReport: "
                     "Could not send TM packet"
@@ -68,11 +68,11 @@ ReturnValue_t Service5EventReporting::handleRequest(uint8_t subservice) {
   switch (subservice) {
     case Subservice::ENABLE: {
       enableEventReport = true;
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
     case Subservice::DISABLE: {
       enableEventReport = false;
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
     default:
       return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
@@ -83,16 +83,16 @@ ReturnValue_t Service5EventReporting::handleRequest(uint8_t subservice) {
 // to be registered to the event manager to listen for events.
 ReturnValue_t Service5EventReporting::initialize() {
   ReturnValue_t result = PusServiceBase::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   auto* manager = ObjectManager::instance()->get<EventManagerIF>(objects::EVENT_MANAGER);
   if (manager == nullptr) {
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   // register Service 5 as listener for events
   result = manager->registerListener(eventQueue->getId(), true);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   initializeTmHelpers(sendHelper, storeHelper);

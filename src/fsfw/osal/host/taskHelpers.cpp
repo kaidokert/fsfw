@@ -10,9 +10,9 @@ ReturnValue_t tasks::insertTaskName(std::thread::id threadId, const std::string&
   std::lock_guard<std::mutex> lg(nameMapLock);
   auto returnPair = taskNameMap.emplace(threadId, taskName);
   if (not returnPair.second) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 std::string tasks::getTaskName(std::thread::id threadId) {

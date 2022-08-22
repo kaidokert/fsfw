@@ -3,14 +3,14 @@
 
 #include "../ipc/CommandMessage.h"
 #include "../ipc/MessageQueueIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../storagemanager/StorageManagerIF.h"
 #include "AcceptsMemoryMessagesIF.h"
 
 /**
  * @brief   TODO: documentation.
  */
-class MemoryHelper : public HasReturnvaluesIF {
+class MemoryHelper {
  public:
   static const uint8_t INTERFACE_ID = CLASS_ID::MEMORY_HELPER;
   static const ReturnValue_t UNKNOWN_CMD = MAKE_RETURN_CODE(0xE0);

@@ -61,13 +61,13 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleRequest(
     default:
       return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <size_t MAX_NUM_TCS>
 inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::performService() {
   if (not schedulingEnabled) {
-    return RETURN_OK;
+    return returnvalue::OK;
   }
   // get current time as UNIX timestamp
   timeval tNow = {};
@@ -83,7 +83,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::performService
         TmTcMessage releaseMsg(it->second.storeAddr);
         auto sendRet = psbParams.reqQueue->sendMessage(recipientMsgQueueId, &releaseMsg, false);
 
-        if (sendRet != HasReturnvaluesIF::RETURN_OK) {
+        if (sendRet != returnvalue::OK) {
           return sendRet;
         }
         if (debugMode) {
@@ -102,13 +102,13 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::performService
     it++;
   }
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <size_t MAX_NUM_TCS>
 inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::initialize() {
   ReturnValue_t res = PusServiceBase::initialize();
-  if (res != HasReturnvaluesIF::RETURN_OK) {
+  if (res != returnvalue::OK) {
     return res;
   }
 
@@ -129,7 +129,7 @@ template <size_t MAX_NUM_TCS>
 inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleResetCommand() {
   for (auto it = telecommandMap.begin(); it != telecommandMap.end(); it++) {
     ReturnValue_t result = tcStore->deleteData(it->second.storeAddr);
-    if (result != RETURN_OK) {
+    if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       // This should not happen
       sif::warning << "Service11TelecommandScheduling::handleRequestDeleting: Deletion failed"
@@ -142,7 +142,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleResetCom
     }
   }
   telecommandMap.clear();
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <size_t MAX_NUM_TCS>
@@ -150,7 +150,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivi
     const uint8_t *data, size_t size) {
   uint32_t timestamp = 0;
   ReturnValue_t result = SerializeAdapter::deSerialize(&timestamp, &data, &size, DEF_END);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -168,12 +168,12 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivi
         "Service11TelecommandScheduling::doInsertActivity: Release time too close to current "
         "time\n");
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   // store currentPacket and receive the store address
   store_address_t addr{};
-  if (tcStore->addData(&addr, data, size) != RETURN_OK ||
+  if (tcStore->addData(&addr, data, size) != returnvalue::OK ||
       addr.raw == store_address_t::INVALID_RAW) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service11TelecommandScheduling::doInsertActivity: Adding data to TC Store failed"
@@ -182,7 +182,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivi
     sif::printError(
         "Service11TelecommandScheduling::doInsertActivity: Adding data to TC Store failed\n");
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   // insert into multimap with new store address
@@ -193,7 +193,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivi
 
   auto it = telecommandMap.insert(std::pair<uint32_t, TelecommandStruct>(timestamp, tc));
   if (it == telecommandMap.end()) {
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   if (debugMode) {
@@ -204,7 +204,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivi
 #endif
     debugPrintMultimapContent();
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <size_t MAX_NUM_TCS>
@@ -213,7 +213,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doDeleteActivi
   // Get request ID
   uint64_t requestId;
   ReturnValue_t result = getRequestIdFromData(data, size, requestId);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -247,11 +247,11 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doDeleteActivi
         "Service11TelecommandScheduling::doDeleteActivity: No or more than 1 TC found. "
         "Cannot explicitly delete TC");
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   // delete packet from store
-  if (tcStore->deleteData(tcToDelete->second.storeAddr) != RETURN_OK) {
+  if (tcStore->deleteData(tcToDelete->second.storeAddr) != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service11TelecommandScheduling::doDeleteActivity: Could not delete TC from Store"
                << std::endl;
@@ -259,7 +259,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doDeleteActivi
     sif::printError(
         "Service11TelecommandScheduling::doDeleteActivity: Could not delete TC from Store\n");
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   telecommandMap.erase(tcToDelete);
@@ -271,7 +271,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doDeleteActivi
 #endif
   }
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <size_t MAX_NUM_TCS>
@@ -282,14 +282,14 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doFilterDelete
 
   ReturnValue_t result = getMapFilterFromData(data, size, itBegin, itEnd);
   // get the filter window as map range via dedicated method
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   int deletedTCs = 0;
   for (TcMapIter it = itBegin; it != itEnd; it++) {
     // delete packet from store
-    if (tcStore->deleteData(it->second.storeAddr) != RETURN_OK) {
+    if (tcStore->deleteData(it->second.storeAddr) != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::error << "Service11TelecommandScheduling::doFilterDeleteActivity: Could not delete TC "
                     "from Store"
@@ -320,7 +320,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doFilterDelete
     sif::printInfo("PUS11::doFilterDeleteActivity: Deleted %d TCs\n", deletedTCs);
 #endif
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <size_t MAX_NUM_TCS>
@@ -329,7 +329,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doTimeshiftAct
   // Get relative time
   uint32_t relativeTime = 0;
   ReturnValue_t result = SerializeAdapter::deSerialize(&relativeTime, &data, &size, DEF_END);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (relativeTime == 0) {
@@ -340,7 +340,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doTimeshiftAct
   // Get request ID
   uint64_t requestId;
   result = getRequestIdFromData(data, size, requestId);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -398,7 +398,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doTimeshiftAct
     debugPrintMultimapContent();
   }
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <size_t MAX_NUM_TCS>
@@ -407,7 +407,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doFilterTimesh
   // Get relative time
   uint32_t relativeTime = 0;
   ReturnValue_t result = SerializeAdapter::deSerialize(&relativeTime, &data, &size, DEF_END);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (relativeTime == 0) {
@@ -418,7 +418,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doFilterTimesh
   TcMapIter itBegin;
   TcMapIter itEnd;
   result = getMapFilterFromData(data, size, itBegin, itEnd);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -447,9 +447,9 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doFilterTimesh
   }
 
   if (shiftedItemsCount > 0) {
-    return RETURN_OK;
+    return returnvalue::OK;
   }
-  return RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 template <size_t MAX_NUM_TCS>
@@ -469,20 +469,20 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getRequestIdFr
   uint16_t ssc = 0;
 
   ReturnValue_t result = SerializeAdapter::deSerialize(&srcId, &data, &dataSize, DEF_END);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = SerializeAdapter::deSerialize(&apid, &data, &dataSize, DEF_END);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = SerializeAdapter::deSerialize(&ssc, &data, &dataSize, DEF_END);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   requestId = buildRequestId(srcId, apid, ssc);
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <size_t MAX_NUM_TCS>
@@ -502,7 +502,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
   // get filter type first
   uint32_t typeRaw = 0;
   ReturnValue_t result = SerializeAdapter::deSerialize(&typeRaw, &data, &dataSize, DEF_END);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -525,7 +525,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
     case TypeOfTimeWindow::FROM_TIMETAG: {
       uint32_t fromTimestamp = 0;
       result = SerializeAdapter::deSerialize(&fromTimestamp, &data, &dataSize, DEF_END);
-      if (result != RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
 
@@ -541,7 +541,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
     case TypeOfTimeWindow::TO_TIMETAG: {
       uint32_t toTimestamp;
       result = SerializeAdapter::deSerialize(&toTimestamp, &data, &dataSize, DEF_END);
-      if (result != RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
       itBegin = telecommandMap.begin();
@@ -558,12 +558,12 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
 
       result = SerializeAdapter::deSerialize(&fromTimestamp, &data, &dataSize,
                                              SerializeIF::Endianness::BIG);
-      if (result != RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
       result = SerializeAdapter::deSerialize(&toTimestamp, &data, &dataSize,
                                              SerializeIF::Endianness::BIG);
-      if (result != RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
       itBegin = telecommandMap.begin();
@@ -579,7 +579,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
     }
 
     default:
-      return RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 
   // additional security check, this should never be true
@@ -588,11 +588,11 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
 #else
     sif::printError("11::GetMapFilterFromData: itBegin > itEnd\n");
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   // the map range should now be set according to the sent filter.
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <size_t MAX_NUM_TCS>
@@ -605,7 +605,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleInvalidD
   sif::printWarning("Service11TelecommandScheduling::%s: Invalid buffer\n", ctx);
 #endif
 #endif
-  return RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 template <size_t MAX_NUM_TCS>

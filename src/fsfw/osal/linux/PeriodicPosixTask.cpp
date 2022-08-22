@@ -23,11 +23,11 @@ ReturnValue_t PeriodicPosixTask::sleepFor(uint32_t ms) {
 
 ReturnValue_t PeriodicPosixTask::startTask() {
   if (isEmpty()) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   started = true;
   posixThread.createTask(&taskEntryPoint, this);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 [[noreturn]] void PeriodicPosixTask::taskFunctionality() {

@@ -20,7 +20,7 @@ TEST_CASE("ACK PDU", "[cfdp][pdu]") {
                   AckTransactionStatus::ACTIVE);
   auto ackSerializer = AckPduSerializer(ackInfo, pduConf);
   result = ackSerializer.serialize(&bufptr, &sz, maxsz, SerializeIF::Endianness::NETWORK);
-  REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+  REQUIRE(result == returnvalue::OK);
 
   SECTION("Serialize") {
     REQUIRE(buf[sz - 3] == cfdp::FileDirectives::ACK);
@@ -34,7 +34,7 @@ TEST_CASE("ACK PDU", "[cfdp][pdu]") {
     bufptr = buf.data();
     sz = 0;
     result = ackSerializer2.serialize(&bufptr, &sz, maxsz, SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(buf[sz - 3] == cfdp::FileDirectives::ACK);
     REQUIRE((buf[sz - 2] >> 4) == FileDirectives::FINISH);
     REQUIRE((buf[sz - 2] & 0x0f) == 0b0001);
@@ -47,7 +47,7 @@ TEST_CASE("ACK PDU", "[cfdp][pdu]") {
     auto ackSerializer3 = AckPduSerializer(ackInfo, pduConf);
     result = ackSerializer3.serialize(&bufptr, &sz, maxsz, SerializeIF::Endianness::NETWORK);
     // Invalid file directive
-    REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result != returnvalue::OK);
 
     ackInfo.setAckedDirective(FileDirectives::FINISH);
     // buffer too small
@@ -59,7 +59,7 @@ TEST_CASE("ACK PDU", "[cfdp][pdu]") {
     AckInfo ackInfo2;
     auto reader = AckPduDeserializer(buf.data(), sz, ackInfo2);
     result = reader.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(ackInfo2.getAckedDirective() == FileDirectives::EOF_DIRECTIVE);
     REQUIRE(ackInfo2.getAckedConditionCode() == ConditionCode::NO_ERROR);
     REQUIRE(ackInfo2.getDirectiveSubtypeCode() == 0);
@@ -71,11 +71,11 @@ TEST_CASE("ACK PDU", "[cfdp][pdu]") {
     bufptr = buf.data();
     sz = 0;
     result = ackSerializer2.serialize(&bufptr, &sz, maxsz, SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     auto reader2 = AckPduDeserializer(buf.data(), sz, ackInfo2);
     result = reader2.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(ackInfo2.getAckedDirective() == FileDirectives::FINISH);
     REQUIRE(ackInfo2.getAckedConditionCode() == ConditionCode::FILESTORE_REJECTION);
     REQUIRE(ackInfo2.getDirectiveSubtypeCode() == 0b0001);

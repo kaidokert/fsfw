@@ -64,7 +64,7 @@ class HousekeepingSnapshot : public SerializeIF {
       *buffer += timeStampSize;
     }
     if (updateData == nullptr) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
 
     return updateData->serialize(buffer, size, maxSize, streamEndianness);
@@ -92,7 +92,7 @@ class HousekeepingSnapshot : public SerializeIF {
     }
 
     if (updateData == nullptr) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     if (*size < updateData->getSerializedSize()) {
       return SerializeIF::STREAM_TOO_SHORT;

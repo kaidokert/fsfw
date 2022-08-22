@@ -73,7 +73,7 @@ ReturnValue_t FaultCounter::getParameter(uint8_t domainId, uint8_t uniqueId,
     default:
       return INVALID_IDENTIFIER_ID;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void FaultCounter::setParameterDomain(uint8_t domain) { parameterDomain = domain; }

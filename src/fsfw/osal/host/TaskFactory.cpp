@@ -5,7 +5,7 @@
 #include "fsfw/osal/host/FixedTimeslotTask.h"
 #include "fsfw/osal/host/PeriodicTask.h"
 #include "fsfw/osal/host/taskHelpers.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tasks/PeriodicTaskIF.h"
 
@@ -37,12 +37,12 @@ FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(
 ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
   // This might block for some time!
   delete task;
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t TaskFactory::delayTask(uint32_t delayMs) {
   std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void TaskFactory::printMissedDeadline() {

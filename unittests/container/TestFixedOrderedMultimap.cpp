@@ -1,5 +1,5 @@
 #include <fsfw/container/FixedOrderedMultimap.h>
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include <fsfw/returnvalues/returnvalue.h>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -14,9 +14,8 @@ TEST_CASE("FixedOrderedMultimap Tests", "[containers]") {
 
   SECTION("Test insert, find, exists") {
     for (uint16_t i = 0; i < 30; i++) {
-      REQUIRE(map.insert(std::make_pair(i, i + 1)) ==
-              static_cast<int>(HasReturnvaluesIF::RETURN_OK));
-      REQUIRE(map.exists(i) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+      REQUIRE(map.insert(std::make_pair(i, i + 1)) == static_cast<int>(returnvalue::OK));
+      REQUIRE(map.exists(i) == static_cast<int>(returnvalue::OK));
       REQUIRE(map.find(i)->second == i + 1);
     }
     REQUIRE(map.insert(0, 0) ==
@@ -26,12 +25,12 @@ TEST_CASE("FixedOrderedMultimap Tests", "[containers]") {
     REQUIRE(map.size() == 30);
     {
       uint16_t* ptr;
-      REQUIRE(map.find(5, &ptr) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+      REQUIRE(map.find(5, &ptr) == static_cast<int>(returnvalue::OK));
       REQUIRE(*ptr == 6);
       REQUIRE(map.find(31, &ptr) ==
               static_cast<int>(FixedOrderedMultimap<uint32_t, uint16_t>::KEY_DOES_NOT_EXIST));
     }
-    REQUIRE(map.erase(2) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(map.erase(2) == static_cast<int>(returnvalue::OK));
     REQUIRE(map.erase(31) ==
             static_cast<int>(FixedOrderedMultimap<uint32_t, uint16_t>::KEY_DOES_NOT_EXIST));
     REQUIRE(map.exists(2) ==
@@ -55,7 +54,7 @@ TEST_CASE("FixedOrderedMultimap Tests", "[containers]") {
     {
       FixedOrderedMultimap<uint32_t, uint16_t>::Iterator it = map.begin();
       while (it != map.end()) {
-        REQUIRE(map.erase(&it) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+        REQUIRE(map.erase(&it) == static_cast<int>(returnvalue::OK));
       }
       REQUIRE(map.size() == 0);
     }
@@ -69,16 +68,16 @@ TEST_CASE("FixedOrderedMultimap Tests", "[containers]") {
 
   SECTION("Test different insert variants") {
     FixedOrderedMultimap<uint32_t, uint16_t>::Iterator it = map.end();
-    REQUIRE(map.insert(36, 37, &it) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(map.insert(36, 37, &it) == static_cast<int>(returnvalue::OK));
     REQUIRE(it->first == 36);
     REQUIRE(it->second == 37);
     REQUIRE(map.size() == 1);
-    REQUIRE(map.insert(37, 38, nullptr) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(map.insert(37, 38, nullptr) == static_cast<int>(returnvalue::OK));
     REQUIRE(map.find(37)->second == 38);
     REQUIRE(map.size() == 2);
-    REQUIRE(map.insert(37, 24, nullptr) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(map.insert(37, 24, nullptr) == static_cast<int>(returnvalue::OK));
     REQUIRE(map.find(37)->second == 38);
-    REQUIRE(map.insert(0, 1, nullptr) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(map.insert(0, 1, nullptr) == static_cast<int>(returnvalue::OK));
     REQUIRE(map.find(0)->second == 1);
     REQUIRE(map.size() == 4);
     map.clear();
@@ -128,8 +127,8 @@ TEST_CASE("FixedOrderedMultimap Non Trivial Type", "[TestFixedOrderedMultimapNon
   SECTION("Test insert, find, exists") {
     for (uint16_t i = 0; i < 30; i++) {
       REQUIRE(map.insert(std::make_pair(i, TestClass(i + 1, i))) ==
-              static_cast<int>(HasReturnvaluesIF::RETURN_OK));
-      REQUIRE(map.exists(i) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+              static_cast<int>(returnvalue::OK));
+      REQUIRE(map.exists(i) == static_cast<int>(returnvalue::OK));
       bool compare = map.find(i)->second == TestClass(i + 1, i);
       REQUIRE(compare);
     }
@@ -140,13 +139,13 @@ TEST_CASE("FixedOrderedMultimap Non Trivial Type", "[TestFixedOrderedMultimapNon
     REQUIRE(map.size() == 30);
     {
       TestClass* ptr = nullptr;
-      REQUIRE(map.find(5, &ptr) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+      REQUIRE(map.find(5, &ptr) == static_cast<int>(returnvalue::OK));
       bool compare = *ptr == TestClass(6, 5);
       REQUIRE(compare);
       REQUIRE(map.find(31, &ptr) ==
               static_cast<int>(FixedOrderedMultimap<uint32_t, uint16_t>::KEY_DOES_NOT_EXIST));
     }
-    REQUIRE(map.erase(2) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(map.erase(2) == static_cast<int>(returnvalue::OK));
     REQUIRE(map.erase(31) ==
             static_cast<int>(FixedOrderedMultimap<uint32_t, uint16_t>::KEY_DOES_NOT_EXIST));
     REQUIRE(map.exists(2) ==
@@ -174,7 +173,7 @@ TEST_CASE("FixedOrderedMultimap Non Trivial Type", "[TestFixedOrderedMultimapNon
     {
       FixedOrderedMultimap<uint32_t, TestClass>::Iterator it = map.begin();
       while (it != map.end()) {
-        REQUIRE(map.erase(&it) == static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+        REQUIRE(map.erase(&it) == static_cast<int>(returnvalue::OK));
       }
       REQUIRE(map.size() == 0);
     }
@@ -188,23 +187,19 @@ TEST_CASE("FixedOrderedMultimap Non Trivial Type", "[TestFixedOrderedMultimapNon
 
   SECTION("Test different insert variants") {
     FixedOrderedMultimap<uint32_t, TestClass>::Iterator it = map.end();
-    REQUIRE(map.insert(36, TestClass(37, 36), &it) ==
-            static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(map.insert(36, TestClass(37, 36), &it) == static_cast<int>(returnvalue::OK));
     REQUIRE(it->first == 36);
     bool compare = it->second == TestClass(37, 36);
     REQUIRE(compare);
     REQUIRE(map.size() == 1);
-    REQUIRE(map.insert(37, TestClass(38, 37), nullptr) ==
-            static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(map.insert(37, TestClass(38, 37), nullptr) == static_cast<int>(returnvalue::OK));
     compare = map.find(37)->second == TestClass(38, 37);
     REQUIRE(compare);
     REQUIRE(map.size() == 2);
-    REQUIRE(map.insert(37, TestClass(24, 37), nullptr) ==
-            static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(map.insert(37, TestClass(24, 37), nullptr) == static_cast<int>(returnvalue::OK));
     compare = map.find(37)->second == TestClass(38, 37);
     REQUIRE(compare);
-    REQUIRE(map.insert(0, TestClass(1, 0), nullptr) ==
-            static_cast<int>(HasReturnvaluesIF::RETURN_OK));
+    REQUIRE(map.insert(0, TestClass(1, 0), nullptr) == static_cast<int>(returnvalue::OK));
     compare = map.find(0)->second == TestClass(1, 0);
     REQUIRE(compare);
     REQUIRE(map.size() == 4);

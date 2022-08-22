@@ -45,8 +45,7 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
   }
 
   SECTION("Serialization") {
-    REQUIRE(creator.SerializeIF::serializeBe(&dataPtr, &serLen, buf.size()) ==
-            HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.SerializeIF::serializeBe(&dataPtr, &serLen, buf.size()) == returnvalue::OK);
     REQUIRE(buf[0] == 0x08);
     REQUIRE(buf[1] == 0xef);
     // Unsegmented is the default
@@ -90,7 +89,7 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
     REQUIRE(creator.getApid() == 0x3ff);
     REQUIRE(creator.getDestId() == 0xfff);
     REQUIRE(creator.getMessageTypeCounter() == 0x313);
-    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == returnvalue::OK);
     // Message Sequence Count
     REQUIRE(((buf[9] << 8) | buf[10]) == 0x313);
     // Destination ID
@@ -101,14 +100,14 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
     SerializeIF& deser = creator;
     const uint8_t* roDataPtr = nullptr;
     REQUIRE(deser.deSerialize(&roDataPtr, &serLen, SerializeIF::Endianness::NETWORK) ==
-            HasReturnvaluesIF::RETURN_FAILED);
+            returnvalue::FAILED);
   }
 
   SECTION("Serialize with Raw Data") {
     std::array<uint8_t, 3> data{1, 2, 3};
     creator.setRawUserData(data.data(), data.size());
     REQUIRE(creator.getFullPacketLen() == 25);
-    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == returnvalue::OK);
     REQUIRE(buf[20] == 1);
     REQUIRE(buf[21] == 2);
     REQUIRE(buf[22] == 3);
@@ -119,7 +118,7 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
     creator.setSerializableUserData(simpleSer);
     REQUIRE(creator.getFullPacketLen() == 25);
     REQUIRE(creator.serialize(&dataPtr, &serLen, buf.size(), SerializeIF::Endianness::NETWORK) ==
-            HasReturnvaluesIF::RETURN_OK);
+            returnvalue::OK);
     REQUIRE(buf[20] == 1);
     REQUIRE(buf[21] == 2);
     REQUIRE(buf[22] == 3);
@@ -151,7 +150,7 @@ TEST_CASE("PUS TM Creator", "[pus-tm-creator]") {
   SECTION("No CRC Generation") {
     creator.disableCrcCalculation();
     REQUIRE(not creator.crcCalculationEnabled());
-    REQUIRE(creator.serializeBe(dataPtr, serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(dataPtr, serLen, buf.size()) == returnvalue::OK);
     REQUIRE(serLen == 22);
     REQUIRE(buf[20] == 0x00);
     REQUIRE(buf[21] == 0x00);

@@ -19,7 +19,7 @@ ChildHandlerBase::~ChildHandlerBase() {}
 
 ReturnValue_t ChildHandlerBase::initialize() {
   ReturnValue_t result = DeviceHandlerBase::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -28,7 +28,7 @@ ReturnValue_t ChildHandlerBase::initialize() {
   if (parentId != objects::NO_OBJECT) {
     SubsystemBase* parent = ObjectManager::instance()->get<SubsystemBase>(parentId);
     if (parent == NULL) {
-      return RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     parentQueue = parent->getCommandQueue();
 
@@ -39,5 +39,5 @@ ReturnValue_t ChildHandlerBase::initialize() {
 
   modeHelper.setParentQueue(parentQueue);
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }

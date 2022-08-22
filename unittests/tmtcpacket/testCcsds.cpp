@@ -44,8 +44,7 @@ TEST_CASE("CCSDS Packet ID", "[ccsds-packet-id]") {
     packetId.packetType = ccsds::PacketType::TM;
     size_t serLen = 0;
     REQUIRE(packetId.raw() == 0x1ff);
-    REQUIRE(packetId.SerializeIF::serializeBe(buf.data(), serLen, buf.size()) ==
-            HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(packetId.SerializeIF::serializeBe(buf.data(), serLen, buf.size()) == returnvalue::OK);
     CHECK(buf[0] == 0x1);
     CHECK(buf[1] == 0xff);
   }
@@ -78,7 +77,7 @@ TEST_CASE("CCSDS Packet ID", "[ccsds-packet-id]") {
     buf[1] = 0xff;
     size_t deserLen = 0xff;
     REQUIRE(packetId.deSerialize(buf.data(), deserLen, buf.size(),
-                                 SerializeIF::Endianness::NETWORK) == HasReturnvaluesIF::RETURN_OK);
+                                 SerializeIF::Endianness::NETWORK) == returnvalue::OK);
     CHECK(packetId.apid == 0x2ff);
     CHECK(deserLen == 2);
     CHECK(packetId.packetType == ccsds::PacketType::TC);
@@ -94,8 +93,7 @@ TEST_CASE("CCSDS Packet Seq Ctrl", "[ccsds-packet-seq-ctrl]") {
     psc.seqFlags = ccsds::SequenceFlags::FIRST_SEGMENT;
     psc.seqCount = static_cast<uint16_t>(std::round(std::pow(2, 14) - 1));
     REQUIRE(psc.raw() == 0x7fff);
-    REQUIRE(psc.SerializeIF::serializeBe(buf.data(), serLen, buf.size()) ==
-            HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(psc.SerializeIF::serializeBe(buf.data(), serLen, buf.size()) == returnvalue::OK);
     CHECK(buf[0] == 0x7f);
     CHECK(buf[1] == 0xff);
     CHECK(serLen == 2);
@@ -114,7 +112,7 @@ TEST_CASE("CCSDS Packet Seq Ctrl", "[ccsds-packet-seq-ctrl]") {
     buf[1] = 0xfe;
     size_t deserLen = 0xff;
     REQUIRE(psc.deSerialize(buf.data(), deserLen, buf.size(), SerializeIF::Endianness::NETWORK) ==
-            HasReturnvaluesIF::RETURN_OK);
+            returnvalue::OK);
     CHECK(psc.seqFlags == ccsds::SequenceFlags::LAST_SEGMENT);
     CHECK(deserLen == 2);
     CHECK(psc.seqCount == static_cast<uint16_t>(std::round(std::pow(2, 14) - 2)));

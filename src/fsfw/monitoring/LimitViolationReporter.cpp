@@ -7,7 +7,7 @@
 
 ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF* data) {
   ReturnValue_t result = checkClassLoaded();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   store_address_t storeId;
@@ -17,12 +17,12 @@ ReturnValue_t LimitViolationReporter::sendLimitViolationReport(const SerializeIF
     return MonitoringIF::INVALID_SIZE;
   }
   result = ipcStore->getFreeElement(&storeId, maxSize, &dataTarget);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t size = 0;
   result = data->serialize(&dataTarget, &size, maxSize, SerializeIF::Endianness::BIG);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   CommandMessage report;
@@ -42,10 +42,10 @@ ReturnValue_t LimitViolationReporter::checkClassLoaded() {
   if (ipcStore == nullptr) {
     ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
     if (ipcStore == nullptr) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 // Lazy initialization.

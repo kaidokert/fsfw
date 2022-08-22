@@ -16,21 +16,21 @@ TEST_CASE("PUS TC Reader", "[pus-tc-reader]") {
   PusTcReader reader;
 
   SECTION("State") {
-    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == returnvalue::OK);
     REQUIRE(reader.isNull());
     REQUIRE(not reader);
     PusTcReader* readerPtr = nullptr;
     bool callDelete = false;
     SECTION("Setter") {
       readerPtr = &reader;
-      REQUIRE(readerPtr->setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
-      REQUIRE(readerPtr->parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(readerPtr->setReadOnlyData(buf.data(), serLen) == returnvalue::OK);
+      REQUIRE(readerPtr->parseDataWithCrcCheck() == returnvalue::OK);
     }
     SECTION("Directly Constructed") {
       callDelete = true;
       readerPtr = new PusTcReader(buf.data(), serLen);
       REQUIRE(not readerPtr->isNull());
-      REQUIRE(readerPtr->parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(readerPtr->parseDataWithCrcCheck() == returnvalue::OK);
     }
     REQUIRE(not readerPtr->isNull());
     REQUIRE(*readerPtr);
@@ -55,26 +55,26 @@ TEST_CASE("PUS TC Reader", "[pus-tc-reader]") {
   }
 
   SECTION("Invalid CRC") {
-    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
-    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == returnvalue::OK);
+    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == returnvalue::OK);
     buf[11] = 0x00;
     REQUIRE(reader.parseDataWithCrcCheck() == PusIF::INVALID_CRC_16);
   }
 
   SECTION("Invalid CRC but no check") {
-    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
-    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == returnvalue::OK);
+    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == returnvalue::OK);
     buf[11] = 0x00;
-    REQUIRE(reader.parseDataWithoutCrcCheck() == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(reader.parseDataWithoutCrcCheck() == returnvalue::OK);
   }
 
   SECTION("With application data") {
     auto& params = creator.getPusParams();
     std::array<uint8_t, 3> data{1, 2, 3};
     creator.setRawUserData(data.data(), data.size());
-    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == HasReturnvaluesIF::RETURN_OK);
-    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == HasReturnvaluesIF::RETURN_OK);
-    REQUIRE(reader.parseDataWithCrcCheck() == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(creator.serializeBe(&dataPtr, &serLen, buf.size()) == returnvalue::OK);
+    REQUIRE(reader.setReadOnlyData(buf.data(), serLen) == returnvalue::OK);
+    REQUIRE(reader.parseDataWithCrcCheck() == returnvalue::OK);
     const uint8_t* userDataPtr = reader.getUserData();
     REQUIRE(userDataPtr != nullptr);
     REQUIRE(reader.getUserDataLen() == 3);

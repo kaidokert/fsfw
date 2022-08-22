@@ -31,7 +31,7 @@ ReturnValue_t MapPacketExtraction::extractPackets(TcTransferFrame* frame) {
       if (packetLength <= MAX_PACKET_SIZE) {
         memcpy(packetBuffer, frame->getDataField(), packetLength);
         bufferPosition = &packetBuffer[packetLength];
-        status = RETURN_OK;
+        status = returnvalue::OK;
       } else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "MapPacketExtraction::extractPackets. Packet too large! Size: "
@@ -52,7 +52,7 @@ ReturnValue_t MapPacketExtraction::extractPackets(TcTransferFrame* frame) {
             status = sendCompletePacket(packetBuffer, packetLength);
             clearBuffers();
           }
-          status = RETURN_OK;
+          status = returnvalue::OK;
         } else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
           sif::error << "MapPacketExtraction::extractPackets. Packet too large! Size: "
@@ -95,7 +95,7 @@ ReturnValue_t MapPacketExtraction::unpackBlockingPackets(TcTransferFrame* frame)
       status = sendCompletePacket(packet.getWholeData(), packet.getFullSize());
       totalLength -= packet.getFullSize();
       position += packet.getFullSize();
-      status = RETURN_OK;
+      status = returnvalue::OK;
     } else {
       status = DATA_CORRUPTED;
       totalLength = 0;
@@ -110,7 +110,7 @@ ReturnValue_t MapPacketExtraction::unpackBlockingPackets(TcTransferFrame* frame)
 ReturnValue_t MapPacketExtraction::sendCompletePacket(uint8_t* data, uint32_t size) {
   store_address_t store_id;
   ReturnValue_t status = this->packetStore->addData(&store_id, data, size);
-  if (status == RETURN_OK) {
+  if (status == returnvalue::OK) {
     TmTcMessage message(store_id);
     status = MessageQueueSenderIF::sendMessage(tcQueueId, &message);
   }
@@ -130,9 +130,9 @@ ReturnValue_t MapPacketExtraction::initialize() {
       ObjectManager::instance()->get<AcceptsTelecommandsIF>(packetDestination);
   if ((packetStore != NULL) && (distributor != NULL)) {
     tcQueueId = distributor->getRequestQueue();
-    return RETURN_OK;
+    return returnvalue::OK;
   } else {
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 }
 

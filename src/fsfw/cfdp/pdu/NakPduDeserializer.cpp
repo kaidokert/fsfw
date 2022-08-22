@@ -5,7 +5,7 @@ NakPduDeserializer::NakPduDeserializer(const uint8_t* pduBuf, size_t maxSize, Na
 
 ReturnValue_t NakPduDeserializer::parseData() {
   ReturnValue_t result = FileDirectiveReader::parseData();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t currentIdx = FileDirectiveReader::getHeaderSize();
@@ -16,11 +16,11 @@ ReturnValue_t NakPduDeserializer::parseData() {
   }
   result =
       nakInfo.getStartOfScope().deSerialize(&buffer, &remSize, SerializeIF::Endianness::NETWORK);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = nakInfo.getEndOfScope().deSerialize(&buffer, &remSize, SerializeIF::Endianness::NETWORK);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   nakInfo.setSegmentRequestLen(0);
@@ -39,12 +39,12 @@ ReturnValue_t NakPduDeserializer::parseData() {
         }
         result =
             segReqs[idx].first.deSerialize(&buffer, &remSize, SerializeIF::Endianness::NETWORK);
-        if (result != HasReturnvaluesIF::RETURN_OK) {
+        if (result != returnvalue::OK) {
           return result;
         }
         result =
             segReqs[idx].second.deSerialize(&buffer, &remSize, SerializeIF::Endianness::NETWORK);
-        if (result != HasReturnvaluesIF::RETURN_OK) {
+        if (result != returnvalue::OK) {
           return result;
         }
         idx++;

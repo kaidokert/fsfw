@@ -2,7 +2,7 @@
 
 #include "fsfw/osal/linux/FixedTimeslotTask.h"
 #include "fsfw/osal/linux/PeriodicPosixTask.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
 // TODO: Different variant than the lazy loading in QueueFactory. What's better and why?
@@ -28,7 +28,7 @@ FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(
 
 ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
   // TODO not implemented
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t TaskFactory::delayTask(uint32_t delayMs) {

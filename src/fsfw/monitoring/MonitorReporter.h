@@ -70,7 +70,7 @@ class MonitorReporter : public HasParametersIF {
       default:
         return INVALID_IDENTIFIER_ID;
     }
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   virtual ReturnValue_t setToUnchecked() { return setToState(MonitoringIF::UNCHECKED); }
   virtual ReturnValue_t setToInvalid() { return setToState(MonitoringIF::INVALID); }
@@ -135,7 +135,7 @@ class MonitorReporter : public HasParametersIF {
       case MonitoringIF::UNCHECKED:
       case MonitoringIF::UNSELECTED:
       case MonitoringIF::INVALID:
-      case HasReturnvaluesIF::RETURN_OK:
+      case returnvalue::OK:
         break;
       default:
         EventManagerIF::triggerEvent(reportingId, MonitoringIF::MONITOR_CHANGED_STATE, state);
@@ -159,7 +159,7 @@ class MonitorReporter : public HasParametersIF {
       LimitViolationReporter::sendLimitViolationReport(&report);
       oldState = state;
     }
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 };
 

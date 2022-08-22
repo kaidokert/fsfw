@@ -26,7 +26,7 @@ class SerialArrayListAdapter : public SerializeIF {
     ReturnValue_t result =
         SerializeAdapter::serialize(&list->size, buffer, size, maxSize, streamEndianness);
     count_t i = 0;
-    while ((result == HasReturnvaluesIF::RETURN_OK) && (i < list->size)) {
+    while ((result == returnvalue::OK) && (i < list->size)) {
       result =
           SerializeAdapter::serialize(&list->entries[i], buffer, size, maxSize, streamEndianness);
       ++i;
@@ -56,7 +56,7 @@ class SerialArrayListAdapter : public SerializeIF {
                                    size_t* size, Endianness streamEndianness) {
     count_t tempSize = 0;
     ReturnValue_t result = SerializeAdapter::deSerialize(&tempSize, buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     if (tempSize > list->maxSize()) {
@@ -65,7 +65,7 @@ class SerialArrayListAdapter : public SerializeIF {
 
     list->size = tempSize;
     count_t i = 0;
-    while ((result == HasReturnvaluesIF::RETURN_OK) && (i < list->size)) {
+    while ((result == returnvalue::OK) && (i < list->size)) {
       result = SerializeAdapter::deSerialize(&list->front()[i], buffer, size, streamEndianness);
       ++i;
     }

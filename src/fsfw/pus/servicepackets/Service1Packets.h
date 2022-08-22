@@ -42,26 +42,26 @@ class FailureReport : public SerializeIF {  //!< [EXPORT] : [SUBSERVICE] 2, 4, 6
                                   SerializeIF::Endianness streamEndianness) const override {
     ReturnValue_t result =
         SerializeAdapter::serialize(&packetId, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::serialize(&packetSequenceControl, buffer, size, maxSize,
                                          streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     if (failureSubtype == tcverif::PROGRESS_FAILURE) {
       result = SerializeAdapter::serialize(&stepNumber, buffer, size, maxSize, streamEndianness);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
     }
     result = SerializeAdapter::serialize(&errorCode, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::serialize(&errorParameter1, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
 
@@ -91,7 +91,7 @@ class FailureReport : public SerializeIF {  //!< [EXPORT] : [SUBSERVICE] 2, 4, 6
    */
   ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
                             SerializeIF::Endianness streamEndianness) override {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
  private:
@@ -122,17 +122,17 @@ class SuccessReport : public SerializeIF {  //!< [EXPORT] : [SUBSERVICE] 1, 3, 5
                                   SerializeIF::Endianness streamEndianness) const override {
     ReturnValue_t result =
         SerializeAdapter::serialize(&packetId, buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::serialize(&packetSequenceControl, buffer, size, maxSize,
                                          streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     if (subtype == tcverif::PROGRESS_SUCCESS) {
       result = SerializeAdapter::serialize(&stepNumber, buffer, size, maxSize, streamEndianness);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
     }
@@ -151,7 +151,7 @@ class SuccessReport : public SerializeIF {  //!< [EXPORT] : [SUBSERVICE] 1, 3, 5
 
   ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
                             SerializeIF::Endianness streamEndianness) override {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
  private:

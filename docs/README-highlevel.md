@@ -14,7 +14,7 @@ FSFW to achieve that. The fsfw uses run-time type information but exceptions are
 # Failure Handling
 
 Functions should return a defined `ReturnValue_t` to signal to the caller that something has
-gone wrong. Returnvalues must be unique. For this the function `HasReturnvaluesIF::makeReturnCode`
+gone wrong. Returnvalues must be unique. For this the function `returnvalue::makeCode`
 or the macro `MAKE_RETURN` can be used. The `CLASS_ID` is a unique id for that type of object.
 See `returnvalues/FwClassIds` folder. The user can add custom `CLASS_ID`s via the
 `fsfwconfig` folder.

@@ -10,7 +10,7 @@
 
 TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
   using namespace cfdp;
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   std::array<uint8_t, 256> mdBuffer = {};
   uint8_t* buffer = mdBuffer.data();
   size_t sz = 0;
@@ -40,7 +40,7 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
   SECTION("Serialize") {
     MetadataPduCreator serializer(pduConf, info);
     result = serializer.serialize(&buffer, &sz, mdBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(serializer.getWholePduSize() == 27);
     REQUIRE(info.getSourceFileName().getSerializedSize() == 10);
     REQUIRE(info.getDestFileName().getSerializedSize() == 1);
@@ -52,7 +52,7 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
     uint32_t fileSizeRaw = 0;
     result = SerializeAdapter::deSerialize(&fileSizeRaw, mdBuffer.data() + 12, nullptr,
                                            SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(fileSizeRaw == 35);
     REQUIRE(mdBuffer[16] == 9);
     REQUIRE(mdBuffer[17] == 'h');
@@ -82,7 +82,7 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
     serializer.updateDirectiveFieldLen();
 
     result = serializer.serialize(&buffer, &sz, mdBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE((mdBuffer[1] << 8 | mdBuffer[2]) == 37);
     auto checksumType = static_cast<cfdp::ChecksumType>(mdBuffer[11] & 0x0f);
     REQUIRE(checksumType == cfdp::ChecksumType::CRC_32C);
@@ -116,16 +116,16 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
   SECTION("Deserialize") {
     MetadataPduCreator serializer(pduConf, info);
     result = serializer.serialize(&buffer, &sz, mdBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     MetadataPduReader deserializer(mdBuffer.data(), mdBuffer.size(), info);
     result = deserializer.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     size_t fullSize = deserializer.getWholePduSize();
     for (size_t maxSz = 0; maxSz < fullSize; maxSz++) {
       MetadataPduReader invalidSzDeser(mdBuffer.data(), maxSz, info);
       result = invalidSzDeser.parseData();
-      REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+      REQUIRE(result != returnvalue::OK);
     }
     size_t sizeOfOptions = options.size();
     size_t maxSize = 4;
@@ -139,11 +139,11 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
 
     info.setSourceFileName(sourceFileName);
     result = serializer.serialize(&buffer, &sz, mdBuffer.size(), SerializeIF::Endianness::NETWORK);
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
 
     MetadataPduReader deserializer2(mdBuffer.data(), mdBuffer.size(), info);
     result = deserializer2.parseData();
-    REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+    REQUIRE(result == returnvalue::OK);
     REQUIRE(options[0]->getType() == cfdp::TlvTypes::FILESTORE_RESPONSE);
     REQUIRE(options[0]->getSerializedSize() == 14);
     REQUIRE(options[1]->getType() == cfdp::TlvTypes::MSG_TO_USER);
@@ -161,7 +161,7 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
       }
       // This is the precise length where there are no options or one option
       if (invalidFieldLen != 17 and invalidFieldLen != 31) {
-        REQUIRE(result != HasReturnvaluesIF::RETURN_OK);
+        REQUIRE(result != returnvalue::OK);
       }
     }
     mdBuffer[1] = (36 >> 8) & 0xff;

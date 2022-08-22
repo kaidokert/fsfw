@@ -49,7 +49,7 @@ ReturnValue_t CommandingServiceBase::performOperation(uint8_t opCode) {
   handleRequestQueue();
   checkTimeout();
   doPeriodicOperation();
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 uint32_t CommandingServiceBase::getIdentifier() const { return service; }
@@ -58,7 +58,7 @@ MessageQueueId_t CommandingServiceBase::getRequestQueue() const { return request
 
 ReturnValue_t CommandingServiceBase::initialize() {
   ReturnValue_t result = SystemObject::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -131,7 +131,7 @@ ReturnValue_t CommandingServiceBase::initialize() {
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void CommandingServiceBase::handleCommandQueue() {
@@ -139,7 +139,7 @@ void CommandingServiceBase::handleCommandQueue() {
   ReturnValue_t result;
   while (true) {
     result = commandQueue->receiveMessage(&reply);
-    if (result == HasReturnvaluesIF::RETURN_OK) {
+    if (result == returnvalue::OK) {
       handleCommandMessage(&reply);
       continue;
     } else if (result == MessageQueueIF::EMPTY) {
@@ -179,18 +179,18 @@ void CommandingServiceBase::handleCommandMessage(CommandMessage* reply) {
                                      iter->second.objectId, &isStep);
 
   /* If the child implementation does not implement special handling for
-   * rejected replies (RETURN_FAILED or INVALID_REPLY is returned), a
+   * rejected replies (returnvalue::FAILED or INVALID_REPLY is returned), a
    * failure verification will be generated with the reason as the
    * return code and the initial command as failure parameter 1 */
   if ((reply->getCommand() == CommandMessage::REPLY_REJECTED) and
-      (result == RETURN_FAILED or result == INVALID_REPLY)) {
+      (result == returnvalue::FAILED or result == INVALID_REPLY)) {
     result = reply->getReplyRejectedReason();
     failureParameter1 = iter->second.command;
   }
 
   switch (result) {
     case EXECUTION_COMPLETE:
-    case RETURN_OK:
+    case returnvalue::OK:
     case NO_STEP_MESSAGE:
       // handle result of reply handler implemented by developer.
       handleReplyHandlerResult(result, iter, &nextCommand, reply, isStep);
@@ -224,12 +224,12 @@ void CommandingServiceBase::handleReplyHandlerResult(ReturnValue_t result, Comma
   // In case a new command is to be sent immediately, this is performed here.
   // If no new command is sent, only analyse reply result by initializing
   // sendResult as RETURN_OK
-  ReturnValue_t sendResult = RETURN_OK;
+  ReturnValue_t sendResult = returnvalue::OK;
   if (nextCommand->getCommand() != CommandMessage::CMD_NONE) {
     sendResult = commandQueue->sendMessage(reply->getSender(), nextCommand);
   }
 
-  if (sendResult == RETURN_OK) {
+  if (sendResult == returnvalue::OK) {
     if (isStep and result != NO_STEP_MESSAGE) {
       prepareVerificationSuccessWithFullInfo(tcverif::PROGRESS_SUCCESS, iter->second.tcInfo);
       successParams.step = ++iter->second.step;
@@ -264,23 +264,23 @@ void CommandingServiceBase::handleRequestQueue() {
   store_address_t address;
   MessageQueueId_t queue;
   object_id_t objectId;
-  for (result = requestQueue->receiveMessage(&message); result == RETURN_OK;
+  for (result = requestQueue->receiveMessage(&message); result == returnvalue::OK;
        result = requestQueue->receiveMessage(&message)) {
     address = message.getStorageId();
     result = setUpTcReader(address);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       rejectPacketInvalidTc(result, address);
       continue;
     }
     if ((tcReader.getSubService() == 0) or
-        (isValidSubservice(tcReader.getSubService()) != RETURN_OK)) {
+        (isValidSubservice(tcReader.getSubService()) != returnvalue::OK)) {
       rejectPacket(tcverif::START_FAILURE, address, INVALID_SUBSERVICE);
       continue;
     }
 
     result = getMessageQueueAndObject(tcReader.getSubService(), tcReader.getUserData(),
                                       tcReader.getUserDataLen(), &queue, &objectId);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       rejectPacket(tcverif::START_FAILURE, address, result);
       continue;
     }
@@ -291,14 +291,14 @@ void CommandingServiceBase::handleRequestQueue() {
 
     if (iter != commandMap.end()) {
       result = iter->second.fifo.insert(address);
-      if (result != RETURN_OK) {
+      if (result != returnvalue::OK) {
         rejectPacket(tcverif::START_FAILURE, address, OBJECT_BUSY);
       }
     } else {
       CommandInfo newInfo;  // Info will be set by startExecution if neccessary
       newInfo.objectId = objectId;
       result = commandMap.insert(queue, newInfo, &iter);
-      if (result != RETURN_OK) {
+      if (result != returnvalue::OK) {
         rejectPacket(tcverif::START_FAILURE, address, BUSY);
       } else {
         startExecution(address, iter);
@@ -310,7 +310,7 @@ void CommandingServiceBase::handleRequestQueue() {
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, const uint8_t* sourceData,
                                                   size_t sourceDataLen) {
   ReturnValue_t result = tmHelper.prepareTmPacket(subservice, sourceData, sourceDataLen);
-  if (result != result::OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return tmHelper.storeAndSendTmPacket();
@@ -320,7 +320,7 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, object_id_
                                                   const uint8_t* data, size_t dataLen) {
   telemetry::DataWithObjectIdPrefix dataWithObjId(objectId, data, dataLen);
   ReturnValue_t result = tmHelper.prepareTmPacket(subservice, dataWithObjId);
-  if (result != result::OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return tmHelper.storeAndSendTmPacket();
@@ -328,7 +328,7 @@ ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, object_id_
 
 ReturnValue_t CommandingServiceBase::sendTmPacket(uint8_t subservice, SerializeIF& sourceData) {
   ReturnValue_t result = tmHelper.prepareTmPacket(subservice, sourceData);
-  if (result != result::OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return tmHelper.storeAndSendTmPacket();
@@ -341,13 +341,13 @@ void CommandingServiceBase::startExecution(store_address_t storeId, CommandMapIt
       prepareCommand(&command, iter->second.subservice, tcReader.getUserData(),
                      tcReader.getUserDataLen(), &iter->second.state, iter->second.objectId);
 
-  ReturnValue_t sendResult = RETURN_OK;
+  ReturnValue_t sendResult = returnvalue::OK;
   switch (result) {
-    case RETURN_OK:
+    case returnvalue::OK:
       if (command.getCommand() != CommandMessage::CMD_NONE) {
         sendResult = commandQueue->sendMessage(iter.value->first, &command);
       }
-      if (sendResult == RETURN_OK) {
+      if (sendResult == returnvalue::OK) {
         Clock::getUptime(&iter->second.uptimeOfStart);
         iter->second.step = 0;
         iter->second.subservice = tcReader.getSubService();
@@ -367,7 +367,7 @@ void CommandingServiceBase::startExecution(store_address_t storeId, CommandMapIt
         // Fire-and-forget command.
         sendResult = commandQueue->sendMessage(iter.value->first, &command);
       }
-      if (sendResult == RETURN_OK) {
+      if (sendResult == returnvalue::OK) {
         verificationReporter->sendSuccessReport(
             VerifSuccessParams(tcverif::START_SUCCESS, tcReader));
         acceptPacket(tcverif::COMPLETION_SUCCESS, storeId);
@@ -412,11 +412,11 @@ ReturnValue_t CommandingServiceBase::acceptPacket(uint8_t reportId, store_addres
 
 void CommandingServiceBase::checkAndExecuteFifo(CommandMapIter& iter) {
   store_address_t address;
-  if (iter->second.fifo.retrieve(&address) != RETURN_OK) {
+  if (iter->second.fifo.retrieve(&address) != returnvalue::OK) {
     commandMap.erase(&iter);
   } else {
     ReturnValue_t result = setUpTcReader(address);
-    if (result == HasReturnvaluesIF::RETURN_OK) {
+    if (result == returnvalue::OK) {
       startExecution(address, iter);
     } else {
       // TODO: Warning?

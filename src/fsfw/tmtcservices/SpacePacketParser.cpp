@@ -22,7 +22,7 @@ ReturnValue_t SpacePacketParser::parseSpacePackets(const uint8_t** buffer, const
 #else
     sif::printWarning("SpacePacketParser::parseSpacePackets: Frame invalid\n");
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   const uint8_t* bufPtr = *buffer;
 
@@ -30,7 +30,7 @@ ReturnValue_t SpacePacketParser::parseSpacePackets(const uint8_t** buffer, const
     uint16_t lengthField = bufPtr[idx + 4] << 8 | bufPtr[idx + 5];
     size_t packetSize = lengthField + 7;
     startIndex = idx;
-    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+    ReturnValue_t result = returnvalue::OK;
     if (lengthField == 0) {
       // Skip whole header for now
       foundSize = 6;

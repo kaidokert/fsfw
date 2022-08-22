@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 /**
  * @defgroup serialize Serialization
@@ -56,8 +56,8 @@ class SerializeIF {
    * SerializeIF::Endianness
    * @return
    * 		- @c BUFFER_TOO_SHORT The given buffer in is too short
-   * 		- @c RETURN_FAILED Generic error
-   * 		- @c RETURN_OK Successful serialization
+   * 		- @c returnvalue::FAILED Generic error
+   * 		- @c returnvalue::OK Successful serialization
    */
   [[nodiscard]] virtual ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                                 Endianness streamEndianness) const = 0;
@@ -92,8 +92,8 @@ class SerializeIF {
    * @return
    * 	- @c STREAM_TOO_SHORT The input stream is too short to deSerialize the object
    * 	- @c TOO_MANY_ELEMENTS The buffer has more inputs than expected
-   * 	- @c RETURN_FAILED Generic Error
-   * 	- @c RETURN_OK Successful deserialization
+   * 	- @c returnvalue::FAILED Generic Error
+   * 	- @c returnvalue::OK Successful deserialization
    */
   virtual ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
                                     Endianness streamEndianness) = 0;

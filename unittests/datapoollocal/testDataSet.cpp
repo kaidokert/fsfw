@@ -13,11 +13,13 @@
 #include "mocks/MessageQueueMock.h"
 #include "tests/TestsConfig.h"
 
+using namespace returnvalue;
+
 TEST_CASE("DataSetTest", "[DataSetTest]") {
   auto queue = MessageQueueMock(1);
   LocalPoolOwnerBase poolOwner(queue, objects::TEST_LOCAL_POOL_OWNER_BASE);
-  REQUIRE(poolOwner.initializeHkManager() == result::OK);
-  REQUIRE(poolOwner.initializeHkManagerAfterTaskCreation() == result::OK);
+  REQUIRE(poolOwner.initializeHkManager() == OK);
+  REQUIRE(poolOwner.initializeHkManagerAfterTaskCreation() == OK);
   LocalPoolStaticTestDataSet localSet;
 
   SECTION("BasicTest") {
@@ -36,7 +38,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
 
     /* Test local pool ID serialization */
     CHECK(localSet.serializeLocalPoolIds(&localPoolIdBuffPtr, &serSize, maxSize,
-                                         SerializeIF::Endianness::MACHINE) == result::OK);
+                                         SerializeIF::Endianness::MACHINE) == returnvalue::OK);
     CHECK(serSize == maxSize);
     CHECK(localPoolIdBuff[0] == 3);
     CHECK(lpIds[0] == localSet.localPoolVarUint8.getDataPoolId());
@@ -47,7 +49,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
     localPoolIdBuffPtr = localPoolIdBuff;
     serSize = 0;
     CHECK(localSet.serializeLocalPoolIds(&localPoolIdBuffPtr, &serSize, maxSize,
-                                         SerializeIF::Endianness::MACHINE, false) == result::OK);
+                                         SerializeIF::Endianness::MACHINE, false) == OK);
     CHECK(serSize == maxSize - sizeof(uint8_t));
     CHECK(lpIds[0] == localSet.localPoolVarUint8.getDataPoolId());
     CHECK(lpIds[1] == localSet.localPoolVarFloat.getDataPoolId());
@@ -56,7 +58,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
     {
       /* Test read operation. Values should be all zeros */
       PoolReadGuard readHelper(&localSet);
-      REQUIRE(readHelper.getReadResult() == result::OK);
+      REQUIRE(readHelper.getReadResult() == returnvalue::OK);
       CHECK(not localSet.isValid());
       CHECK(localSet.localPoolVarUint8.value == 0);
       CHECK(not localSet.localPoolVarUint8.isValid());
@@ -89,7 +91,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
       /* Now we read again and check whether our zeroed values were overwritten with
       the values in the pool */
       PoolReadGuard readHelper(&localSet);
-      REQUIRE(readHelper.getReadResult() == result::OK);
+      REQUIRE(readHelper.getReadResult() == returnvalue::OK);
       CHECK(localSet.isValid());
       CHECK(localSet.localPoolVarUint8.value == 232);
       CHECK(localSet.localPoolVarUint8.isValid());
@@ -109,7 +111,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
       uint8_t buffer[maxSize + 1];
       uint8_t* buffPtr = buffer;
       CHECK(localSet.serialize(&buffPtr, &serSize, maxSize, SerializeIF::Endianness::MACHINE) ==
-            result::OK);
+            returnvalue::OK);
       uint8_t rawUint8 = buffer[0];
       CHECK(rawUint8 == 232);
       float rawFloat = 0.0;
@@ -127,7 +129,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
       std::memset(buffer, 0, sizeof(buffer));
       const uint8_t* constBuffPtr = buffer;
       CHECK(localSet.deSerialize(&constBuffPtr, &sizeToDeserialize,
-                                 SerializeIF::Endianness::MACHINE) == result::OK);
+                                 SerializeIF::Endianness::MACHINE) == returnvalue::OK);
       /* Check whether deserialization was successfull */
       CHECK(localSet.localPoolVarUint8.value == 0);
       CHECK(localSet.localPoolVarFloat.value == Catch::Approx(0.0));
@@ -155,7 +157,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
       serSize = 0;
       buffPtr = buffer;
       CHECK(localSet.serialize(&buffPtr, &serSize, maxSize, SerializeIF::Endianness::MACHINE) ==
-            result::OK);
+            returnvalue::OK);
       CHECK(rawUint8 == 232);
       std::memcpy(&rawFloat, buffer + sizeof(uint8_t), sizeof(float));
       CHECK(rawFloat == Catch::Approx(-2324.322));
@@ -185,7 +187,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
       sizeToDeserialize = maxSize;
       constBuffPtr = buffer;
       CHECK(localSet.deSerialize(&constBuffPtr, &sizeToDeserialize,
-                                 SerializeIF::Endianness::MACHINE) == result::OK);
+                                 SerializeIF::Endianness::MACHINE) == returnvalue::OK);
       /* Check whether deserialization was successfull */
       CHECK(localSet.localPoolVarUint8.value == 0);
       CHECK(localSet.localPoolVarFloat.value == Catch::Approx(0.0));
@@ -212,10 +214,10 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
 
     /* Register same variables again to get more than 8 registered variables */
     for (uint8_t idx = 0; idx < 8; idx++) {
-      REQUIRE(set.registerVariable(&localSet.localPoolVarUint8) == result::OK);
+      REQUIRE(set.registerVariable(&localSet.localPoolVarUint8) == returnvalue::OK);
     }
-    REQUIRE(set.registerVariable(&localSet.localPoolVarUint8) == result::OK);
-    REQUIRE(set.registerVariable(&localSet.localPoolUint16Vec) == result::OK);
+    REQUIRE(set.registerVariable(&localSet.localPoolVarUint8) == returnvalue::OK);
+    REQUIRE(set.registerVariable(&localSet.localPoolUint16Vec) == returnvalue::OK);
 
     set.setValidityBufferGeneration(true);
     {
@@ -231,8 +233,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
     /* Already reserve additional space for validity buffer, will be needed later */
     uint8_t buffer[maxSize + 1];
     uint8_t* buffPtr = buffer;
-    CHECK(set.serialize(&buffPtr, &serSize, maxSize, SerializeIF::Endianness::MACHINE) ==
-          result::OK);
+    CHECK(set.serialize(&buffPtr, &serSize, maxSize, SerializeIF::Endianness::MACHINE) == OK);
     std::array<uint8_t, 2> validityBuffer{};
     std::memcpy(validityBuffer.data(), buffer + 9 + sizeof(uint16_t) * 3, 2);
     /* The first 9 variables should be valid */
@@ -250,7 +251,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
     const uint8_t* constBuffPtr = buffer;
     size_t sizeToDeSerialize = serSize;
     CHECK(set.deSerialize(&constBuffPtr, &sizeToDeSerialize, SerializeIF::Endianness::MACHINE) ==
-          result::OK);
+          returnvalue::OK);
     CHECK(localSet.localPoolVarUint8.isValid() == false);
     CHECK(localSet.localPoolUint16Vec.isValid() == true);
   }
@@ -260,11 +261,11 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
     SharedLocalDataSet sharedSet(sharedSetId, &poolOwner, lpool::testSetId, 5);
     localSet.localPoolVarUint8.setReadWriteMode(pool_rwm_t::VAR_WRITE);
     localSet.localPoolUint16Vec.setReadWriteMode(pool_rwm_t::VAR_WRITE);
-    CHECK(sharedSet.registerVariable(&localSet.localPoolVarUint8) == result::OK);
-    CHECK(sharedSet.registerVariable(&localSet.localPoolUint16Vec) == result::OK);
-    CHECK(sharedSet.initialize() == result::OK);
-    CHECK(sharedSet.lockDataset() == result::OK);
-    CHECK(sharedSet.unlockDataset() == result::OK);
+    CHECK(sharedSet.registerVariable(&localSet.localPoolVarUint8) == returnvalue::OK);
+    CHECK(sharedSet.registerVariable(&localSet.localPoolUint16Vec) == returnvalue::OK);
+    CHECK(sharedSet.initialize() == returnvalue::OK);
+    CHECK(sharedSet.lockDataset() == returnvalue::OK);
+    CHECK(sharedSet.unlockDataset() == returnvalue::OK);
 
     {
       // PoolReadGuard rg(&sharedSet);
@@ -273,7 +274,7 @@ TEST_CASE("DataSetTest", "[DataSetTest]") {
       localSet.localPoolUint16Vec.value[0] = 1;
       localSet.localPoolUint16Vec.value[1] = 2;
       localSet.localPoolUint16Vec.value[2] = 3;
-      CHECK(sharedSet.commit() == result::OK);
+      CHECK(sharedSet.commit() == returnvalue::OK);
     }
 
     sharedSet.setReadCommitProtectionBehaviour(true);

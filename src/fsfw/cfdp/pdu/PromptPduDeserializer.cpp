@@ -9,7 +9,7 @@ cfdp::PromptResponseRequired PromptPduDeserializer::getPromptResponseRequired() 
 
 ReturnValue_t PromptPduDeserializer::parseData() {
   ReturnValue_t result = FileDirectiveReader::parseData();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (FileDirectiveReader::getWholePduSize() <= FileDirectiveReader::getHeaderSize()) {
@@ -17,5 +17,5 @@ ReturnValue_t PromptPduDeserializer::parseData() {
   }
   responseRequired = static_cast<cfdp::PromptResponseRequired>(
       (pointers.rawPtr[FileDirectiveReader::getHeaderSize()] >> 7) & 0x01);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

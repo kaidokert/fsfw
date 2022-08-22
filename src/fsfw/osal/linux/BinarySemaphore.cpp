@@ -43,7 +43,7 @@ ReturnValue_t BinarySemaphore::acquire(TimeoutType timeoutType, uint32_t timeout
     }
   }
   if (result == 0) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   switch (errno) {
@@ -62,10 +62,10 @@ ReturnValue_t BinarySemaphore::acquire(TimeoutType timeoutType, uint32_t timeout
     case (EINTR): {
       // Call was interrupted by signal handler
       utility::printUnixErrorGeneric(CLASS_NAME, "acquire", "EINTR");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
@@ -73,13 +73,13 @@ ReturnValue_t BinarySemaphore::release() { return BinarySemaphore::release(&this
 
 ReturnValue_t BinarySemaphore::release(sem_t* handle) {
   ReturnValue_t countResult = checkCount(handle, 1);
-  if (countResult != HasReturnvaluesIF::RETURN_OK) {
+  if (countResult != returnvalue::OK) {
     return countResult;
   }
 
   int result = sem_post(handle);
   if (result == 0) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   switch (errno) {
@@ -91,10 +91,10 @@ ReturnValue_t BinarySemaphore::release(sem_t* handle) {
     case (EOVERFLOW): {
       // SEM_MAX_VALUE overflow. This should never happen
       utility::printUnixErrorGeneric(CLASS_NAME, "release", "EOVERFLOW");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
@@ -145,9 +145,9 @@ ReturnValue_t BinarySemaphore::checkCount(sem_t* handle, uint8_t maxCount) {
       // This is a config error use lightweight printf is this is called
       // from an interrupt
       printf("BinarySemaphore::release: Value of binary semaphore greater than 1!\n");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     return SemaphoreIF::SEMAPHORE_NOT_OWNED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

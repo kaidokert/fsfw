@@ -10,12 +10,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [v6.0.0]
 
+## Changes
+
 ## Added
 
 - Add new `UnsignedByteField` class
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/660
 
 ## Changes
 
+- Removed `HasReturnvaluesIF` class in favor of `returnvalue` namespace with `OK` and `FAILED`
+  constants.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/659
 - Overhaul of the TMTC stack, including various changes and improvements
   for other modules
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/655
@@ -37,7 +43,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - HAL Devicehandlers: Periodic printout is run-time configurable now
 - `oneShotAction` flag in the `TestTask` class is not static anymore
 - `SimpleRingBuffer::writeData` now checks if the amount is larger than the total size of the 
-  Buffer and rejects such writeData calls with `HasReturnvaluesIF::RETURN_FAILED`
+  Buffer and rejects such writeData calls with `returnvalue::FAILED`
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/586
 - Major update for version handling, using `git describe` to fetch version information with git.
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/601
