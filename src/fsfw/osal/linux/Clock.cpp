@@ -26,9 +26,9 @@ ReturnValue_t Clock::setClock(const TimeOfDay_t* time) {
   int status = clock_settime(CLOCK_REALTIME, &timeUnix);
   if (status != 0) {
     // TODO errno
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::setClock(const timeval* time) {
@@ -38,37 +38,37 @@ ReturnValue_t Clock::setClock(const timeval* time) {
   int status = clock_settime(CLOCK_REALTIME, &timeUnix);
   if (status != 0) {
     // TODO errno
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::getClock_timeval(timeval* time) {
   timespec timeUnix;
   int status = clock_gettime(CLOCK_REALTIME, &timeUnix);
   if (status != 0) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   time->tv_sec = timeUnix.tv_sec;
   time->tv_usec = timeUnix.tv_nsec / 1000.0;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
   timeval timeVal;
   ReturnValue_t result = getClock_timeval(&timeVal);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   *time = (uint64_t)timeVal.tv_sec * 1e6 + timeVal.tv_usec;
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 timeval Clock::getUptime() {
   timeval uptime;
   auto result = getUptime(&uptime);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Clock::getUptime: Error getting uptime" << std::endl;
 #endif
@@ -84,7 +84,7 @@ ReturnValue_t Clock::getUptime(timeval* uptime) {
     uptime->tv_sec = uptimeSeconds;
     uptime->tv_usec = uptimeSeconds * (double)1e6 - (uptime->tv_sec * 1e6);
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 // Wait for new FSFW Clock function delivering seconds uptime.
@@ -93,7 +93,7 @@ ReturnValue_t Clock::getUptime(timeval* uptime) {
 //	struct sysinfo sysInfo;
 //	int result = sysinfo(&sysInfo);
 //	if(result != 0){
-//		return HasReturnvaluesIF::RETURN_FAILED;
+//		return returnvalue::FAILED;
 //	}
 //	return sysInfo.uptime;
 //}
@@ -101,11 +101,11 @@ ReturnValue_t Clock::getUptime(timeval* uptime) {
 ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
   timeval uptime;
   ReturnValue_t result = getUptime(&uptime);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   *uptimeMs = uptime.tv_sec * 1e3 + uptime.tv_usec / 1e3;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
@@ -113,10 +113,10 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
   int status = clock_gettime(CLOCK_REALTIME, &timeUnix);
   if (status != 0) {
     // TODO errno
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   ReturnValue_t result = checkOrCreateClockMutex();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   MutexGuard helper(timeMutex);
@@ -132,7 +132,7 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
   time->second = timeInfo->tm_sec;
   time->usecond = timeUnix.tv_nsec / 1000.0;
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from, timeval* to) {
@@ -148,10 +148,10 @@ ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from, timeval*
 
   to->tv_sec = timegm(&fromTm);
   to->tv_usec = from->usecond;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::convertTimevalToJD2000(timeval time, double* JD2000) {
   *JD2000 = (time.tv_sec - 946728000. + time.tv_usec / 1000000.) / 24. / 3600.;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

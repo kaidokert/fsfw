@@ -6,7 +6,7 @@
 #include "fsfw/storagemanager/LocalPool.h"
 #include "fsfw/tmtcpacket/pus/tm/TmPacketMinimal.h"
 
-class PacketMatchTree : public MatchTree<TmPacketMinimal*>, public HasReturnvaluesIF {
+class PacketMatchTree : public MatchTree<TmPacketMinimal*> {
  public:
   PacketMatchTree(Node* root);
   PacketMatchTree(iterator root);

@@ -32,7 +32,7 @@ ReturnValue_t Clock::setClock(const TimeOfDay_t* time) {
 #else
   sif::printWarning("Clock::setClock: Not implemented for host OSAL\n");
 #endif
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::setClock(const timeval* time) {
@@ -43,7 +43,7 @@ ReturnValue_t Clock::setClock(const timeval* time) {
 #else
   sif::printWarning("Clock::setClock: Not implemented for host OSAL\n");
 #endif
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::getClock_timeval(timeval* time) {
@@ -54,33 +54,33 @@ ReturnValue_t Clock::getClock_timeval(timeval* time) {
   time->tv_sec = std::chrono::duration_cast<std::chrono::seconds>(epoch).count();
   auto fraction = now - secondsChrono;
   time->tv_usec = std::chrono::duration_cast<std::chrono::microseconds>(fraction).count();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 #elif defined(PLATFORM_UNIX)
   timespec timeUnix;
   int status = clock_gettime(CLOCK_REALTIME, &timeUnix);
   if (status != 0) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   time->tv_sec = timeUnix.tv_sec;
   time->tv_usec = timeUnix.tv_nsec / 1000.0;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 #else
 #if FSFW_CPP_OSTREAM_ENABLED == 1
   sif::warning << "Clock::getUptime: Not implemented for found OS!" << std::endl;
 #else
   sif::printWarning("Clock::getUptime: Not implemented for found OS!\n");
 #endif
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 #endif
 }
 
 ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
   if (time == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   using namespace std::chrono;
   *time = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 timeval Clock::getUptime() {
@@ -108,13 +108,13 @@ timeval Clock::getUptime() {
 
 ReturnValue_t Clock::getUptime(timeval* uptime) {
   *uptime = getUptime();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
   timeval uptime = getUptime();
   *uptimeMs = uptime.tv_sec * 1000 + uptime.tv_usec / 1000;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
@@ -126,7 +126,7 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
   auto fraction = now - seconds;
   time_t tt = SystemClock::to_time_t(now);
   ReturnValue_t result = checkOrCreateClockMutex();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   MutexGuard helper(timeMutex);
@@ -142,7 +142,7 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
   time->second = timeInfo->tm_sec;
   auto usecond = std::chrono::duration_cast<std::chrono::microseconds>(fraction);
   time->usecond = usecond.count();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from, timeval* to) {
@@ -162,10 +162,10 @@ ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from, timeval*
   to->tv_sec = seconds;
   to->tv_usec = from->usecond;
   // Fails in 2038..
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Clock::convertTimevalToJD2000(timeval time, double* JD2000) {
   *JD2000 = (time.tv_sec - 946728000. + time.tv_usec / 1000000.) / 24. / 3600.;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

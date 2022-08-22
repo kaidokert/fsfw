@@ -102,7 +102,7 @@ TEST_CASE("Serial Buffer Adapter", "[single-file]") {
     size_t size = 6;
     auto result = tv_serial_buffer_adapter3.deSerialize(const_cast<const uint8_t**>(&arrayPtr),
                                                         &size, SerializeIF::Endianness::MACHINE);
-    REQUIRE(result == retval::CATCH_OK);
+    REQUIRE(result == returnvalue::OK);
     CHECK(test_recv_array[0] == 1);
     CHECK(test_recv_array[1] == 1);
     CHECK(test_recv_array[2] == 1);

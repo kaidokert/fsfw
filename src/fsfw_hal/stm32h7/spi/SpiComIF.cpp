@@ -35,7 +35,7 @@ void SpiComIF::addDmaHandles(DMA_HandleTypeDef *txHandle, DMA_HandleTypeDef *rxH
   spi::setDmaHandles(txHandle, rxHandle);
 }
 
-ReturnValue_t SpiComIF::initialize() { return HasReturnvaluesIF::RETURN_OK; }
+ReturnValue_t SpiComIF::initialize() { return returnvalue::OK; }
 
 ReturnValue_t SpiComIF::initializeInterface(CookieIF *cookie) {
   SpiCookie *spiCookie = dynamic_cast<SpiCookie *>(cookie);
@@ -55,7 +55,7 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF *cookie) {
     spi::getDmaHandles(&txHandle, &rxHandle);
     if (txHandle == nullptr or rxHandle == nullptr) {
       sif::printError("SpiComIF::initialize: DMA handles not set!\n");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
   // This semaphore ensures thread-safety for a given bus
@@ -79,7 +79,7 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF *cookie) {
           static_cast<unsigned long>(spiAddress));
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
   auto gpioPin = spiCookie->getChipSelectGpioPin();
@@ -98,7 +98,7 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF *cookie) {
 #endif
   } else {
     printCfgError("SPI Bus Index");
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   auto mspCfg = spiCookie->getMspCfg();
@@ -107,21 +107,21 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF *cookie) {
     auto typedCfg = dynamic_cast<spi::MspPollingConfigStruct *>(mspCfg);
     if (typedCfg == nullptr) {
       printCfgError("Polling MSP");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     spi::setSpiPollingMspFunctions(typedCfg);
   } else if (transferMode == spi::TransferModes::INTERRUPT) {
     auto typedCfg = dynamic_cast<spi::MspIrqConfigStruct *>(mspCfg);
     if (typedCfg == nullptr) {
       printCfgError("IRQ MSP");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     spi::setSpiIrqMspFunctions(typedCfg);
   } else if (transferMode == spi::TransferModes::DMA) {
     auto typedCfg = dynamic_cast<spi::MspDmaConfigStruct *>(mspCfg);
     if (typedCfg == nullptr) {
       printCfgError("DMA MSP");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     // Check DMA handles
     DMA_HandleTypeDef *txHandle = nullptr;
@@ -129,7 +129,7 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF *cookie) {
     spi::getDmaHandles(&txHandle, &rxHandle);
     if (txHandle == nullptr or rxHandle == nullptr) {
       printCfgError("DMA Handle");
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     spi::setSpiDmaMspFunctions(typedCfg);
   }
@@ -145,12 +145,12 @@ ReturnValue_t SpiComIF::initializeInterface(CookieIF *cookie) {
 
   if (HAL_SPI_Init(&spiHandle) != HAL_OK) {
     sif::printWarning("SpiComIF::initialize: Error initializing SPI\n");
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   // The MSP configuration struct is not required anymore
   spiCookie->deleteMspCfg();
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t SpiComIF::sendMessage(CookieIF *cookie, const uint8_t *sendData, size_t sendLen) {
@@ -163,7 +163,7 @@ ReturnValue_t SpiComIF::sendMessage(CookieIF *cookie, const uint8_t *sendData, s
 
   auto iter = spiDeviceMap.find(spiCookie->getDeviceAddress());
   if (iter == spiDeviceMap.end()) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   iter->second.currentTransferLen = sendLen;
 
@@ -176,7 +176,7 @@ ReturnValue_t SpiComIF::sendMessage(CookieIF *cookie, const uint8_t *sendData, s
     case (spi::TransferStates::FAILURE):
     case (spi::TransferStates::SUCCESS):
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 
@@ -194,13 +194,13 @@ ReturnValue_t SpiComIF::sendMessage(CookieIF *cookie, const uint8_t *sendData, s
                                     sendData, sendLen);
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
-ReturnValue_t SpiComIF::getSendSuccess(CookieIF *cookie) { return HasReturnvaluesIF::RETURN_OK; }
+ReturnValue_t SpiComIF::getSendSuccess(CookieIF *cookie) { return returnvalue::OK; }
 
 ReturnValue_t SpiComIF::requestReceiveMessage(CookieIF *cookie, size_t requestLen) {
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t SpiComIF::readReceivedMessage(CookieIF *cookie, uint8_t **buffer, size_t *size) {
@@ -212,7 +212,7 @@ ReturnValue_t SpiComIF::readReceivedMessage(CookieIF *cookie, uint8_t **buffer, 
     case (spi::TransferStates::SUCCESS): {
       auto iter = spiDeviceMap.find(spiCookie->getDeviceAddress());
       if (iter == spiDeviceMap.end()) {
-        return HasReturnvaluesIF::RETURN_FAILED;
+        return returnvalue::FAILED;
       }
       *buffer = iter->second.replyBuffer.data();
       *size = iter->second.currentTransferLen;
@@ -228,18 +228,18 @@ ReturnValue_t SpiComIF::readReceivedMessage(CookieIF *cookie, uint8_t **buffer, 
 #endif
 #endif
       spiCookie->setTransferState(spi::TransferStates::IDLE);
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     case (spi::TransferStates::WAIT):
     case (spi::TransferStates::IDLE): {
       break;
     }
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void SpiComIF::setDefaultPollingTimeout(dur_millis_t timeout) {
@@ -252,7 +252,7 @@ ReturnValue_t SpiComIF::handlePollingSendOperation(uint8_t *recvPtr, SPI_HandleT
   auto gpioPort = spiCookie.getChipSelectGpioPort();
   auto gpioPin = spiCookie.getChipSelectGpioPin();
   auto returnval = spiSemaphore->acquire(timeoutType, timeoutMs);
-  if (returnval != HasReturnvaluesIF::RETURN_OK) {
+  if (returnval != returnvalue::OK) {
     return returnval;
   }
   spiCookie.setTransferState(spi::TransferStates::WAIT);
@@ -299,7 +299,7 @@ ReturnValue_t SpiComIF::handlePollingSendOperation(uint8_t *recvPtr, SPI_HandleT
       return spi::HAL_ERROR_RETVAL;
     }
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t SpiComIF::handleInterruptSendOperation(uint8_t *recvPtr, SPI_HandleTypeDef &spiHandle,
@@ -318,7 +318,7 @@ ReturnValue_t SpiComIF::handleIrqSendOperation(uint8_t *recvPtr, SPI_HandleTypeD
                                                SpiCookie &spiCookie, const uint8_t *sendData,
                                                size_t sendLen) {
   ReturnValue_t result = genericIrqSendSetup(recvPtr, spiHandle, spiCookie, sendData, sendLen);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   // yet another HAL driver which is not const-correct..
@@ -366,7 +366,7 @@ ReturnValue_t SpiComIF::halErrorHandler(HAL_StatusTypeDef status, spi::TransferM
       return spi::HAL_TIMEOUT_RETVAL;
     }
     default: {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
 }
@@ -379,7 +379,7 @@ ReturnValue_t SpiComIF::genericIrqSendSetup(uint8_t *recvPtr, SPI_HandleTypeDef 
 
   // Take the semaphore which will be released by a callback when the transfer is complete
   ReturnValue_t result = spiSemaphore->acquire(SemaphoreIF::TimeoutType::WAITING, timeoutMs);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     // Configuration error
     sif::printWarning(
         "SpiComIF::handleInterruptSendOperation: Semaphore "
@@ -399,7 +399,7 @@ ReturnValue_t SpiComIF::genericIrqSendSetup(uint8_t *recvPtr, SPI_HandleTypeDef 
     HAL_GPIO_WritePin(spiCookie.getChipSelectGpioPort(), spiCookie.getChipSelectGpioPin(),
                       GPIO_PIN_RESET);
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void SpiComIF::spiTransferTxCompleteCallback(SPI_HandleTypeDef *hspi, void *args) {
@@ -445,7 +445,7 @@ void SpiComIF::genericIrqHandler(void *irqArgsVoid, spi::TransferStates targetSt
 #elif defined FSFW_OSAL_RTEMS
   ReturnValue_t result = comIF->spiSemaphore->release();
 #endif
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     // Configuration error
     printf("SpiComIF::genericIrqHandler: Failure releasing Semaphore!\n");
   }

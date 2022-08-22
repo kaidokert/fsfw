@@ -4,10 +4,10 @@
 #include "../../container/PlacementFactory.h"
 #include "../../events/EventMessage.h"
 #include "../../globalfunctions/matching/MatchTree.h"
-#include "../../returnvalues/HasReturnvaluesIF.h"
+#include "../../returnvalues/returnvalue.h"
 class StorageManagerIF;
 
-class EventMatchTree : public MatchTree<EventMessage*>, public HasReturnvaluesIF {
+class EventMatchTree : public MatchTree<EventMessage*> {
  public:
   EventMatchTree(StorageManagerIF* storageBackend, bool invertedMatch);
   virtual ~EventMatchTree();

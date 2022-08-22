@@ -3,7 +3,7 @@
 
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/objectmanager/SystemObject.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
 #include "fsfw/tcdistribution/CFDPDistributor.h"
 #include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
@@ -14,8 +14,7 @@ void setStaticFrameworkObjectIds();
 
 class CFDPHandler : public ExecutableObjectIF,
                     public AcceptsTelecommandsIF,
-                    public SystemObject,
-                    public HasReturnvaluesIF {
+                    public SystemObject {
   friend void(Factory::setStaticFrameworkObjectIds)();
 
  public:

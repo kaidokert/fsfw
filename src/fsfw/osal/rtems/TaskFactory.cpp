@@ -3,7 +3,7 @@
 #include "fsfw/osal/rtems/FixedTimeslotTask.h"
 #include "fsfw/osal/rtems/PeriodicTask.h"
 #include "fsfw/osal/rtems/RtemsBasic.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 // TODO: Different variant than the lazy loading in QueueFactory. What's better and why?
 TaskFactory* TaskFactory::factoryInstance = new TaskFactory();
@@ -31,13 +31,13 @@ FixedTimeslotTaskIF* TaskFactory::createFixedTimeslotTask(
 ReturnValue_t TaskFactory::deleteTask(PeriodicTaskIF* task) {
   // This should call the OS specific destructor
   delete (dynamic_cast<PeriodicTask*>(task));
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t TaskFactory::delayTask(uint32_t delayMs) {
   rtems_task_wake_after(RtemsBasic::convertMsToTicks(delayMs));
   // Only return value is "RTEMS_SUCCESSFUL - always successful" so it has been neglected
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void TaskFactory::printMissedDeadline() {

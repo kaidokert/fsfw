@@ -21,7 +21,7 @@ ReturnValue_t Service17Test::handleRequest(uint8_t subservice) {
                                           packetSubCounter++);
 #endif
       connectionPacket.sendPacket(requestQueue->getDefaultDestination(), requestQueue->getId());
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
     case Subservice::EVENT_TRIGGER_TEST: {
 #if FSFW_USE_PUS_C_TELEMETRY == 0
@@ -33,11 +33,11 @@ ReturnValue_t Service17Test::handleRequest(uint8_t subservice) {
 #endif
       connectionPacket.sendPacket(requestQueue->getDefaultDestination(), requestQueue->getId());
       triggerEvent(TEST, 1234, 5678);
-      return RETURN_OK;
+      return returnvalue::OK;
     }
     default:
       return AcceptsTelecommandsIF::INVALID_SUBSERVICE;
   }
 }
 
-ReturnValue_t Service17Test::performService() { return HasReturnvaluesIF::RETURN_OK; }
+ReturnValue_t Service17Test::performService() { return returnvalue::OK; }

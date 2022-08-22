@@ -8,9 +8,9 @@ TEST_CASE("Countdown Tests", "[TestCountdown]") {
   INFO("Countdown Tests");
   Countdown count(20);
   REQUIRE(count.timeout == 20);
-  REQUIRE(count.setTimeout(100) == static_cast<uint16_t>(HasReturnvaluesIF::RETURN_OK));
+  REQUIRE(count.setTimeout(100) == static_cast<uint16_t>(returnvalue::OK));
   REQUIRE(count.timeout == 100);
-  REQUIRE(count.setTimeout(150) == static_cast<uint16_t>(HasReturnvaluesIF::RETURN_OK));
+  REQUIRE(count.setTimeout(150) == static_cast<uint16_t>(returnvalue::OK));
   REQUIRE(count.isBusy());
   REQUIRE(not count.hasTimedOut());
   uint32_t number = count.getRemainingMillis();

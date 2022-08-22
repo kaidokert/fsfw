@@ -43,14 +43,14 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::readWithoutLock() {
       LocalDpManagerAttorney::fetchPoolEntry(*hkManager, localPoolId, &poolEntry);
   memset(this->value, 0, vectorSize * sizeof(T));
 
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     object_id_t targetObjectId = hkManager->getCreatorObjectId();
     reportReadCommitError("LocalPoolVector", result, true, targetObjectId, localPoolId);
     return result;
   }
   std::memcpy(this->value, poolEntry->getDataPtr(), poolEntry->getByteSize());
   this->valid = poolEntry->getValid();
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <typename T, uint16_t vectorSize>
@@ -79,14 +79,14 @@ inline ReturnValue_t LocalPoolVector<T, vectorSize>::commitWithoutLock() {
   PoolEntry<T>* poolEntry = nullptr;
   ReturnValue_t result =
       LocalDpManagerAttorney::fetchPoolEntry(*hkManager, localPoolId, &poolEntry);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     object_id_t targetObjectId = hkManager->getCreatorObjectId();
     reportReadCommitError("LocalPoolVector", result, false, targetObjectId, localPoolId);
     return result;
   }
   std::memcpy(poolEntry->getDataPtr(), this->value, poolEntry->getByteSize());
   poolEntry->setValid(this->valid);
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <typename T, uint16_t vectorSize>
@@ -131,10 +131,10 @@ template <typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::serialize(
     uint8_t** buffer, size_t* size, size_t maxSize,
     SerializeIF::Endianness streamEndianness) const {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
   for (uint16_t i = 0; i < vectorSize; i++) {
     result = SerializeAdapter::serialize(&(value[i]), buffer, size, maxSize, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       break;
     }
   }
@@ -149,10 +149,10 @@ inline size_t LocalPoolVector<T, vectorSize>::getSerializedSize() const {
 template <typename T, uint16_t vectorSize>
 inline ReturnValue_t LocalPoolVector<T, vectorSize>::deSerialize(
     const uint8_t** buffer, size_t* size, SerializeIF::Endianness streamEndianness) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
   for (uint16_t i = 0; i < vectorSize; i++) {
     result = SerializeAdapter::deSerialize(&(value[i]), buffer, size, streamEndianness);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       break;
     }
   }

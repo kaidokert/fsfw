@@ -22,8 +22,8 @@ PowerSensor::~PowerSensor() { QueueFactory::instance()->deleteMessageQueue(comma
 
 ReturnValue_t PowerSensor::calculatePower() {
   powerSensorSet.read();
-  ReturnValue_t result1 = HasReturnvaluesIF::RETURN_FAILED;
-  ReturnValue_t result2 = HasReturnvaluesIF::RETURN_FAILED;
+  ReturnValue_t result1 = returnvalue::FAILED;
+  ReturnValue_t result2 = returnvalue::FAILED;
   if (healthHelper.healthTable->isHealthy(getObjectId()) && voltage.isValid() &&
       current.isValid()) {
     result1 = voltageLimit.doCheck(voltage.value);
@@ -33,7 +33,7 @@ ReturnValue_t PowerSensor::calculatePower() {
     currentLimit.setToInvalid();
     result1 = OBJECT_NOT_HEALTHY;
   }
-  if (result1 != HasReturnvaluesIF::RETURN_OK || result2 != HasReturnvaluesIF::RETURN_OK) {
+  if (result1 != returnvalue::OK || result2 != returnvalue::OK) {
     result1 = MonitoringIF::INVALID;
     power.setValid(PoolVariableIF::INVALID);
   } else {
@@ -46,22 +46,22 @@ ReturnValue_t PowerSensor::calculatePower() {
 
 ReturnValue_t PowerSensor::performOperation(uint8_t opCode) {
   checkCommandQueue();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 MessageQueueId_t PowerSensor::getCommandQueue() const { return commandQueue->getId(); }
 
 ReturnValue_t PowerSensor::initialize() {
   ReturnValue_t result = SystemObject::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = healthHelper.initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = parameterHelper.initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return result;
@@ -75,15 +75,15 @@ void PowerSensor::setAllMonitorsToUnchecked() {
 void PowerSensor::checkCommandQueue() {
   CommandMessage command;
   ReturnValue_t result = commandQueue->receiveMessage(&command);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return;
   }
   result = healthHelper.handleHealthCommand(&command);
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     return;
   }
   result = parameterHelper.handleParameterMessage(&command);
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     return;
   }
   command.setToUnknownCommand();
@@ -106,7 +106,7 @@ float PowerSensor::getPower() {
 
 ReturnValue_t PowerSensor::setHealth(HealthState health) {
   healthHelper.setHealth(health);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 HasHealthIF::HealthState PowerSensor::getHealth() { return healthHelper.getHealth(); }

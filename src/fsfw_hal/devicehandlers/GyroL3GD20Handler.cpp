@@ -70,9 +70,9 @@ ReturnValue_t GyroHandlerL3GD20H::buildTransitionDeviceCommand(DeviceCommandId_t
           "GyroL3GD20Handler::buildTransitionDeviceCommand: "
           "Unknown internal state!\n");
 #endif
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t GyroHandlerL3GD20H::buildNormalDeviceCommand(DeviceCommandId_t *id) {
@@ -135,7 +135,7 @@ ReturnValue_t GyroHandlerL3GD20H::buildCommandFromCommand(DeviceCommandId_t devi
     default:
       return DeviceHandlerIF::COMMAND_NOT_IMPLEMENTED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t GyroHandlerL3GD20H::scanForReply(const uint8_t *start, size_t len,
@@ -144,12 +144,12 @@ ReturnValue_t GyroHandlerL3GD20H::scanForReply(const uint8_t *start, size_t len,
   *foundId = this->getPendingCommand();
   *foundLen = this->rawPacketLen;
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t GyroHandlerL3GD20H::interpretDeviceReply(DeviceCommandId_t id,
                                                        const uint8_t *packet) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   switch (id) {
     case (L3GD20H::CONFIGURE_CTRL_REGS): {
       commandExecuted = true;
@@ -207,7 +207,7 @@ ReturnValue_t GyroHandlerL3GD20H::interpretDeviceReply(DeviceCommandId_t id,
       }
 
       PoolReadGuard readSet(&dataset);
-      if (readSet.getReadResult() == HasReturnvaluesIF::RETURN_OK) {
+      if (readSet.getReadResult() == returnvalue::OK) {
         if (std::abs(angVelocX) < this->absLimitX) {
           dataset.angVelocX = angVelocX;
           dataset.angVelocX.setValid(true);
@@ -252,7 +252,7 @@ ReturnValue_t GyroHandlerL3GD20H::initializeLocalDataPool(localpool::DataPool &l
   localDataPoolMap.emplace(L3GD20H::ANG_VELOC_Y, new PoolEntry<float>({0.0}));
   localDataPoolMap.emplace(L3GD20H::ANG_VELOC_Z, new PoolEntry<float>({0.0}));
   localDataPoolMap.emplace(L3GD20H::TEMPERATURE, new PoolEntry<float>({0.0}));
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void GyroHandlerL3GD20H::fillCommandAndReplyMap() {

@@ -29,20 +29,20 @@
  * @author	Bastian Baetz
  * @ingroup data_pool
  */
-class PoolDataSetBase : public PoolDataSetIF, public SerializeIF, public HasReturnvaluesIF {
+class PoolDataSetBase : public PoolDataSetIF, public SerializeIF {
  public:
   /**
    * @brief	Creates an empty dataset. Use registerVariable or
    * 			supply a pointer to this dataset to PoolVariable
    * 			initializations to register pool variables.
    */
-  PoolDataSetBase(PoolVariableIF** registeredVariablesArray, const size_t maxFillCount);
+  PoolDataSetBase(PoolVariableIF** registeredVariablesArray, size_t maxFillCount);
 
   /* Forbidden for now */
   PoolDataSetBase(const PoolDataSetBase& otherSet) = delete;
   const PoolDataSetBase& operator=(const PoolDataSetBase& otherSet) = delete;
 
-  virtual ~PoolDataSetBase();
+  ~PoolDataSetBase() override;
 
   /**
    * @brief	The read call initializes reading out all registered variables.
@@ -58,7 +58,7 @@ class PoolDataSetBase : public PoolDataSetIF, public SerializeIF, public HasRetu
    * freed afterwards. It is mandatory to call commit after a read call,
    * even if the read operation is not successful!
    * @return
-   * - @c RETURN_OK if all variables were read successfully.
+   * - @c returnvalue::OK if all variables were read successfully.
    * - @c INVALID_PARAMETER_DEFINITION if a pool entry does not exist or there
    *      is a type conflict.
    * - @c SET_WAS_ALREADY_READ if read() is called twice without calling
@@ -80,7 +80,7 @@ class PoolDataSetBase : public PoolDataSetIF, public SerializeIF, public HasRetu
    * commit() can only be called after read(). If the set only contains
    * variables which are write only, commit() can be called without a
    * preceding read() call. Every read call must be followed by a commit call!
-   * @return	- @c RETURN_OK if all variables were read successfully.
+   * @return	- @c returnvalue::OK if all variables were read successfully.
    * 			- @c COMMITING_WITHOUT_READING if set was not read yet and
    * 			  contains non write-only variables
    */
@@ -97,7 +97,7 @@ class PoolDataSetBase : public PoolDataSetIF, public SerializeIF, public HasRetu
   /**
    * Provides the means to lock the underlying data structure to ensure
    * thread-safety. Default implementation is empty
-   * @return Always returns -@c RETURN_OK
+   * @return Always returns -@c returnvalue::OK
    */
   virtual ReturnValue_t lockDataPool(
       MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING,
@@ -105,7 +105,7 @@ class PoolDataSetBase : public PoolDataSetIF, public SerializeIF, public HasRetu
   /**
    * Provides the means to unlock the underlying data structure to ensure
    * thread-safety. Default implementation is empty
-   * @return Always returns -@c RETURN_OK
+   * @return Always returns -@c returnvalue::OK
    */
   virtual ReturnValue_t unlockDataPool() override;
 

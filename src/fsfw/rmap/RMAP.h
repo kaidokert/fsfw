@@ -1,7 +1,7 @@
 #ifndef FSFW_RMAP_RMAP_H_
 #define FSFW_RMAP_RMAP_H_
 
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/rmap/RMAPCookie.h"
 #include "rmapConf.h"
 
@@ -36,7 +36,7 @@
  * assignment can be changed at runtime to allow for example redundancy switching. This API is
  * static as the information which channel to use is contained within the cookie.
  */
-class RMAP : public HasReturnvaluesIF {
+class RMAP {
  public:
   static const uint8_t INTERFACE_ID = CLASS_ID::RMAP_CHANNEL;
 

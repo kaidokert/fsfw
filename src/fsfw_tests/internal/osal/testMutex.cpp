@@ -16,7 +16,7 @@ void testmutex::testMutex() {
   std::string id = "[testMutex]";
   MutexIF* mutex = MutexFactory::instance()->createMutex();
   auto result = mutex->lockMutex(MutexIF::TimeoutType::POLLING);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     unitt::put_error(id);
   }
   // timed_mutex from the C++ library specifies undefined behaviour if
@@ -35,7 +35,7 @@ void testmutex::testMutex() {
   }
 
   result = mutex->unlockMutex();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     unitt::put_error(id);
   }
 

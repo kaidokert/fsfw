@@ -30,14 +30,14 @@ uint16_t TmPacketPusC::getSourceDataSize() {
 
 ReturnValue_t TmPacketPusC::setData(uint8_t* p_Data, size_t maxSize, void* args) {
   ReturnValue_t result = SpacePacketBase::setData(p_Data, maxSize);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   if (maxSize < sizeof(TmPacketPointerPusC)) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   tmData = reinterpret_cast<TmPacketPointerPusC*>(const_cast<uint8_t*>(p_Data));
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 size_t TmPacketPusC::getPacketMinimumSize() const { return TM_PACKET_MIN_SIZE; }
@@ -51,7 +51,7 @@ ReturnValue_t TmPacketPusC::initializeTmPacket(uint16_t apid, uint8_t service, u
                                                uint8_t timeRefField) {
   // Set primary header:
   ReturnValue_t result = initSpacePacketHeader(false, true, apid);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   // Set data Field Header:
@@ -72,7 +72,7 @@ ReturnValue_t TmPacketPusC::initializeTmPacket(uint16_t apid, uint8_t service, u
   if (TmPacketBase::checkAndSetStamper()) {
     timeStamper->addTimeStamp(tmData->dataField.time, sizeof(tmData->dataField.time));
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void TmPacketPusC::setSourceDataSize(uint16_t size) {

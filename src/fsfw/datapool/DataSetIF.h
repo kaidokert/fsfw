@@ -1,7 +1,7 @@
 #ifndef FSFW_DATAPOOL_DATASETIF_H_
 #define FSFW_DATAPOOL_DATASETIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../timemanager/Clock.h"
 class PoolVariableIF;
 

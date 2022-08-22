@@ -3,7 +3,7 @@
 
 #include "CommandActionHelper.h"
 #include "fsfw/ipc/MessageQueueIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 /**
  * Interface to separate commanding actions of other objects.

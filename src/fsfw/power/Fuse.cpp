@@ -32,22 +32,22 @@ void Fuse::addDevice(PowerComponentIF* switchSet) { devices.push_back(switchSet)
 
 ReturnValue_t Fuse::initialize() {
   ReturnValue_t result = SystemObject::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = parameterHelper.initialize();
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = healthHelper.initialize();
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   powerIF = ObjectManager::instance()->get<PowerSwitchIF>(powerSwitchId);
   if (powerIF == NULL) {
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void Fuse::calculatePowerLimits(float* low, float* high) {
@@ -66,7 +66,7 @@ ReturnValue_t Fuse::check() {
     set.setValidity(false, true);
     return set.commit();
   }
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   checkFuseState();
   calculateFusePower();
   // Check if power is valid and if fuse state is off or invalid.
@@ -89,14 +89,14 @@ ReturnValue_t Fuse::check() {
 
 ReturnValue_t Fuse::serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                               Endianness streamEndianness) const {
-  ReturnValue_t result = RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
   for (DeviceList::const_iterator iter = devices.begin(); iter != devices.end(); iter++) {
     result = (*iter)->serialize(buffer, size, maxSize, streamEndianness);
-    if (result != RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 size_t Fuse::getSerializedSize() const {
@@ -108,21 +108,21 @@ size_t Fuse::getSerializedSize() const {
 }
 
 ReturnValue_t Fuse::deSerialize(const uint8_t** buffer, size_t* size, Endianness streamEndianness) {
-  ReturnValue_t result = RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
   for (DeviceList::iterator iter = devices.begin(); iter != devices.end(); iter++) {
     result = (*iter)->deSerialize(buffer, size, streamEndianness);
-    if (result != RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 uint8_t Fuse::getFuseId() const { return fuseId; }
 
 void Fuse::calculateFusePower() {
   ReturnValue_t result1 = currentLimit.check();
-  if (result1 != HasReturnvaluesIF::RETURN_OK || !(voltage.isValid())) {
+  if (result1 != returnvalue::OK || !(voltage.isValid())) {
     power.setValid(PoolVariableIF::INVALID);
     return;
   }
@@ -133,7 +133,7 @@ void Fuse::calculateFusePower() {
 
 ReturnValue_t Fuse::performOperation(uint8_t opCode) {
   checkCommandQueue();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void Fuse::reportEvents(Event event) {
@@ -157,15 +157,15 @@ void Fuse::setAllMonitorsToUnchecked() {
 void Fuse::checkCommandQueue() {
   CommandMessage command;
   ReturnValue_t result = commandQueue->receiveMessage(&command);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return;
   }
   result = healthHelper.handleHealthCommand(&command);
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     return;
   }
   result = parameterHelper.handleParameterMessage(&command);
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     return;
   }
   command.setToUnknownCommand();
@@ -227,7 +227,7 @@ bool Fuse::isPowerValid() { return power.isValid(); }
 
 ReturnValue_t Fuse::setHealth(HealthState health) {
   healthHelper.setHealth(health);
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 HasHealthIF::HealthState Fuse::getHealth() { return healthHelper.getHealth(); }
@@ -238,6 +238,6 @@ ReturnValue_t Fuse::PowerMonitor::checkPower(float sample, float lowerLimit, flo
   } else if (sample < lowerLimit) {
     return this->monitorStateIs(MonitoringIF::BELOW_LOW_LIMIT, sample, lowerLimit);
   } else {
-    return this->monitorStateIs(RETURN_OK, sample, 0.0);  // Within limits.
+    return this->monitorStateIs(returnvalue::OK, sample, 0.0);  // Within limits.
   }
 }

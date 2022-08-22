@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "fsfw/returnvalues/FwClassIds.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 class SimpleRingBuffer;
 template <typename T>
@@ -32,19 +32,19 @@ class CommandExecutor {
 
   //! [EXPORT] : [COMMENT] Execution of the current command has finished
   static constexpr ReturnValue_t EXECUTION_FINISHED =
-      HasReturnvaluesIF::makeReturnCode(CLASS_ID, 0);
+      returnvalue::makeCode(CLASS_ID, 0);
 
   //! [EXPORT] : [COMMENT] Command is pending. This will also be returned if the user tries
   //! to load another command but a command is still pending
-  static constexpr ReturnValue_t COMMAND_PENDING = HasReturnvaluesIF::makeReturnCode(CLASS_ID, 1);
+  static constexpr ReturnValue_t COMMAND_PENDING = returnvalue::makeCode(CLASS_ID, 1);
   //! [EXPORT] : [COMMENT] Some bytes have been read from the executing process
-  static constexpr ReturnValue_t BYTES_READ = HasReturnvaluesIF::makeReturnCode(CLASS_ID, 2);
+  static constexpr ReturnValue_t BYTES_READ = returnvalue::makeCode(CLASS_ID, 2);
   //! [EXPORT] : [COMMENT] Command execution failed
-  static constexpr ReturnValue_t COMMAND_ERROR = HasReturnvaluesIF::makeReturnCode(CLASS_ID, 3);
+  static constexpr ReturnValue_t COMMAND_ERROR = returnvalue::makeCode(CLASS_ID, 3);
   //! [EXPORT] : [COMMENT]
   static constexpr ReturnValue_t NO_COMMAND_LOADED_OR_PENDING =
-      HasReturnvaluesIF::makeReturnCode(CLASS_ID, 4);
-  static constexpr ReturnValue_t PCLOSE_CALL_ERROR = HasReturnvaluesIF::makeReturnCode(CLASS_ID, 6);
+      returnvalue::makeCode(CLASS_ID, 4);
+  static constexpr ReturnValue_t PCLOSE_CALL_ERROR = returnvalue::makeCode(CLASS_ID, 6);
 
   /**
    * Constructor. Is initialized with maximum size of internal buffer to read data from the
@@ -64,11 +64,11 @@ class CommandExecutor {
   /**
    * Execute the loaded command.
    * @return
-   *  - In blocking mode, it will return RETURN_FAILED if
+   *  - In blocking mode, it will return returnvalue::FAILED if
    *    the result of the system call was not 0. The error value can be accessed using
    *    getLastError
    *  - In non-blocking mode, this call will start
-   *    the execution and then return RETURN_OK
+   *    the execution and then return returnvalue::OK
    */
   ReturnValue_t execute();
   /**
@@ -77,8 +77,8 @@ class CommandExecutor {
    * @return
    *  - BYTES_READ if bytes have been read from the executing process. It is recommended to call
    *    check again after this
-   *  - RETURN_OK execution is pending, but no bytes have been read from the executing process
-   *  - RETURN_FAILED if execution has failed, error value can be accessed using getLastError
+   *  - returnvalue::OK execution is pending, but no bytes have been read from the executing process
+   *  - returnvalue::FAILED if execution has failed, error value can be accessed using getLastError
    *  - EXECUTION_FINISHED if the process was executed successfully
    *  - NO_COMMAND_LOADED_OR_PENDING self-explanatory
    *  - COMMAND_ERROR internal poll error
@@ -87,7 +87,7 @@ class CommandExecutor {
   /**
    * Abort the current command. Should normally not be necessary, check can be used to find
    * out whether command execution was successful
-   * @return RETURN_OK
+   * @return returnvalue::OK
    */
   ReturnValue_t close();
 

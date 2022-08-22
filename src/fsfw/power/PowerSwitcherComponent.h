@@ -23,7 +23,6 @@ class PowerSwitchIF;
  * commanding in to MODE_ON will cause the switcher to turn the switch on.
  */
 class PowerSwitcherComponent : public SystemObject,
-                               public HasReturnvaluesIF,
                                public ExecutableObjectIF,
                                public HasModesIF,
                                public HasHealthIF {

@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_TMTCPACKET_PUS_TMPACKETMINIMAL_H_
 #define FRAMEWORK_TMTCPACKET_PUS_TMPACKETMINIMAL_H_
 
-#include "../../../returnvalues/HasReturnvaluesIF.h"
+#include "../../../returnvalues/returnvalue.h"
 #include "../../SpacePacketBase.h"
 
 struct timeval;

@@ -3,7 +3,7 @@
 
 #include <array>
 
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 namespace testserialize {
 ReturnValue_t test_serialization();

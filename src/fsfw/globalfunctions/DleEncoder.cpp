@@ -73,7 +73,7 @@ ReturnValue_t DleEncoder::encodeStreamEscaped(const uint8_t *sourceStream, size_
       ++encodedIndex;
     }
     *encodedLen = encodedIndex;
-    return RETURN_OK;
+    return returnvalue::OK;
   } else {
     return STREAM_TOO_SHORT;
   }
@@ -119,7 +119,7 @@ ReturnValue_t DleEncoder::encodeStreamNonEscaped(const uint8_t *sourceStream, si
       destStream[encodedIndex++] = ETX_CHAR;
     }
     *encodedLen = encodedIndex;
-    return RETURN_OK;
+    return returnvalue::OK;
   } else {
     return STREAM_TOO_SHORT;
   }
@@ -191,7 +191,7 @@ ReturnValue_t DleEncoder::decodeStreamEscaped(const uint8_t *sourceStream, size_
       case (ETX_CHAR): {
         *readLen = ++encodedIndex;
         *decodedLen = decodedIndex;
-        return RETURN_OK;
+        return returnvalue::OK;
       }
       default: {
         destStream[decodedIndex] = sourceStream[encodedIndex];
@@ -255,7 +255,7 @@ ReturnValue_t DleEncoder::decodeStreamNonEscaped(const uint8_t *sourceStream,
         // End of stream reached
         *readLen = encodedIndex + 2;
         *decodedLen = decodedIndex;
-        return RETURN_OK;
+        return returnvalue::OK;
       } else {
         *readLen = encodedIndex;
         return DECODING_ERROR;

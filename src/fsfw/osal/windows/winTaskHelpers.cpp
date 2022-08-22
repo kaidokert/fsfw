@@ -89,7 +89,7 @@ ReturnValue_t tasks::setTaskPriority(HANDLE nativeHandle, TaskPriority priority)
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "PeriodicTask: Windows SetPriorityClass failed with code " << GetLastError()
                << std::endl;
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
 #endif
   }
   result = SetThreadPriority(reinterpret_cast<HANDLE>(nativeHandle), nPriorityNumber);
@@ -97,8 +97,8 @@ ReturnValue_t tasks::setTaskPriority(HANDLE nativeHandle, TaskPriority priority)
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "PeriodicTask: Windows SetPriorityClass failed with code " << GetLastError()
                << std::endl;
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
 #endif
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

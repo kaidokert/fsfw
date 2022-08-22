@@ -20,7 +20,7 @@ ReturnValue_t Service20ParameterManagement::isValidSubservice(uint8_t subservice
   switch (static_cast<Subservice>(subservice)) {
     case Subservice::PARAMETER_LOAD:
     case Subservice::PARAMETER_DUMP:
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     default:
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::error << "Invalid Subservice for Service 20" << std::endl;
@@ -37,7 +37,7 @@ ReturnValue_t Service20ParameterManagement::getMessageQueueAndObject(uint8_t sub
                                                                      MessageQueueId_t* id,
                                                                      object_id_t* objectId) {
   ReturnValue_t result = checkAndAcquireTargetID(objectId, tcData, tcDataLen);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return checkInterfaceAndAcquireMessageQueue(id, objectId);
@@ -47,7 +47,7 @@ ReturnValue_t Service20ParameterManagement::checkAndAcquireTargetID(object_id_t*
                                                                     const uint8_t* tcData,
                                                                     size_t tcDataLen) {
   if (SerializeAdapter::deSerialize(objectIdToSet, &tcData, &tcDataLen,
-                                    SerializeIF::Endianness::BIG) != HasReturnvaluesIF::RETURN_OK) {
+                                    SerializeIF::Endianness::BIG) != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service20ParameterManagement::checkAndAcquireTargetID: "
                << "Invalid data." << std::endl;
@@ -58,7 +58,7 @@ ReturnValue_t Service20ParameterManagement::checkAndAcquireTargetID(object_id_t*
 #endif
     return CommandingServiceBase::INVALID_TC;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Service20ParameterManagement::checkInterfaceAndAcquireMessageQueue(
@@ -83,7 +83,7 @@ ReturnValue_t Service20ParameterManagement::checkInterfaceAndAcquireMessageQueue
     return CommandingServiceBase::INVALID_OBJECT;
   }
   *messageQueueToSet = possibleTarget->getCommandQueue();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Service20ParameterManagement::prepareCommand(CommandMessage* message,
@@ -98,7 +98,7 @@ ReturnValue_t Service20ParameterManagement::prepareCommand(CommandMessage* messa
       return prepareLoadCommand(message, tcData, tcDataLen);
     } break;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
@@ -111,7 +111,7 @@ ReturnValue_t Service20ParameterManagement::prepareDumpCommand(CommandMessage* m
   tcDataLen -= sizeof(object_id_t);
   ParameterId_t parameterId;
   if (SerializeAdapter::deSerialize(&parameterId, &tcData, &tcDataLen,
-                                    SerializeIF::Endianness::BIG) != HasReturnvaluesIF::RETURN_OK) {
+                                    SerializeIF::Endianness::BIG) != returnvalue::OK) {
     return CommandingServiceBase::INVALID_TC;
   }
   /* The length should have been decremented to 0 by this point */
@@ -120,7 +120,7 @@ ReturnValue_t Service20ParameterManagement::prepareDumpCommand(CommandMessage* m
   }
 
   ParameterMessage::setParameterDumpCommand(message, parameterId);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Service20ParameterManagement::prepareLoadCommand(CommandMessage* message,
@@ -138,7 +138,7 @@ ReturnValue_t Service20ParameterManagement::prepareLoadCommand(CommandMessage* m
     return CommandingServiceBase::INVALID_TC;
   }
   ReturnValue_t result = IPCStore->getFreeElement(&storeAddress, parameterDataLen, &storePointer);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -151,14 +151,14 @@ ReturnValue_t Service20ParameterManagement::prepareLoadCommand(CommandMessage* m
    4. Number of columns */
   ParameterLoadCommand command(storePointer, parameterDataLen);
   result = command.deSerialize(&tcData, &tcDataLen, SerializeIF::Endianness::BIG);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   ParameterMessage::setParameterLoadCommand(message, command.getParameterId(), storeAddress,
                                             command.getPtc(), command.getPfc(), command.getRows(),
                                             command.getColumns());
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Service20ParameterManagement::handleReply(const CommandMessage* reply,
@@ -170,15 +170,15 @@ ReturnValue_t Service20ParameterManagement::handleReply(const CommandMessage* re
   switch (replyId) {
     case ParameterMessage::REPLY_PARAMETER_DUMP: {
       ConstAccessorPair parameterData = IPCStore->getData(ParameterMessage::getStoreId(reply));
-      if (parameterData.first != HasReturnvaluesIF::RETURN_OK) {
-        return HasReturnvaluesIF::RETURN_FAILED;
+      if (parameterData.first != returnvalue::OK) {
+        return returnvalue::FAILED;
       }
 
       ParameterId_t parameterId = ParameterMessage::getParameterId(reply);
       ParameterDumpReply parameterReply(objectId, parameterId, parameterData.second.data(),
                                         parameterData.second.size());
       sendTmPacket(static_cast<uint8_t>(Subservice::PARAMETER_DUMP_REPLY), &parameterReply);
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     }
     default:
       return CommandingServiceBase::INVALID_REPLY;

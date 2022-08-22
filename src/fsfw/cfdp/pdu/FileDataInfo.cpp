@@ -50,11 +50,11 @@ ReturnValue_t FileDataInfo::addSegmentMetadataInfo(cfdp::RecordContinuationState
   this->segmentMetadataFlag = cfdp::SegmentMetadataFlag::PRESENT;
   this->recContState = recContState;
   if (segmentMetadataLen > 63) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   this->segmentMetadata = segmentMetadata;
   this->segmentMetadataLen = segmentMetadataLen;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 const uint8_t *FileDataInfo::getFileData(size_t *fileSize) const {

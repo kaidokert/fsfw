@@ -52,7 +52,7 @@ ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
 
   {
     PoolReadGuard readGuard(&internalErrorDataset);
-    if (readGuard.getReadResult() == HasReturnvaluesIF::RETURN_OK) {
+    if (readGuard.getReadResult() == returnvalue::OK) {
       internalErrorDataset.queueHits.value += newQueueHits;
       internalErrorDataset.storeHits.value += newStoreHits;
       internalErrorDataset.tmHits.value += newTmHits;
@@ -64,7 +64,7 @@ ReturnValue_t InternalErrorReporter::performOperation(uint8_t opCode) {
   }
 
   poolManager.performHkOperation();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void InternalErrorReporter::queueMessageNotSent() { incrementQueueHits(); }
@@ -132,7 +132,7 @@ ReturnValue_t InternalErrorReporter::initializeLocalDataPool(localpool::DataPool
   poolManager.subscribeForPeriodicPacket(internalErrorSid, false, getPeriodicOperationFrequency(),
                                          true);
   internalErrorDataset.setValidity(true, true);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 dur_millis_t InternalErrorReporter::getPeriodicOperationFrequency() const {
@@ -147,7 +147,7 @@ void InternalErrorReporter::setTaskIF(PeriodicTaskIF *task) { this->executingTas
 
 ReturnValue_t InternalErrorReporter::initialize() {
   ReturnValue_t result = poolManager.initialize(commandQueue);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return SystemObject::initialize();

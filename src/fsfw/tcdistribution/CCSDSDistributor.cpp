@@ -26,7 +26,7 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
   const uint8_t* packet = nullptr;
   size_t size = 0;
   ReturnValue_t result = this->tcStore->getData(currentMessage.getStorageId(), &packet, &size);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "CCSDSDistributor::selectDestination: Getting data from"
@@ -59,20 +59,20 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
 MessageQueueId_t CCSDSDistributor::getRequestQueue() { return tcQueue->getId(); }
 
 ReturnValue_t CCSDSDistributor::registerApplication(AcceptsTelecommandsIF* application) {
-  ReturnValue_t returnValue = RETURN_OK;
+  ReturnValue_t returnValue = returnvalue::OK;
   auto insertPair =
       this->queueMap.emplace(application->getIdentifier(), application->getRequestQueue());
   if (not insertPair.second) {
-    returnValue = RETURN_FAILED;
+    returnValue = returnvalue::FAILED;
   }
   return returnValue;
 }
 
 ReturnValue_t CCSDSDistributor::registerApplication(uint16_t apid, MessageQueueId_t id) {
-  ReturnValue_t returnValue = RETURN_OK;
+  ReturnValue_t returnValue = returnvalue::OK;
   auto insertPair = this->queueMap.emplace(apid, id);
   if (not insertPair.second) {
-    returnValue = RETURN_FAILED;
+    returnValue = returnvalue::FAILED;
   }
   return returnValue;
 }
@@ -94,14 +94,14 @@ ReturnValue_t CCSDSDistributor::initialize() {
         " TC store!\n");
 #endif
 #endif
-    status = RETURN_FAILED;
+    status = returnvalue::FAILED;
   }
   return status;
 }
 
 ReturnValue_t CCSDSDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
-  if (queueStatus != RETURN_OK) {
+  if (queueStatus != returnvalue::OK) {
     tcStore->deleteData(currentMessage.getStorageId());
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }

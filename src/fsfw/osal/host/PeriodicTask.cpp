@@ -63,12 +63,12 @@ ReturnValue_t PeriodicTask::startTask() {
   std::lock_guard<std::mutex> lock(initMutex);
   initCondition.notify_one();
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t PeriodicTask::sleepFor(uint32_t ms) {
   std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void PeriodicTask::taskFunctionality() {

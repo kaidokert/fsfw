@@ -31,7 +31,7 @@ ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType, uint32_t timeoutMs) {
 
   BaseType_t returncode = xSemaphoreTake(handle, timeout);
   if (returncode == pdPASS) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     return MutexIF::MUTEX_TIMEOUT;
   }
@@ -43,7 +43,7 @@ ReturnValue_t Mutex::unlockMutex() {
   }
   BaseType_t returncode = xSemaphoreGive(handle);
   if (returncode == pdPASS) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     return MutexIF::CURR_THREAD_DOES_NOT_OWN_MUTEX;
   }

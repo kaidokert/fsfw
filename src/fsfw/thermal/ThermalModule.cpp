@@ -233,7 +233,7 @@ bool ThermalModule::calculateModuleHeaterRequestAndSetModuleStatus(Strategy stra
 
 void ThermalModule::setHeating(bool on) {
   ReturnValue_t result = targetState.read();
-  if (result == HasReturnvaluesIF::RETURN_OK) {
+  if (result == returnvalue::OK) {
     if (on) {
       targetState.value = STATE_REQUEST_HEATING;
     } else {

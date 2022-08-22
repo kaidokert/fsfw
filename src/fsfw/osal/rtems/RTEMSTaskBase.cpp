@@ -21,7 +21,7 @@ RTEMSTaskBase::RTEMSTaskBase(rtems_task_priority set_priority, size_t stack_size
                                RTEMS_FLOATING_POINT, &id);
   }
   ReturnValue_t result = convertReturnCode(status);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "TaskBase::TaskBase: createTask with name " << std::hex << osalName << std::dec
                << " failed with return code " << (uint32_t)status << std::endl;
@@ -42,21 +42,21 @@ ReturnValue_t RTEMSTaskBase::sleepFor(uint32_t ms) {
 ReturnValue_t RTEMSTaskBase::convertReturnCode(rtems_status_code inValue) {
   switch (inValue) {
     case RTEMS_SUCCESSFUL:
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     case RTEMS_MP_NOT_CONFIGURED:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_INVALID_NAME:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_TOO_MANY:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_INVALID_ADDRESS:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_UNSATISFIED:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_INVALID_PRIORITY:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 

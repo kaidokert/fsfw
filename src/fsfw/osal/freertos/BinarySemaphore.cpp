@@ -59,7 +59,7 @@ ReturnValue_t BinarySemaphore::acquireWithTickTimeout(TimeoutType timeoutType,
 
   BaseType_t returncode = xSemaphoreTake(handle, timeoutTicks);
   if (returncode == pdPASS) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     return SemaphoreIF::SEMAPHORE_TIMEOUT;
   }
@@ -73,7 +73,7 @@ ReturnValue_t BinarySemaphore::release(SemaphoreHandle_t semaphore) {
   }
   BaseType_t returncode = xSemaphoreGive(semaphore);
   if (returncode == pdPASS) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     return SemaphoreIF::SEMAPHORE_NOT_OWNED;
   }
@@ -91,7 +91,7 @@ ReturnValue_t BinarySemaphore::releaseFromISR(SemaphoreHandle_t semaphore,
   }
   BaseType_t returncode = xSemaphoreGiveFromISR(semaphore, higherPriorityTaskWoken);
   if (returncode == pdPASS) {
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     return SemaphoreIF::SEMAPHORE_NOT_OWNED;
   }

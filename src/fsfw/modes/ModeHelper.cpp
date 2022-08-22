@@ -25,7 +25,7 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* command) {
       submode = ModeMessage::getSubmode(command);
       uint32_t timeout;
       ReturnValue_t result = owner->checkModeCommand(mode, submode, &timeout);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         ModeMessage::setCantReachMode(&reply, result);
         MessageQueueSenderIF::sendMessage(command->getSender(), &reply, owner->getCommandQueue());
         break;
@@ -55,9 +55,9 @@ ReturnValue_t ModeHelper::handleModeCommand(CommandMessage* command) {
       owner->announceMode(true);
       break;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t ModeHelper::initialize(MessageQueueId_t parentQueueId) {
@@ -99,7 +99,7 @@ void ModeHelper::setParentQueue(MessageQueueId_t parentQueueId) {
   this->parentQueueId = parentQueueId;
 }
 
-ReturnValue_t ModeHelper::initialize(void) { return HasReturnvaluesIF::RETURN_OK; }
+ReturnValue_t ModeHelper::initialize(void) { return returnvalue::OK; }
 
 bool ModeHelper::isTimedOut() { return countdown.hasTimedOut(); }
 

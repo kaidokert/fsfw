@@ -21,18 +21,18 @@ ReturnValue_t ThermalComponent::setTargetState(int8_t newState) {
   targetState.setReadWriteMode(pool_rwm_t::VAR_READ_WRITE);
   targetState.read();
   if ((targetState == STATE_REQUEST_OPERATIONAL) and (newState != STATE_REQUEST_IGNORE)) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   switch (newState) {
     case STATE_REQUEST_NON_OPERATIONAL:
       targetState = newState;
       targetState.setValid(true);
       targetState.commit(PoolVariableIF::VALID);
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     default:
       return ThermalComponentCore::setTargetState(newState);
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t ThermalComponent::setLimits(const uint8_t* data, size_t size) {
@@ -48,7 +48,7 @@ ReturnValue_t ThermalComponent::setLimits(const uint8_t* data, size_t size) {
                                 SerializeIF::Endianness::BIG);
   SerializeAdapter::deSerialize(&nopParameters.upperNopLimit, &data, &readSize,
                                 SerializeIF::Endianness::BIG);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ThermalComponentIF::State ThermalComponent::getState(float temperature,
@@ -155,5 +155,5 @@ ReturnValue_t ThermalComponent::getParameter(uint8_t domainId, uint8_t uniqueId,
     default:
       return INVALID_IDENTIFIER_ID;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

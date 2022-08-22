@@ -48,14 +48,14 @@ ReturnValue_t MessageQueue::handleSendResult(BaseType_t result, bool ignoreFault
     }
     return MessageQueueIF::FULL;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
   BaseType_t result = xQueueReceive(handle, reinterpret_cast<void*>(message->getBuffer()), 0);
   if (result == pdPASS) {
     this->last = message->getSender();
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     return MessageQueueIF::EMPTY;
   }
@@ -65,7 +65,7 @@ ReturnValue_t MessageQueue::flush(uint32_t* count) {
   // TODO FreeRTOS does not support flushing partially
   // Is always successful
   xQueueReset(handle);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 // static core function to send messages.

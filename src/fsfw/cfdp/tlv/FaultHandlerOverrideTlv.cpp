@@ -22,7 +22,7 @@ ReturnValue_t FaultHandlerOverrideTlv::serialize(uint8_t **buffer, size_t *size,
   **buffer = this->conditionCode << 4 | this->handlerCode;
   *buffer += 1;
   *size += 1;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 size_t FaultHandlerOverrideTlv::getSerializedSize() const { return getLengthField() + 2; }
@@ -40,7 +40,7 @@ ReturnValue_t FaultHandlerOverrideTlv::deSerialize(const uint8_t **buffer, size_
   *size -= 1;
   size_t detectedSize = **buffer;
   if (detectedSize != getLengthField()) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   *buffer += 1;
   *size += 1;
@@ -48,7 +48,7 @@ ReturnValue_t FaultHandlerOverrideTlv::deSerialize(const uint8_t **buffer, size_
   this->handlerCode = static_cast<cfdp::FaultHandlerCode>(**buffer & 0x0f);
   *buffer += 1;
   *size += 1;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 cfdp::TlvTypes FaultHandlerOverrideTlv::getType() const { return cfdp::TlvTypes::FAULT_HANDLER; }

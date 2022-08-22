@@ -30,7 +30,7 @@ class MutexGuard {
                       timeoutMs);
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 
-    } else if (result != HasReturnvaluesIF::RETURN_OK) {
+    } else if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::error << "MutexGuard: Lock of Mutex failed with code " << result << std::endl;
 #else
@@ -51,7 +51,7 @@ class MutexGuard {
 
  private:
   MutexIF* internalMutex;
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
 };
 
 #endif /* FRAMEWORK_IPC_MUTEXGUARD_H_ */

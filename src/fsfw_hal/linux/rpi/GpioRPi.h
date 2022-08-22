@@ -1,7 +1,7 @@
 #ifndef BSP_RPI_GPIO_GPIORPI_H_
 #define BSP_RPI_GPIO_GPIORPI_H_
 
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include <fsfw/returnvalues/returnvalue.h>
 
 #include "../../common/gpio/gpioDefinitions.h"
 

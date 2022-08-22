@@ -17,7 +17,7 @@ class PoolReadGuard {
       : readObject(readObject), mutexTimeout(mutexTimeout) {
     if (readObject != nullptr) {
       readResult = readObject->read(timeoutType, mutexTimeout);
-      if (readResult != HasReturnvaluesIF::RETURN_OK) {
+      if (readResult != returnvalue::OK) {
 #if FSFW_VERBOSE_LEVEL == 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "PoolReadHelper: Read failed!" << std::endl;
@@ -47,7 +47,7 @@ class PoolReadGuard {
 
  private:
   ReadCommitIF* readObject = nullptr;
-  ReturnValue_t readResult = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t readResult = returnvalue::OK;
   bool noCommit = false;
   MutexIF::TimeoutType timeoutType = MutexIF::TimeoutType::WAITING;
   uint32_t mutexTimeout = 20;

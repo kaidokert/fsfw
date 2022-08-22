@@ -12,7 +12,7 @@ cfdp::Tlv::Tlv() : value(static_cast<uint8_t *>(nullptr), 0, true) {}
 ReturnValue_t cfdp::Tlv::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                    Endianness streamEndianness) const {
   if (buffer == nullptr or size == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (*size + 2 > maxSize) {
     return BUFFER_TOO_SHORT;
@@ -28,10 +28,10 @@ ReturnValue_t cfdp::Tlv::serialize(uint8_t **buffer, size_t *size, size_t maxSiz
     **buffer = 0;
     *size += 1;
     *buffer += 1;
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   if (value.getConstBuffer() == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   return value.serialize(buffer, size, maxSize, streamEndianness);
 }
@@ -48,7 +48,7 @@ size_t cfdp::Tlv::getSerializedSize() const {
 ReturnValue_t cfdp::Tlv::deSerialize(const uint8_t **buffer, size_t *size,
                                      Endianness streamEndianness) {
   if (buffer == nullptr or size == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (*size < 2) {
     return STREAM_TOO_SHORT;
@@ -68,7 +68,7 @@ ReturnValue_t cfdp::Tlv::deSerialize(const uint8_t **buffer, size_t *size,
     zeroLen = true;
     *buffer += 1;
     *size -= 1;
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   if (lengthField + 1 > *size) {
     return SerializeIF::STREAM_TOO_SHORT;
@@ -78,7 +78,7 @@ ReturnValue_t cfdp::Tlv::deSerialize(const uint8_t **buffer, size_t *size,
   value.setBuffer(const_cast<uint8_t *>(*buffer + 1), lengthField);
   *buffer += 1 + lengthField;
   *size -= 1 + lengthField;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 const uint8_t *cfdp::Tlv::getValue() const { return value.getConstBuffer(); }

@@ -6,7 +6,7 @@ KeepAlivePduDeserializer::KeepAlivePduDeserializer(const uint8_t* pduBuf, size_t
 
 ReturnValue_t KeepAlivePduDeserializer::parseData() {
   ReturnValue_t result = FileDirectiveDeserializer::parseData();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   size_t currentIdx = FileDirectiveDeserializer::getHeaderSize();

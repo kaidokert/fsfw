@@ -14,7 +14,7 @@ ReturnValue_t TcPacketCheckPUS::checkPacket(SpacePacketBase* currentPacket) {
   TcPacketStoredBase* storedPacket = dynamic_cast<TcPacketStoredBase*>(currentPacket);
   TcPacketPusBase* tcPacketBase = dynamic_cast<TcPacketPusBase*>(currentPacket);
   if (tcPacketBase == nullptr or storedPacket == nullptr) {
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   uint16_t calculated_crc =
       CRC::crc16ccitt(tcPacketBase->getWholeData(), tcPacketBase->getFullSize());
@@ -38,7 +38,7 @@ ReturnValue_t TcPacketCheckPUS::checkPacket(SpacePacketBase* currentPacket) {
   if (condition) {
     return INCORRECT_SECONDARY_HEADER;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 uint16_t TcPacketCheckPUS::getApid() const { return apid; }

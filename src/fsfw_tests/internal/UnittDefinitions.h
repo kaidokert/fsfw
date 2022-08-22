@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <string>
 
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
 namespace tv {

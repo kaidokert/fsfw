@@ -28,7 +28,7 @@ ReturnValue_t DataLinkLayer::frameDelimitingAndFillRemoval() {
   TcTransferFrame frame_candidate(frameBuffer);
   this->currentFrame = frame_candidate;  // should work with shallow copy.
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t DataLinkLayer::frameValidationCheck() {
@@ -59,14 +59,14 @@ ReturnValue_t DataLinkLayer::frameValidationCheck() {
   if (USE_CRC) {
     return this->frameCheckCRC();
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t DataLinkLayer::frameCheckCRC() {
   uint16_t checkValue =
       CRC::crc16ccitt(this->currentFrame.getFullFrame(), this->currentFrame.getFullSize());
   if (checkValue == 0) {
-    return RETURN_OK;
+    return returnvalue::OK;
   } else {
     return CRC_FAILED;
   }
@@ -74,7 +74,7 @@ ReturnValue_t DataLinkLayer::frameCheckCRC() {
 
 ReturnValue_t DataLinkLayer::allFramesReception() {
   ReturnValue_t status = this->frameDelimitingAndFillRemoval();
-  if (status != RETURN_OK) {
+  if (status != returnvalue::OK) {
     return status;
   }
   return this->frameValidationCheck();
@@ -90,7 +90,7 @@ ReturnValue_t DataLinkLayer::virtualChannelDemultiplexing() {
   virtualChannelIterator iter = virtualChannels.find(vcId);
   if (iter == virtualChannels.end()) {
     // Do not report because passive board will get this error all the time.
-    return RETURN_OK;
+    return returnvalue::OK;
   } else {
     return (iter->second)->frameAcceptanceAndReportingMechanism(&currentFrame, clcw);
   }
@@ -99,7 +99,7 @@ ReturnValue_t DataLinkLayer::virtualChannelDemultiplexing() {
 ReturnValue_t DataLinkLayer::processFrame(uint16_t length) {
   receivedDataLength = length;
   ReturnValue_t status = allFramesReception();
-  if (status != RETURN_OK) {
+  if (status != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "DataLinkLayer::processFrame: frame reception failed. "
                   "Error code: "
@@ -117,14 +117,14 @@ ReturnValue_t DataLinkLayer::addVirtualChannel(uint8_t virtualChannelId,
   std::pair<virtualChannelIterator, bool> returnValue = virtualChannels.insert(
       std::pair<uint8_t, VirtualChannelReceptionIF*>(virtualChannelId, object));
   if (returnValue.second == true) {
-    return RETURN_OK;
+    return returnvalue::OK;
   } else {
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 }
 
 ReturnValue_t DataLinkLayer::initialize() {
-  ReturnValue_t returnValue = RETURN_FAILED;
+  ReturnValue_t returnValue = returnvalue::FAILED;
   // Set Virtual Channel ID to first virtual channel instance in this DataLinkLayer instance to
   // avoid faulty information (e.g. 0) in the VCID.
   if (virtualChannels.begin() != virtualChannels.end()) {
@@ -133,13 +133,13 @@ ReturnValue_t DataLinkLayer::initialize() {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "DataLinkLayer::initialize: No VC assigned to this DLL instance! " << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   for (virtualChannelIterator iterator = virtualChannels.begin(); iterator != virtualChannels.end();
        iterator++) {
     returnValue = iterator->second->initialize();
-    if (returnValue != RETURN_OK) break;
+    if (returnValue != returnvalue::OK) break;
   }
   return returnValue;
 }

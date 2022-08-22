@@ -43,7 +43,7 @@ struct FileSize : public SerializeIF {
       uint32_t sizeTmp = 0;
       ReturnValue_t result =
           SerializeAdapter::deSerialize(&sizeTmp, buffer, size, streamEndianness);
-      if (result == HasReturnvaluesIF::RETURN_OK) {
+      if (result == returnvalue::OK) {
         fileSize = sizeTmp;
       }
       return result;
@@ -53,11 +53,11 @@ struct FileSize : public SerializeIF {
   ReturnValue_t setFileSize(uint64_t fileSize, bool largeFile) {
     if (not largeFile and fileSize > UINT32_MAX) {
       // TODO: emit warning here
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     this->fileSize = fileSize;
     this->largeFile = largeFile;
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   bool isLargeFile() const { return largeFile; }

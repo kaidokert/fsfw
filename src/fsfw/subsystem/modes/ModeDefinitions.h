@@ -21,17 +21,17 @@ class ModeListEntry : public SerializeIF, public LinkedElement<ModeListEntry> {
 
     result = SerializeAdapter::serialize(&value1, buffer, size, maxSize, streamEndianness);
 
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::serialize(&value2, buffer, size, maxSize, streamEndianness);
 
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::serialize(&value3, buffer, size, maxSize, streamEndianness);
 
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
 
@@ -50,17 +50,17 @@ class ModeListEntry : public SerializeIF, public LinkedElement<ModeListEntry> {
 
     result = SerializeAdapter::deSerialize(&value1, buffer, size, streamEndianness);
 
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::deSerialize(&value2, buffer, size, streamEndianness);
 
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::deSerialize(&value3, buffer, size, streamEndianness);
 
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return result;
     }
     result = SerializeAdapter::deSerialize(&value4, buffer, size, streamEndianness);

@@ -22,8 +22,8 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
   REQUIRE(cmdExecutor.getCurrentState() == CommandExecutor::States::IDLE);
   ReturnValue_t result = cmdExecutor.load(cmd, true, true);
   REQUIRE(cmdExecutor.getCurrentState() == CommandExecutor::States::COMMAND_LOADED);
-  REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
-  REQUIRE(cmdExecutor.execute() == HasReturnvaluesIF::RETURN_OK);
+  REQUIRE(result == returnvalue::OK);
+  REQUIRE(cmdExecutor.execute() == returnvalue::OK);
   // Check that file exists with contents
   std::ifstream file(TEST_FILE_NAME);
   std::string line;
@@ -38,7 +38,7 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
   cmdExecutor.setRingBuffer(&outputBuffer, &sizesFifo);
 
   result = cmdExecutor.load("echo \"Hello World\"", false, false);
-  REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+  REQUIRE(result == returnvalue::OK);
   cmdExecutor.execute();
   bool bytesHaveBeenRead = false;
   size_t limitIdx = 0;
@@ -58,7 +58,7 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
   REQUIRE(readBytes == 12);
   REQUIRE(outputBuffer.getAvailableReadData() == 12);
   uint8_t readBuffer[32] = {};
-  REQUIRE(outputBuffer.readData(readBuffer, 12) == HasReturnvaluesIF::RETURN_OK);
+  REQUIRE(outputBuffer.readData(readBuffer, 12) == returnvalue::OK);
   std::string readString(reinterpret_cast<char*>(readBuffer));
   std::string cmpString = "Hello World\n";
   CHECK(readString == cmpString);
@@ -69,7 +69,7 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
   // Test more complex command
   result = cmdExecutor.load("ping -c 1 localhost", false, false);
   REQUIRE(cmdExecutor.getCurrentState() == CommandExecutor::States::COMMAND_LOADED);
-  REQUIRE(cmdExecutor.execute() == HasReturnvaluesIF::RETURN_OK);
+  REQUIRE(cmdExecutor.execute() == returnvalue::OK);
   REQUIRE(cmdExecutor.getCurrentState() == CommandExecutor::States::PENDING);
   limitIdx = 0;
   while (result != CommandExecutor::EXECUTION_FINISHED) {
@@ -110,11 +110,11 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
 
   // Now check failing command
   result = cmdExecutor.load("false", false, false);
-  REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+  REQUIRE(result == returnvalue::OK);
   result = cmdExecutor.execute();
-  REQUIRE(result == HasReturnvaluesIF::RETURN_OK);
+  REQUIRE(result == returnvalue::OK);
   while (result != CommandExecutor::EXECUTION_FINISHED and
-         result != HasReturnvaluesIF::RETURN_FAILED) {
+         result != returnvalue::FAILED) {
     limitIdx++;
     result = cmdExecutor.check(bytesHaveBeenRead);
     REQUIRE(result != CommandExecutor::COMMAND_ERROR);
@@ -122,7 +122,7 @@ TEST_CASE("Command Executor", "[cmd-exec]") {
     usleep(500);
     REQUIRE(limitIdx < 500);
   }
-  REQUIRE(result == HasReturnvaluesIF::RETURN_FAILED);
+  REQUIRE(result == returnvalue::FAILED);
   REQUIRE(cmdExecutor.getLastError() == 1);
 }
 

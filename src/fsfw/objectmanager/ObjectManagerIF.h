@@ -1,7 +1,7 @@
 #ifndef FSFW_OBJECTMANAGER_OBJECTMANAGERIF_H_
 #define FSFW_OBJECTMANAGER_OBJECTMANAGERIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../serviceinterface/ServiceInterface.h"
 #include "SystemObjectIF.h"
 #include "frameworkObjects.h"
@@ -16,7 +16,7 @@
  * @author	Bastian Baetz
  * @ingroup system_objects
  */
-class ObjectManagerIF : public HasReturnvaluesIF {
+class ObjectManagerIF {
  public:
   static constexpr uint8_t INTERFACE_ID = CLASS_ID::OBJECT_MANAGER_IF;
   static constexpr ReturnValue_t INSERTION_FAILED = MAKE_RETURN_CODE(1);
@@ -48,14 +48,14 @@ class ObjectManagerIF : public HasReturnvaluesIF {
    * @param id		The new id to be added to the list.
    * @param object	A pointer to the object to be added.
    * @return	@li INSERTION_FAILED in case the object could not be inserted.
-   * 			@li RETURN_OK in case the object was successfully inserted
+   * 			@li returnvalue::OK in case the object was successfully inserted
    */
   virtual ReturnValue_t insert(object_id_t id, SystemObjectIF* object) = 0;
   /**
    * @brief	With this call, an object is removed from the list.
    * @param id	The object id of the object to be removed.
    * @return	@li NOT_FOUND in case the object was not found
-   * 			@li RETURN_OK in case the object was successfully removed
+   * 			@li returnvalue::OK in case the object was successfully removed
    */
   virtual ReturnValue_t remove(object_id_t id) = 0;
   virtual void initialize() = 0;

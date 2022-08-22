@@ -21,21 +21,21 @@ PusServiceBase::~PusServiceBase() { QueueFactory::instance()->deleteMessageQueue
 ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
   handleRequestQueue();
   ReturnValue_t result = this->performService();
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "PusService " << (uint16_t)this->serviceId << ": performService returned with "
                << (int16_t)result << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void PusServiceBase::setTaskIF(PeriodicTaskIF* taskHandle) { this->taskHandle = taskHandle; }
 
 void PusServiceBase::handleRequestQueue() {
   TmTcMessage message;
-  ReturnValue_t result = RETURN_FAILED;
+  ReturnValue_t result = returnvalue::FAILED;
   for (uint8_t count = 0; count < PUS_SERVICE_MAX_RECEPTION; count++) {
     ReturnValue_t status = this->requestQueue->receiveMessage(&message);
     //		if(status != MessageQueueIF::EMPTY) {
@@ -48,7 +48,7 @@ void PusServiceBase::handleRequestQueue() {
 #endif
     //		}
 
-    if (status == RETURN_OK) {
+    if (status == returnvalue::OK) {
       this->currentPacket.setStoreAddress(message.getStorageId(), &currentPacket);
       // info << "Service " << (uint16_t) this->serviceId <<
       //      ": new packet!" << std::endl;
@@ -57,7 +57,7 @@ void PusServiceBase::handleRequestQueue() {
 
       // debug << "Service " << (uint16_t)this->serviceId <<
       //    ": handleRequest returned: " << (int)return_code << std::endl;
-      if (result == RETURN_OK) {
+      if (result == returnvalue::OK) {
         this->verifyReporter.sendSuccessReport(tc_verification::COMPLETION_SUCCESS,
                                                &this->currentPacket);
       } else {
@@ -69,7 +69,7 @@ void PusServiceBase::handleRequestQueue() {
       errorParameter1 = 0;
       errorParameter2 = 0;
     } else if (status == MessageQueueIF::EMPTY) {
-      status = RETURN_OK;
+      status = returnvalue::OK;
       // debug << "PusService " << (uint16_t)this->serviceId <<
       //      ": no new packet." << std::endl;
       break;
@@ -89,7 +89,7 @@ MessageQueueId_t PusServiceBase::getRequestQueue() { return this->requestQueue->
 
 ReturnValue_t PusServiceBase::initialize() {
   ReturnValue_t result = SystemObject::initialize();
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   AcceptsTelemetryIF* destService =
@@ -105,12 +105,12 @@ ReturnValue_t PusServiceBase::initialize() {
   }
   this->requestQueue->setDefaultDestination(destService->getReportReceptionQueue());
   distributor->registerService(this);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t PusServiceBase::initializeAfterTaskCreation() {
   // If task parameters, for example task frequency are required, this
   // function should be overriden and the system object task IF can
   // be used to get those parameters.
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }

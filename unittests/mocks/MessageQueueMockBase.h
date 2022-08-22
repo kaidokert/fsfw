@@ -48,9 +48,9 @@ class MessageQueueMockBase : public MessageQueueBase {
     std::memcpy(message->getBuffer(), messagesSentQueue.front().getBuffer(),
                 message->getMessageSize());
     messagesSentQueue.pop();
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
-  virtual ReturnValue_t flush(uint32_t* count) { return HasReturnvaluesIF::RETURN_OK; }
+  virtual ReturnValue_t flush(uint32_t* count) { return returnvalue::OK; }
   virtual ReturnValue_t sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
                                         MessageQueueId_t sentFrom,
                                         bool ignoreFault = false) override {
@@ -58,7 +58,7 @@ class MessageQueueMockBase : public MessageQueueBase {
     messageSentCounter++;
     MessageQueueMessage& messageRef = *(dynamic_cast<MessageQueueMessage*>(message));
     messagesSentQueue.push(messageRef);
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   virtual ReturnValue_t reply(MessageQueueMessageIF* message) override {

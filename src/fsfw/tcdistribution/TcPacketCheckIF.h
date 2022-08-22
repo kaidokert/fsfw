@@ -1,7 +1,7 @@
 #ifndef FSFW_TCDISTRIBUTION_TCPACKETCHECKIF_H_
 #define FSFW_TCDISTRIBUTION_TCPACKETCHECKIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 
 class SpacePacketBase;
 
@@ -20,7 +20,7 @@ class TcPacketCheckIF {
    * This is the actual method to formally check a certain Packet.
    * The packet's Application Data can not be checked here.
    * @param current_packet The packet to check
-   * @return	- @c RETURN_OK on success.
+   * @return	- @c returnvalue::OK on success.
    * 			- @c INCORRECT_CHECKSUM if checksum is invalid.
    * 			- @c ILLEGAL_APID if APID does not match.
    */

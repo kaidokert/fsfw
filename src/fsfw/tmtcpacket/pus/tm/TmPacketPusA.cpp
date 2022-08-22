@@ -30,11 +30,11 @@ uint16_t TmPacketPusA::getSourceDataSize() {
 
 ReturnValue_t TmPacketPusA::setData(uint8_t* p_Data, size_t maxSize, void* args) {
   ReturnValue_t result = SpacePacketBase::setData(p_Data, maxSize);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   tmData = reinterpret_cast<TmPacketPointerPusA*>(const_cast<uint8_t*>(p_Data));
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 size_t TmPacketPusA::getPacketMinimumSize() const { return TM_PACKET_MIN_SIZE; }

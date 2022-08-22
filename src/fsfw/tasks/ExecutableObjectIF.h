@@ -5,7 +5,7 @@ class PeriodicTaskIF;
 
 #include <cstring>
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 /**
  * @brief	The interface provides a method to execute objects within a task.
  * @details	The performOperation method, that is required by the interface is
@@ -45,7 +45,7 @@ class ExecutableObjectIF {
    * called so the execution frequency can't be cached in initialize()
    * @return
    */
-  virtual ReturnValue_t initializeAfterTaskCreation() { return HasReturnvaluesIF::RETURN_OK; }
+  virtual ReturnValue_t initializeAfterTaskCreation() { return returnvalue::OK; }
 };
 
 #endif /* FRAMEWORK_TASKS_EXECUTABLEOBJECTIF_H_ */

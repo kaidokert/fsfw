@@ -16,7 +16,7 @@ FixedSlotSequence::~FixedSlotSequence() {
 
 void FixedSlotSequence::executeAndAdvance() {
   current->executableObject->performOperation(current->opcode);
-  //	if (returnValue != RETURN_OK) {
+  //	if (returnValue != returnvalue::OK) {
   //		this->sendErrorMessage( returnValue );
   //	}
   // Increment the polling Sequence iterator
@@ -98,7 +98,7 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
 
   if (customChecker != nullptr) {
     ReturnValue_t result = customChecker(slotList, customCheckArgs);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       // Continue for now but print error output.
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::error << "FixedSlotSequence::checkSequence:"
@@ -132,9 +132,9 @@ ReturnValue_t FixedSlotSequence::checkSequence() const {
   //	   << slotList.size() << std::endl;
 #endif
   if (errorCount > 0) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t FixedSlotSequence::intializeSequenceAfterTaskCreation() const {
@@ -144,7 +144,7 @@ ReturnValue_t FixedSlotSequence::intializeSequenceAfterTaskCreation() const {
     // Ensure that each unique object is initialized once.
     if (uniqueObjects.find(slot.executableObject) == uniqueObjects.end()) {
       ReturnValue_t result = slot.executableObject->initializeAfterTaskCreation();
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         count++;
       }
       uniqueObjects.emplace(slot.executableObject);
@@ -156,9 +156,9 @@ ReturnValue_t FixedSlotSequence::intializeSequenceAfterTaskCreation() const {
                   "Counted "
                << count << " failed initializations!" << std::endl;
 #endif
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void FixedSlotSequence::addCustomCheck(CustomCheckFunc customChecker_, void* checkerArgs_) {

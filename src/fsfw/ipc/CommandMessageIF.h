@@ -1,7 +1,7 @@
 #ifndef FSFW_IPC_COMMANDMESSAGEIF_H_
 #define FSFW_IPC_COMMANDMESSAGEIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "FwMessageTypes.h"
 #include "MessageQueueMessageIF.h"
 

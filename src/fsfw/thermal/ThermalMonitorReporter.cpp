@@ -46,20 +46,20 @@ ReturnValue_t ThermalMonitorReporter::translateState(ThermalComponentIF::State s
       if (componentIsOperational) {
         return monitorStateIs(ThermalComponentIF::BELOW_OPERATIONAL_LIMIT, sample, lowerLimit);
       } else {
-        return monitorStateIs(HasReturnvaluesIF::RETURN_OK, sample, 0.0);
+        return monitorStateIs(returnvalue::OK, sample, 0.0);
       }
     case ThermalComponentIF::OPERATIONAL:
-      return monitorStateIs(HasReturnvaluesIF::RETURN_OK, sample, 0.0);
+      return monitorStateIs(returnvalue::OK, sample, 0.0);
     case ThermalComponentIF::NON_OPERATIONAL_HIGH:
       if (componentIsOperational) {
         return monitorStateIs(ThermalComponentIF::ABOVE_OPERATIONAL_LIMIT, sample, upperLimit);
       } else {
-        return monitorStateIs(HasReturnvaluesIF::RETURN_OK, sample, 0.0);
+        return monitorStateIs(returnvalue::OK, sample, 0.0);
       }
     case ThermalComponentIF::OUT_OF_RANGE_HIGH:
       return monitorStateIs(MonitoringIF::ABOVE_HIGH_LIMIT, sample, upperLimit);
     default:
       // Never reached, all states covered.
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }

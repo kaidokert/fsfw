@@ -5,7 +5,7 @@
 #include "../events/EventReportingProxyIF.h"
 #include "../ipc/MessageQueueIF.h"
 #include "../objectmanager/ObjectManagerIF.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "HasHealthIF.h"
 #include "HealthMessage.h"
 #include "HealthTableIF.h"
@@ -55,8 +55,8 @@ class HealthHelper {
    *
    * @param message
    * @return
-   * -@c RETURN_OK if the message was handled
-   * -@c RETURN_FAILED if the message could not be handled
+   * -@c returnvalue::OK if the message was handled
+   * -@c returnvalue::FAILED if the message could not be handled
    *     (ie it was not a @c HEALTH_SET or @c HEALTH_READ message)
    */
   ReturnValue_t handleHealthCommand(CommandMessage* message);
@@ -88,9 +88,9 @@ class HealthHelper {
    * @param parentQueue   The queue ID of the parent object.
    *                      Set to 0 if no parent present
    * @return
-   * -@c RETURN_OK if the Health Table was found and the object
+   * -@c returnvalue::OK if the Health Table was found and the object
    * could be registered
-   * -@c RETURN_FAILED else
+   * -@c returnvalue::FAILED else
    */
   ReturnValue_t initialize(MessageQueueId_t parentQueue);
 

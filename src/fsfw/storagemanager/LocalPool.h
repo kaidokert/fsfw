@@ -138,7 +138,7 @@ class LocalPool : public SystemObject, public StorageManagerIF {
    * With this helper method, a free element of @c size is reserved.
    * @param size	The minimum packet size that shall be reserved.
    * @param[out] address Storage ID of the reserved data.
-   * @return	- #RETURN_OK on success,
+   * @return	- returnvalue::OK on success,
    * 			- the return codes of #getPoolIndex or #findEmpty otherwise.
    */
   virtual ReturnValue_t reserveSpace(const size_t size, store_address_t* address, bool ignoreFault);
@@ -210,7 +210,7 @@ class LocalPool : public SystemObject, public StorageManagerIF {
    * 			fits is used.
    * @param packet_size		The size of the data to be stored.
    * @param[out] poolIndex	The fitting pool index found.
-   * @return	- @c RETURN_OK on success,
+   * @return	- @c returnvalue::OK on success,
    * 			- @c DATA_TOO_LARGE otherwise.
    */
   ReturnValue_t getSubPoolIndex(size_t packetSize, uint16_t* subpoolIndex,
@@ -230,7 +230,7 @@ class LocalPool : public SystemObject, public StorageManagerIF {
    * 			duration grows with the fill level of the pool.
    * @param pool_index	The pool in which the search is performed.
    * @param[out] element	The first found element in the pool.
-   * @return	- #RETURN_OK on success,
+   * @return	- returnvalue::OK on success,
    * 			- #DATA_STORAGE_FULL if the store is full
    */
   ReturnValue_t findEmpty(n_pool_elem_t poolIndex, uint16_t* element);

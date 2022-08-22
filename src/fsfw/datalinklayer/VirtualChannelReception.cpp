@@ -57,18 +57,18 @@ ReturnValue_t VirtualChannelReception::doFARM(TcTransferFrame* frame, ClcwIF* cl
 
 ReturnValue_t VirtualChannelReception::frameAcceptanceAndReportingMechanism(TcTransferFrame* frame,
                                                                             ClcwIF* clcw) {
-  ReturnValue_t result = RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   result = doFARM(frame, &internalClcw);
   internalClcw.setReceiverFrameSequenceNumber(vR);
   internalClcw.setFarmBCount(farmBCounter);
   clcw->setWhole(internalClcw.getAsWhole());
   switch (result) {
-    case RETURN_OK:
+    case returnvalue::OK:
       return mapDemultiplexing(frame);
     case BC_IS_SET_VR_COMMAND:
     case BC_IS_UNLOCK_COMMAND:
       // Need to catch these codes to avoid error reporting later.
-      return RETURN_OK;
+      return returnvalue::OK;
     default:
       break;
   }
@@ -79,15 +79,15 @@ ReturnValue_t VirtualChannelReception::addMapChannel(uint8_t mapId, MapPacketExt
   std::pair<mapChannelIterator, bool> returnValue =
       mapChannels.insert(std::pair<uint8_t, MapPacketExtractionIF*>(mapId, object));
   if (returnValue.second == true) {
-    return RETURN_OK;
+    return returnvalue::OK;
   } else {
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 }
 
 ReturnValue_t VirtualChannelReception::handleBDFrame(TcTransferFrame* frame, ClcwIF* clcw) {
   farmBCounter++;
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t VirtualChannelReception::handleBCFrame(TcTransferFrame* frame, ClcwIF* clcw) {
@@ -107,18 +107,18 @@ ReturnValue_t VirtualChannelReception::handleBCFrame(TcTransferFrame* frame, Clc
 uint8_t VirtualChannelReception::getChannelId() const { return channelId; }
 
 ReturnValue_t VirtualChannelReception::initialize() {
-  ReturnValue_t returnValue = RETURN_FAILED;
+  ReturnValue_t returnValue = returnvalue::FAILED;
   if ((slidingWindowWidth > 254) || (slidingWindowWidth % 2 != 0)) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "VirtualChannelReception::initialize: Illegal sliding window width: "
                << (int)slidingWindowWidth << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   for (mapChannelIterator iterator = mapChannels.begin(); iterator != mapChannels.end();
        iterator++) {
     returnValue = iterator->second->initialize();
-    if (returnValue != RETURN_OK) break;
+    if (returnValue != returnvalue::OK) break;
   }
   return returnValue;
 }

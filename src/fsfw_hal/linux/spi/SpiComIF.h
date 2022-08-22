@@ -24,13 +24,13 @@ class SpiComIF : public DeviceCommunicationIF, public SystemObject {
  public:
   static constexpr uint8_t spiRetvalId = CLASS_ID::HAL_SPI;
   static constexpr ReturnValue_t OPENING_FILE_FAILED =
-      HasReturnvaluesIF::makeReturnCode(spiRetvalId, 0);
+      returnvalue::makeCode(spiRetvalId, 0);
   /* Full duplex (ioctl) transfer failure */
   static constexpr ReturnValue_t FULL_DUPLEX_TRANSFER_FAILED =
-      HasReturnvaluesIF::makeReturnCode(spiRetvalId, 1);
+      returnvalue::makeCode(spiRetvalId, 1);
   /* Half duplex (read/write) transfer failure */
   static constexpr ReturnValue_t HALF_DUPLEX_TRANSFER_FAILED =
-      HasReturnvaluesIF::makeReturnCode(spiRetvalId, 2);
+      returnvalue::makeCode(spiRetvalId, 2);
 
   SpiComIF(object_id_t objectId, GpioIF* gpioComIF);
 

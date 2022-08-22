@@ -4,7 +4,7 @@
 #include "ActionMessage.h"
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/serialize/SerializeIF.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 

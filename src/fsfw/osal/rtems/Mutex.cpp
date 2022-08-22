@@ -43,7 +43,7 @@ ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType = TimeoutType::BLOCKING,
   switch (status) {
     case RTEMS_SUCCESSFUL:
       // semaphore obtained successfully
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     case RTEMS_UNSATISFIED:
       // semaphore not available
       return MUTEX_NOT_FOUND;
@@ -57,7 +57,7 @@ ReturnValue_t Mutex::lockMutex(TimeoutType timeoutType = TimeoutType::BLOCKING,
       // invalid semaphore id
       return MUTEX_INVALID_ID;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
@@ -66,7 +66,7 @@ ReturnValue_t Mutex::unlockMutex() {
   switch (status) {
     case RTEMS_SUCCESSFUL:
       // semaphore obtained successfully
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     case RTEMS_NOT_OWNER_OF_RESOURCE:
       // semaphore not available
       return CURR_THREAD_DOES_NOT_OWN_MUTEX;
@@ -74,6 +74,6 @@ ReturnValue_t Mutex::unlockMutex() {
       // invalid semaphore id
       return MUTEX_INVALID_ID;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }

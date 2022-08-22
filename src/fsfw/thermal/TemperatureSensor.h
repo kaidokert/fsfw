@@ -117,7 +117,7 @@ class TemperatureSensor : public AbstractTemperatureSensor {
 
   void doChildOperation() {
     ReturnValue_t result = inputTemperature->read(MutexIF::TimeoutType::WAITING, 20);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return;
     }
 
@@ -209,7 +209,7 @@ class TemperatureSensor : public AbstractTemperatureSensor {
       default:
         return INVALID_IDENTIFIER_ID;
     }
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   virtual void resetOldState() { sensorMonitor.setToUnchecked(); }

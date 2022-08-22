@@ -13,7 +13,7 @@ CFDPDistributor::CFDPDistributor(uint16_t setApid, object_id_t setObjectId,
     : TcDistributor(setObjectId),
       apid(setApid),
       checker(setApid),
-      tcStatus(RETURN_FAILED),
+      tcStatus(returnvalue::FAILED),
       packetSource(setPacketSource) {}
 
 CFDPDistributor::~CFDPDistributor() {}
@@ -36,7 +36,7 @@ CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
   this->currentPacket->setStoreAddress(this->currentMessage.getStorageId());
   if (currentPacket->getWholeData() != nullptr) {
     tcStatus = checker.checkPacket(currentPacket);
-    if (tcStatus != HasReturnvaluesIF::RETURN_OK) {
+    if (tcStatus != returnvalue::OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::debug << "CFDPDistributor::handlePacket: Packet format invalid, code "
@@ -63,7 +63,7 @@ CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
 #endif
   }
 
-  if (tcStatus != RETURN_OK) {
+  if (tcStatus != returnvalue::OK) {
     return this->queueMap.end();
   } else {
     return queueMapIt;
@@ -95,26 +95,26 @@ ReturnValue_t CFDPDistributor::registerHandler(AcceptsTelecommandsIF* handler) {
 #endif
     return SERVICE_ID_ALREADY_EXISTS;
   }
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 MessageQueueId_t CFDPDistributor::getRequestQueue() { return tcQueue->getId(); }
 
 // ReturnValue_t CFDPDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
-//     if (queueStatus != RETURN_OK) {
+//     if (queueStatus != returnvalue::OK) {
 //         tcStatus = queueStatus;
 //     }
-//     if (tcStatus != RETURN_OK) {
+//     if (tcStatus != returnvalue::OK) {
 //         this->verifyChannel.sendFailureReport(tc_verification::ACCEPTANCE_FAILURE,
 //                 currentPacket, tcStatus);
 //         // A failed packet is deleted immediately after reporting,
 //         // otherwise it will block memory.
 //         currentPacket->deletePacket();
-//         return RETURN_FAILED;
+//         return returnvalue::FAILED;
 //     } else {
 //         this->verifyChannel.sendSuccessReport(tc_verification::ACCEPTANCE_SUCCESS,
 //                 currentPacket);
-//         return RETURN_OK;
+//         return returnvalue::OK;
 //     }
 // }
 
@@ -137,7 +137,7 @@ ReturnValue_t CFDPDistributor::initialize() {
     sif::printError("CFDPDistributor::initialize: Packet source invalid\n");
     sif::printError("Make sure it exists and implements CCSDSDistributorIF\n");
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   return ccsdsDistributor->registerApplication(this);
 }

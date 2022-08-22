@@ -6,7 +6,7 @@
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
 #include "fsfw/objectmanager/SystemObject.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
@@ -27,7 +27,7 @@
  * implementations.
  * @ingroup tc_distribution
  */
-class TcDistributor : public SystemObject, public ExecutableObjectIF, public HasReturnvaluesIF {
+class TcDistributor : public SystemObject, public ExecutableObjectIF {
  public:
   using TcMessageQueueMap = std::map<uint32_t, MessageQueueId_t>;
   using TcMqMapIter = std::map<uint32_t, MessageQueueId_t>::iterator;
@@ -93,7 +93,7 @@ class TcDistributor : public SystemObject, public ExecutableObjectIF, public Has
   /**
    * The handlePacket method calls the child class's selectDestination method
    * and forwards the packet to its destination, if found.
-   * @return The message queue return value or @c RETURN_FAILED, in case no
+   * @return The message queue return value or @c returnvalue::FAILED, in case no
    * 		destination was found.
    */
   ReturnValue_t handlePacket();
@@ -101,11 +101,11 @@ class TcDistributor : public SystemObject, public ExecutableObjectIF, public Has
    * This method gives the child class a chance to perform some kind of
    * operation after the parent tried to forward the message.
    * A typically application would be sending success/failure messages.
-   * The default implementation just returns @c RETURN_OK.
+   * The default implementation just returns @c returnvalue::OK.
    * @param queueStatus	The status of the message queue after an attempt
    *                      to send the TC.
-   * @return	- @c RETURN_OK on success
-   * 			- @c RETURN_FAILED on failure
+   * @return	- @c returnvalue::OK on success
+   * 			- @c returnvalue::FAILED on failure
    */
   virtual ReturnValue_t callbackAfterSending(ReturnValue_t queueStatus);
 

@@ -4,7 +4,7 @@
 #include <cstdint>
 
 #include "../events/Event.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "ModeHelper.h"
 #include "ModeMessage.h"
 
@@ -53,7 +53,7 @@ class HasModesIF {
  protected:
   virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
                                          uint32_t *msToReachTheMode) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   virtual void startTransition(Mode_t mode, Submode_t submode) {}

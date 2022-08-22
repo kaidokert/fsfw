@@ -21,19 +21,19 @@ HealthTable::~HealthTable() { MutexFactory::instance()->deleteMutex(mutex); }
 ReturnValue_t HealthTable::registerObject(object_id_t object,
                                           HasHealthIF::HealthState initilialState) {
   if (healthMap.count(object) != 0) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   healthMap.emplace(object, initilialState);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t HealthTable::removeObject(object_id_t object) {
   mapIterator = healthMap.find(object);
   if (mapIterator == healthMap.end()) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   healthMap.erase(mapIterator);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void HealthTable::setHealth(object_id_t object, HasHealthIF::HealthState newState) {
@@ -76,7 +76,7 @@ void HealthTable::printAll(uint8_t* pointer, size_t maxSize) {
   uint16_t count = healthMap.size();
   ReturnValue_t result =
       SerializeAdapter::serialize(&count, &pointer, &size, maxSize, SerializeIF::Endianness::BIG);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "HealthTable::printAll: Serialization of health table failed" << std::endl;
@@ -89,26 +89,26 @@ void HealthTable::printAll(uint8_t* pointer, size_t maxSize) {
   for (const auto& health : healthMap) {
     result = SerializeAdapter::serialize(&health.first, &pointer, &size, maxSize,
                                          SerializeIF::Endianness::BIG);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return;
     }
     uint8_t healthValue = health.second;
     result = SerializeAdapter::serialize(&healthValue, &pointer, &size, maxSize,
                                          SerializeIF::Endianness::BIG);
-    if (result != HasReturnvaluesIF::RETURN_OK) {
+    if (result != returnvalue::OK) {
       return;
     }
   }
 }
 
 ReturnValue_t HealthTable::iterate(HealthEntry* value, bool reset) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   MutexGuard(mutex, timeoutType, mutexTimeoutMs);
   if (reset) {
     mapIterator = healthMap.begin();
   }
   if (mapIterator == healthMap.end()) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   *value = *mapIterator;
   mapIterator++;

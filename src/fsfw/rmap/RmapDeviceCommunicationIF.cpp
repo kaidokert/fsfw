@@ -26,7 +26,7 @@ ReturnValue_t RmapDeviceCommunicationIF::readReceivedMessage(CookieIF *cookie, u
 
 ReturnValue_t RmapDeviceCommunicationIF::setAddress(CookieIF *cookie, uint32_t address) {
   ((RMAPCookie *)cookie)->setAddress(address);
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 uint32_t RmapDeviceCommunicationIF::getAddress(CookieIF *cookie) {
@@ -35,7 +35,7 @@ uint32_t RmapDeviceCommunicationIF::getAddress(CookieIF *cookie) {
 
 ReturnValue_t RmapDeviceCommunicationIF::setParameter(CookieIF *cookie, uint32_t parameter) {
   // TODO Empty?
-  return HasReturnvaluesIF::RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 uint32_t RmapDeviceCommunicationIF::getParameter(CookieIF *cookie) { return 0; }

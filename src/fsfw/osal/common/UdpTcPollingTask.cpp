@@ -66,7 +66,7 @@ UdpTcPollingTask::UdpTcPollingTask(object_id_t objectId, object_id_t tmtcUdpBrid
 #endif /* FSFW_UDP_RCV_WIRETAPPING_ENABLED == 1 */
 
     ReturnValue_t result = handleSuccessfullTcRead(bytesReceived);
-    if (result != HasReturnvaluesIF::RETURN_FAILED) {
+    if (result != returnvalue::FAILED) {
     }
     tmtcBridge->checkAndSetClientAddress(senderAddress);
   }
@@ -80,20 +80,20 @@ ReturnValue_t UdpTcPollingTask::handleSuccessfullTcRead(size_t bytesRead) {
 #endif
 
   ReturnValue_t result = tcStore->addData(&storeId, receptionBuffer.data(), bytesRead);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "UdpTcPollingTask::transferPusToSoftwareBus: Data storage failed." << std::endl;
     sif::warning << "Packet size: " << bytesRead << std::endl;
 #endif /* FSFW_CPP_OSTREAM_ENABLED == 1 */
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   TmTcMessage message(storeId);
 
   result = MessageQueueSenderIF::sendMessage(targetTcDestination, &message);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "UdpTcPollingTask::handleSuccessfullTcRead: "
@@ -124,11 +124,11 @@ ReturnValue_t UdpTcPollingTask::initialize() {
   }
 
   ReturnValue_t result = TcpIpBase::initialize();
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t UdpTcPollingTask::initializeAfterTaskCreation() {
@@ -138,7 +138,7 @@ ReturnValue_t UdpTcPollingTask::initializeAfterTaskCreation() {
   /* The server socket is set up in the bridge intialization. Calling this function here
       ensures that it is set up regardless of which class was initialized first */
   this->serverSocket = tmtcBridge->serverSocket;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void UdpTcPollingTask::setTimeout(double timeoutSeconds) {

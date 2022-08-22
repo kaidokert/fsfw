@@ -18,7 +18,7 @@ ReturnValue_t HeaderDeserializer::setData(uint8_t *dataPtr, size_t maxSize, void
   if (dataPtr == nullptr) {
     // Allowed for now
     this->fixedHeader = nullptr;
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   this->fixedHeader = reinterpret_cast<PduHeaderFixedStruct *>(const_cast<uint8_t *>(dataPtr));
   sourceIdRaw = static_cast<uint8_t *>(&fixedHeader->variableFieldsStart);
@@ -27,7 +27,7 @@ ReturnValue_t HeaderDeserializer::setData(uint8_t *dataPtr, size_t maxSize, void
   seqNumRaw = static_cast<uint8_t *>(sourceIdRaw) + static_cast<uint8_t>(widthEntityIds);
   destIdRaw = static_cast<uint8_t *>(seqNumRaw) + static_cast<uint8_t>(widthSeqNum);
   this->maxSize = maxSize;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 size_t HeaderDeserializer::getHeaderSize() const {

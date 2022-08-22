@@ -26,7 +26,7 @@ class ActionHelperOwnerMockBase : public HasActionsIF {
     }
     this->size = size;
     memcpy(buffer, data, size);
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   void clearBuffer() {

@@ -44,7 +44,7 @@ ReturnValue_t AsciiConverter::scanAsciiHexByte(const uint8_t** dataPtr, uint8_t*
     *value = *value >> 4;
   }
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t AsciiConverter::scanAsciiDecimalNumber_(uint8_t const** dataPtr, uint8_t len,
@@ -99,7 +99,7 @@ ReturnValue_t AsciiConverter::scanAsciiDecimalNumber_(uint8_t const** dataPtr, u
 
   *dataPtr = ptr;
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t AsciiConverter::printFloat(uint8_t* buffer, uint32_t bufferLength, float value,
@@ -124,7 +124,7 @@ ReturnValue_t AsciiConverter::printFloat(uint8_t* buffer, uint32_t bufferLength,
   ReturnValue_t result =
       printInteger(buffer + streamposition, bufferLength - streamposition - decimalPlaces - 1,
                    value, &integerSize);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   streamposition += integerSize;
@@ -161,7 +161,7 @@ ReturnValue_t AsciiConverter::printInteger(uint8_t* buffer, uint32_t bufferLengt
   }
   if (!leadingZeros && (value == 0)) {
     buffer[(*printedSize)++] = '0';
-    return RETURN_OK;
+    return returnvalue::OK;
   }
   while (maximumNumber >= 1) {
     uint8_t number = value / maximumNumber;
@@ -174,7 +174,7 @@ ReturnValue_t AsciiConverter::printInteger(uint8_t* buffer, uint32_t bufferLengt
       maximumNumber /= 10;
     }
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t AsciiConverter::printSignedInteger(uint8_t* buffer, uint32_t bufferLength,

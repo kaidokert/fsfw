@@ -19,7 +19,7 @@ TEST_CASE("Binary Semaphore Test" , "[BinSemaphore]") {
                 REQUIRE(binSemaph->release() ==
                                 static_cast<int>(SemaphoreIF::SEMAPHORE_NOT_OWNED));
                 REQUIRE(binSemaph->acquire(SemaphoreIF::POLLING) ==
-                                retval::CATCH_OK);
+                                result::OK);
                 {
                         // not precise enough on linux.. should use clock instead..
                         //Stopwatch stopwatch(false);
@@ -29,7 +29,7 @@ TEST_CASE("Binary Semaphore Test" , "[BinSemaphore]") {
                         //CHECK(time == 5);
                 }
                 REQUIRE(binSemaph->getSemaphoreCounter() == 0);
-                REQUIRE(binSemaph->release() == retval::CATCH_OK);
+                REQUIRE(binSemaph->release() == result::OK);
         }
         SemaphoreFactory::instance()->deleteSemaphore(binSemaph);
         // perform tear-down here

@@ -25,7 +25,7 @@ class RmapDeviceCommunicationIF : public DeviceCommunicationIF {
    * this can be performed in this function, which is called on device handler
    * initialization.
    * @param cookie
-   * @return -@c RETURN_OK if initialization was successfull
+   * @return -@c returnvalue::OK if initialization was successfull
    * 		   - Everything else triggers failure event with returnvalue as parameter 1
    */
   virtual ReturnValue_t initializeInterface(CookieIF *cookie) = 0;
@@ -37,7 +37,7 @@ class RmapDeviceCommunicationIF : public DeviceCommunicationIF {
    * @param cookie
    * @param data
    * @param len
-   * @return -@c RETURN_OK for successfull send
+   * @return -@c returnvalue::OK for successfull send
    *         - Everything else triggers failure event with returnvalue as parameter 1
    */
   virtual ReturnValue_t sendMessage(CookieIF *cookie, const uint8_t *sendData, size_t sendLen);
@@ -46,7 +46,7 @@ class RmapDeviceCommunicationIF : public DeviceCommunicationIF {
    * Called by DHB in the GET_WRITE doGetWrite().
    * Get send confirmation that the data in sendMessage() was sent successfully.
    * @param cookie
-   * @return -@c RETURN_OK if data was sent successfull
+   * @return -@c returnvalue::OK if data was sent successfull
    * 		   - Everything else triggers falure event with returnvalue as parameter 1
    */
   virtual ReturnValue_t getSendSuccess(CookieIF *cookie);
@@ -57,7 +57,7 @@ class RmapDeviceCommunicationIF : public DeviceCommunicationIF {
    * from a device.
    *
    * @param cookie
-   * @return -@c RETURN_OK to confirm the request for data has been sent.
+   * @return -@c returnvalue::OK to confirm the request for data has been sent.
    *         -@c NO_READ_REQUEST if no request shall be made. readReceivedMessage()
    *         	   will not be called in the respective communication cycle.
    *         - Everything else triggers failure event with returnvalue as parameter 1
@@ -71,7 +71,7 @@ class RmapDeviceCommunicationIF : public DeviceCommunicationIF {
    * @param cookie
    * @param data
    * @param len
-   * @return @c RETURN_OK for successfull receive
+   * @return @c returnvalue::OK for successfull receive
    *         - Everything else triggers failure event with returnvalue as parameter 1
    */
   virtual ReturnValue_t readReceivedMessage(CookieIF *cookie, uint8_t **buffer, size_t *size);

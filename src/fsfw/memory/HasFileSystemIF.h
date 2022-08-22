@@ -6,7 +6,7 @@
 #include "FileSystemArgsIF.h"
 #include "fsfw/ipc/messageQueueDefinitions.h"
 #include "fsfw/returnvalues/FwClassIds.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 
 /**
  * @brief	Generic interface for objects which expose a file system to enable

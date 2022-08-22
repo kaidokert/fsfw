@@ -16,10 +16,10 @@ class PeriodicTaskMock : public PeriodicTaskBase {
    */
   virtual ReturnValue_t startTask() override {
     initObjsAfterTaskCreation();
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   };
 
-  virtual ReturnValue_t sleepFor(uint32_t ms) override { return HasReturnvaluesIF::RETURN_OK; };
+  virtual ReturnValue_t sleepFor(uint32_t ms) override { return returnvalue::OK; };
 };
 
 #endif  // FSFW_UNITTEST_TESTS_MOCKS_PERIODICTASKMOCK_H_

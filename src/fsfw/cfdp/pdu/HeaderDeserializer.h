@@ -36,8 +36,8 @@ class HeaderDeserializer : public RedirectableDataPointerIF, public PduHeaderIF 
   /**
    * This needs to be called before accessing the PDU fields to avoid segmentation faults.
    * @return
-   *  - RETURN_OK on parse success
-   *  - RETURN_FAILED Invalid raw data
+   *  - returnvalue::OK on parse success
+   *  - returnvalue::FAILED Invalid raw data
    *  - SerializeIF::BUFFER_TOO_SHORT if buffer is shorter than expected
    */
   virtual ReturnValue_t parseData();
@@ -61,7 +61,7 @@ class HeaderDeserializer : public RedirectableDataPointerIF, public PduHeaderIF 
   void getDestId(cfdp::EntityId& destId) const override;
   void getTransactionSeqNum(cfdp::TransactionSeqNum& seqNum) const override;
 
-  ReturnValue_t deserResult = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t deserResult = returnvalue::OK;
 
   /**
    * Can also be used to reset the pointer to a nullptr, but the getter functions will not

@@ -48,7 +48,7 @@ ReturnValue_t FixedTimeslotTask::startTask() {
     vTaskResume(handle);
   }
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 [[noreturn]] void FixedTimeslotTask::taskFunctionality() {
@@ -108,7 +108,7 @@ void FixedTimeslotTask::handleMissedDeadline() {
 
 ReturnValue_t FixedTimeslotTask::sleepFor(uint32_t ms) {
   vTaskDelay(pdMS_TO_TICKS(ms));
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 TaskHandle_t FixedTimeslotTask::getTaskHandle() { return handle; }

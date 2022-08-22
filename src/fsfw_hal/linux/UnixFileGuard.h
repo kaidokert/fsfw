@@ -2,7 +2,7 @@
 #define LINUX_UTILITY_UNIXFILEGUARD_H_
 
 #include <fcntl.h>
-#include <fsfw/returnvalues/HasReturnvaluesIF.h>
+#include <fsfw/returnvalues/returnvalue.h>
 #include <unistd.h>
 
 #include <string>
@@ -24,7 +24,7 @@ class UnixFileGuard {
 
  private:
   int* fileDescriptor = nullptr;
-  ReturnValue_t openStatus = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t openStatus = returnvalue::OK;
 };
 
 #endif /* LINUX_UTILITY_UNIXFILEGUARD_H_ */

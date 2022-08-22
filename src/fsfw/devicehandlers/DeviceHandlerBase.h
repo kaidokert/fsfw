@@ -18,7 +18,7 @@
 #include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/parameters/ParameterHelper.h"
 #include "fsfw/power/PowerSwitchIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/serviceinterface/serviceInterfaceDefintions.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
@@ -78,7 +78,6 @@ class StorageManagerIF;
  * @ingroup devices
  */
 class DeviceHandlerBase : public DeviceHandlerIF,
-                          public HasReturnvaluesIF,
                           public ExecutableObjectIF,
                           public SystemObject,
                           public HasModesIF,
@@ -145,7 +144,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    *   4. Decrements counter for timeout of replies by calling
    *      decrementDeviceReplyMap()
    *   5. Performs FDIR check for failures
-   *   6. If the device mode is MODE_OFF, return RETURN_OK.
+   *   6. If the device mode is MODE_OFF, return returnvalue::OK.
    *      Otherwise, perform the Action property and performs depending
    *      on value specified by input value counter (incremented in PST).
    *      The child class tells base class what to do by setting this value.
@@ -161,7 +160,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    *     - GET_READ: Access requested reading data by calling doGetRead()
    *       which calls readReceivedMessage of #communicationInterface
    * @param counter Specifies which Action to perform
-   * @return RETURN_OK for successful execution
+   * @return returnvalue::OK for successful execution
    */
   virtual ReturnValue_t performOperation(uint8_t counter) override;
 
@@ -282,7 +281,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    *
    * @param[out] id the device command id that has been built
    * @return
-   *  - @c RETURN_OK to send command after setting #rawPacket and
+   *  - @c returnvalue::OK to send command after setting #rawPacket and
    *    #rawPacketLen.
    *  - @c NOTHING_TO_SEND when no command is to be sent.
    *  - Anything else triggers an even with the returnvalue as a parameter.
@@ -306,7 +305,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    *
    * @param[out] id the device command id built
    * @return
-   *    - @c RETURN_OK when a command is to be sent
+   *    - @c returnvalue::OK when a command is to be sent
    *    - @c NOTHING_TO_SEND when no command is to be sent
    *    - Anything else triggers an even with the returnvalue as a parameter
    */
@@ -328,7 +327,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param commandData       Pointer to the data from the direct command
    * @param commandDataLen    Length of commandData
    * @return
-   *  - @c RETURN_OK to send command after #rawPacket and #rawPacketLen
+   *  - @c returnvalue::OK to send command after #rawPacket and #rawPacketLen
    *       have been set.
    *  - @c HasActionsIF::EXECUTION_COMPLETE to generate a finish reply immediately. This can
    *       be used if no reply is expected
@@ -358,8 +357,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param[out] foundLen length of the data found. Is to be set in function,
    *                       buffer is scanned at previous position + foundLen.
    * @return
-   *  - @c RETURN_OK a valid packet was found at @c start, @c foundLen is valid
-   *  - @c RETURN_FAILED no reply could be found starting at @c start,
+   *  - @c returnvalue::OK a valid packet was found at @c start, @c foundLen is valid
+   *  - @c returnvalue::FAILED no reply could be found starting at @c start,
    *    implies @c foundLen is not valid, base class will call scanForReply()
    *    again with ++start
    *  - @c DeviceHandlerIF::INVALID_DATA a packet was found but it is invalid,
@@ -388,10 +387,10 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param id the id found by scanForReply()
    * @param packet
    * @return
-   *     - @c RETURN_OK when the reply was interpreted.
+   *     - @c returnvalue::OK when the reply was interpreted.
    *     - @c IGNORE_REPLY_DATA Ignore the reply and don't reset reply cycle
    *          counter.
-   *     - @c RETURN_FAILED when the reply could not be interpreted,
+   *     - @c returnvalue::FAILED when the reply could not be interpreted,
    *     e.g. logical errors or range violations occurred
    */
   virtual ReturnValue_t interpretDeviceReply(DeviceCommandId_t id, const uint8_t *packet) = 0;
@@ -451,8 +450,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param countdown Instead of using maxDelayCycles to timeout a device reply it is also possible
    *                  to provide a pointer to a Countdown object which will signal the timeout
    *                  when expired
-   * @return	- @c RETURN_OK when the command was successfully inserted,
-   *          - @c RETURN_FAILED else.
+   * @return	- @c returnvalue::OK when the command was successfully inserted,
+   *          - @c returnvalue::FAILED else.
    */
   ReturnValue_t insertInCommandAndReplyMap(DeviceCommandId_t deviceCommand, uint16_t maxDelayCycles,
                                            LocalPoolDataSetBase *replyDataSet = nullptr,
@@ -472,8 +471,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param countdown Instead of using maxDelayCycles to timeout a device reply it is also possible
    *                  to provide a pointer to a Countdown object which will signal the timeout
    *                  when expired
-   * @return	- @c RETURN_OK when the command was successfully inserted,
-   *          - @c RETURN_FAILED else.
+   * @return	- @c returnvalue::OK when the command was successfully inserted,
+   *          - @c returnvalue::FAILED else.
    */
   ReturnValue_t insertInReplyMap(DeviceCommandId_t deviceCommand, uint16_t maxDelayCycles,
                                  LocalPoolDataSetBase *dataSet = nullptr, size_t replyLen = 0,
@@ -482,8 +481,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
   /**
    * @brief   A simple command to add a command to the commandList.
    * @param deviceCommand The command to add
-   * @return - @c RETURN_OK when the command was successfully inserted,
-   *         - @c RETURN_FAILED else.
+   * @return - @c returnvalue::OK when the command was successfully inserted,
+   *         - @c returnvalue::FAILED else.
    */
   ReturnValue_t insertInCommandMap(DeviceCommandId_t deviceCommand,
                                    bool useAlternativeReply = false,
@@ -519,8 +518,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param periodic Indicates if the command is periodic (i.e. it is sent
    * by the device repeatedly without request) or not. Default is aperiodic (0).
    * Warning: The setting always overrides the value that was entered in the map.
-   * @return - @c RETURN_OK when the command was successfully inserted,
-   *         - @c RETURN_FAILED else.
+   * @return - @c returnvalue::OK when the command was successfully inserted,
+   *         - @c returnvalue::FAILED else.
    */
   ReturnValue_t updateReplyMapEntry(DeviceCommandId_t deviceReply, uint16_t delayCycles,
                                     uint16_t maxDelayCycles, bool periodic = false);
@@ -603,8 +602,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param mode
    * @param submode
    * @return
-   *    - @c RETURN_OK if valid
-   *    - @c RETURN_FAILED if invalid
+   *    - @c returnvalue::OK if valid
+   *    - @c returnvalue::FAILED if invalid
    */
   virtual ReturnValue_t isModeCombinationValid(Mode_t mode, Submode_t submode);
   /**
@@ -623,8 +622,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param[out] switches pointer to an array of switches
    * @param[out] numberOfSwitches length of returned array
    * @return
-   *      - @c RETURN_OK if the parameters were set
-   *      - @c RETURN_FAILED if no switches exist
+   *      - @c returnvalue::OK if the parameters were set
+   *      - @c returnvalue::FAILED if no switches exist
    */
   virtual ReturnValue_t getSwitches(const uint8_t **switches, uint8_t *numberOfSwitches);
 
@@ -978,7 +977,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * 	- A failure code may be returned if something went fundamentally wrong.
    *
    * @param deviceCommand
-   * @return 	- RETURN_OK if a reply was activated.
+   * @return 	- returnvalue::OK if a reply was activated.
    * 			- NO_REPLY_EXPECTED if there was no reply found. This is not an
    * 			  error case as many commands do not expect a reply.
    */
@@ -1005,7 +1004,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    *
    * @param[out] id the device command id built
    * @return
-   *    - @c RETURN_OK when a command is to be sent
+   *    - @c returnvalue::OK when a command is to be sent
    *    - not @c NOTHING_TO_SEND when no command is to be sent
    */
   virtual ReturnValue_t buildChildRawCommand();
@@ -1033,7 +1032,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    *       by #switches are on
    *  - @c PowerSwitchIF::SWITCH_OFF one of the switches specified by
    *       #switches are off
-   *  - @c PowerSwitchIF::RETURN_FAILED if an error occured
+   *  - @c PowerSwitchIF::returnvalue::FAILED if an error occured
    */
   ReturnValue_t getStateOfSwitches();
 
@@ -1086,7 +1085,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
   /**
    * Checks if current handler state allows reception of external device commands.
    * Default implementation allows commands only in plain MODE_ON and MODE_NORMAL.
-   * @return RETURN_OK if commands are accepted, anything else otherwise.
+   * @return returnvalue::OK if commands are accepted, anything else otherwise.
    */
   virtual ReturnValue_t acceptExternalDeviceCommands();
 
@@ -1274,9 +1273,9 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param[out] data
    * @param[out] len
    * @return
-   *   - @c RETURN_OK @c data is valid
-   *   - @c RETURN_FAILED IPCStore is nullptr
-   *   - the return value from the IPCStore if it was not @c RETURN_OK
+   *   - @c returnvalue::OK @c data is valid
+   *   - @c returnvalue::FAILED IPCStore is nullptr
+   *   - the return value from the IPCStore if it was not @c returnvalue::OK
    */
   ReturnValue_t getStorageData(store_address_t storageAddress, uint8_t **data, size_t *len);
 
@@ -1306,7 +1305,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    * @param errorPrint
    */
   void printWarningOrError(sif::OutputTypes errorType, const char *functionName,
-                           ReturnValue_t errorCode = HasReturnvaluesIF::RETURN_FAILED,
+                           ReturnValue_t errorCode = returnvalue::FAILED,
                            const char *errorPrint = nullptr);
 };
 

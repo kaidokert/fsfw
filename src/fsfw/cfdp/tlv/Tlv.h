@@ -23,7 +23,7 @@ class Tlv : public TlvIF {
    * @param maxSize
    * @param streamEndianness
    * @return
-   *  - RETURN_OK on success
+   *  - returnvalue::OK on success
    *  - INVALID_TLV_TYPE
    *  - SerializeIF returncode on wrong serialization parameters
    */
@@ -37,7 +37,7 @@ class Tlv : public TlvIF {
    * @param buffer Raw buffer including the size field
    * @param size
    * @param streamEndianness
-   *  - RETURN_OK on success
+   *  - returnvalue::OK on success
    *  - INVALID_TLV_TYPE
    *  - SerializeIF returncode on wrong deserialization parameters
    */

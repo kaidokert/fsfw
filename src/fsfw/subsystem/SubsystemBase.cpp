@@ -42,7 +42,7 @@ ReturnValue_t SubsystemBase::registerChild(object_id_t objectId) {
   if (not resultPair.second) {
     return COULD_NOT_INSERT_CHILD;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t SubsystemBase::checkStateAgainstTable(HybridIterator<ModeListEntry> tableIter,
@@ -53,11 +53,11 @@ ReturnValue_t SubsystemBase::checkStateAgainstTable(HybridIterator<ModeListEntry
     object_id_t object = tableIter.value->getObject();
 
     if ((childIter = childrenMap.find(object)) == childrenMap.end()) {
-      return RETURN_FAILED;
+      return returnvalue::FAILED;
     }
 
     if (childIter->second.mode != tableIter.value->getMode()) {
-      return RETURN_FAILED;
+      return returnvalue::FAILED;
     }
 
     Submode_t submodeToCheckAgainst = tableIter.value->getSubmode();
@@ -66,10 +66,10 @@ ReturnValue_t SubsystemBase::checkStateAgainstTable(HybridIterator<ModeListEntry
     }
 
     if (childIter->second.submode != submodeToCheckAgainst) {
-      return RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter, Submode_t targetSubmode) {
@@ -122,7 +122,7 @@ void SubsystemBase::executeTable(HybridIterator<ModeListEntry> tableIter, Submod
                  // mode is forced to reach lower levels
     }
     ReturnValue_t result = commandQueue->sendMessage(iter->second.commandQueue, &command);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       ++commandsOutstanding;
     }
   }
@@ -136,7 +136,7 @@ ReturnValue_t SubsystemBase::updateChildMode(MessageQueueId_t queue, Mode_t mode
     if (iter->second.commandQueue == queue) {
       iter->second.mode = mode;
       iter->second.submode = submode;
-      return RETURN_OK;
+      return returnvalue::OK;
     }
   }
   return CHILD_NOT_FOUND;
@@ -146,7 +146,7 @@ ReturnValue_t SubsystemBase::updateChildChangedHealth(MessageQueueId_t queue, bo
   for (auto iter = childrenMap.begin(); iter != childrenMap.end(); iter++) {
     if (iter->second.commandQueue == queue) {
       iter->second.healthChanged = changedHealth;
-      return RETURN_OK;
+      return returnvalue::OK;
     }
   }
   return CHILD_NOT_FOUND;
@@ -158,14 +158,14 @@ ReturnValue_t SubsystemBase::initialize() {
   MessageQueueId_t parentQueue = MessageQueueIF::NO_QUEUE;
   ReturnValue_t result = SystemObject::initialize();
 
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   if (parentId != objects::NO_OBJECT) {
     SubsystemBase* parent = ObjectManager::instance()->get<SubsystemBase>(parentId);
     if (parent == nullptr) {
-      return RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     parentQueue = parent->getCommandQueue();
 
@@ -174,17 +174,17 @@ ReturnValue_t SubsystemBase::initialize() {
 
   result = healthHelper.initialize(parentQueue);
 
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   result = modeHelper.initialize(parentQueue);
 
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t SubsystemBase::performOperation(uint8_t opCode) {
@@ -194,7 +194,7 @@ ReturnValue_t SubsystemBase::performOperation(uint8_t opCode) {
 
   performChildOperation();
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t SubsystemBase::handleModeReply(CommandMessage* message) {
@@ -203,14 +203,14 @@ ReturnValue_t SubsystemBase::handleModeReply(CommandMessage* message) {
       updateChildMode(message->getSender(), ModeMessage::getMode(message),
                       ModeMessage::getSubmode(message));
       childrenChangedMode = true;
-      return RETURN_OK;
+      return returnvalue::OK;
     case ModeMessage::REPLY_MODE_REPLY:
     case ModeMessage::REPLY_WRONG_MODE_REPLY:
       updateChildMode(message->getSender(), ModeMessage::getMode(message),
                       ModeMessage::getSubmode(message));
       childrenChangedMode = true;
       commandsOutstanding--;
-      return RETURN_OK;
+      return returnvalue::OK;
     case ModeMessage::REPLY_CANT_REACH_MODE:
       commandsOutstanding--;
       {
@@ -220,19 +220,19 @@ ReturnValue_t SubsystemBase::handleModeReply(CommandMessage* message) {
           }
         }
       }
-      return RETURN_OK;
+      return returnvalue::OK;
       //	case ModeMessage::CMD_MODE_COMMAND:
       //		handleCommandedMode(message);
-      //		return RETURN_OK;
+      //		return returnvalue::OK;
       //	case ModeMessage::CMD_MODE_ANNOUNCE:
       //		triggerEvent(MODE_INFO, mode, submode);
-      //		return RETURN_OK;
+      //		return returnvalue::OK;
       //	case ModeMessage::CMD_MODE_ANNOUNCE_RECURSIVELY:
       //		triggerEvent(MODE_INFO, mode, submode);
       //		commandAllChildren(message);
-      //		return RETURN_OK;
+      //		return returnvalue::OK;
     default:
-      return RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
@@ -242,7 +242,7 @@ ReturnValue_t SubsystemBase::checkTable(HybridIterator<ModeListEntry> tableIter)
       return TABLE_CONTAINS_INVALID_OBJECT_ID;
     }
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void SubsystemBase::replyToCommand(CommandMessage* message) { commandQueue->reply(message); }
@@ -284,25 +284,25 @@ void SubsystemBase::checkCommandQueue() {
   ReturnValue_t result;
   CommandMessage command;
 
-  for (result = commandQueue->receiveMessage(&command); result == RETURN_OK;
+  for (result = commandQueue->receiveMessage(&command); result == returnvalue::OK;
        result = commandQueue->receiveMessage(&command)) {
     result = healthHelper.handleHealthCommand(&command);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       continue;
     }
 
     result = modeHelper.handleModeCommand(&command);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       continue;
     }
 
     result = handleModeReply(&command);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       continue;
     }
 
     result = handleCommandMessage(&command);
-    if (result != RETURN_OK) {
+    if (result != returnvalue::OK) {
       CommandMessage reply;
       reply.setReplyRejected(CommandMessage::UNKNOWN_COMMAND, command.getCommand());
       replyToCommand(&reply);
@@ -315,7 +315,7 @@ ReturnValue_t SubsystemBase::setHealth(HealthState health) {
     case HEALTHY:
     case EXTERNAL_CONTROL:
       healthHelper.setHealth(health);
-      return RETURN_OK;
+      return returnvalue::OK;
     default:
       return INVALID_HEALTH_STATE;
   }

@@ -12,7 +12,7 @@ ReturnValue_t ActionHelper::handleActionMessage(CommandMessage* command) {
   if (command->getCommand() == ActionMessage::EXECUTE_ACTION) {
     ActionId_t currentAction = ActionMessage::getActionId(command);
     prepareExecution(command->getSender(), currentAction, ActionMessage::getStoreId(command));
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   } else {
     return CommandMessage::UNKNOWN_COMMAND;
   }
@@ -21,7 +21,7 @@ ReturnValue_t ActionHelper::handleActionMessage(CommandMessage* command) {
 ReturnValue_t ActionHelper::initialize(MessageQueueIF* queueToUse_) {
   ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
   if (ipcStore == nullptr) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   if (queueToUse_ != nullptr) {
     setQueueToUse(queueToUse_);
@@ -35,10 +35,10 @@ ReturnValue_t ActionHelper::initialize(MessageQueueIF* queueToUse_) {
     sif::printWarning("ActionHelper::initialize: No queue set\n");
 #endif
 #endif /* FSFW_VERBOSE_LEVEL >= 1 */
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 void ActionHelper::step(uint8_t step, MessageQueueId_t reportTo, ActionId_t commandId,
@@ -62,7 +62,7 @@ void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t act
   const uint8_t* dataPtr = nullptr;
   size_t size = 0;
   ReturnValue_t result = ipcStore->getData(dataAddress, &dataPtr, &size);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     CommandMessage reply;
     ActionMessage::setStepReply(&reply, actionId, 0, result);
     queueToUse->sendMessage(commandedBy, &reply);
@@ -75,7 +75,7 @@ void ActionHelper::prepareExecution(MessageQueueId_t commandedBy, ActionId_t act
     ActionMessage::setCompletionReply(&reply, actionId, true, result);
     queueToUse->sendMessage(commandedBy, &reply);
   }
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     CommandMessage reply;
     ActionMessage::setStepReply(&reply, actionId, 0, result);
     queueToUse->sendMessage(commandedBy, &reply);
@@ -91,11 +91,11 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t rep
   size_t maxSize = data->getSerializedSize();
   if (maxSize == 0) {
     /* No error, there's simply nothing to report. */
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   size_t size = 0;
   ReturnValue_t result = ipcStore->getFreeElement(&storeAddress, maxSize, &dataPtr);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "ActionHelper::reportData: Getting free element from IPC store failed!"
                  << std::endl;
@@ -107,7 +107,7 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t rep
     return result;
   }
   result = data->serialize(&dataPtr, &size, maxSize, SerializeIF::Endianness::BIG);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     ipcStore->deleteData(storeAddress);
     return result;
   }
@@ -124,7 +124,7 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t rep
     result = queueToUse->sendMessage(reportTo, &reply);
   }
 
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     ipcStore->deleteData(storeAddress);
   }
   return result;
@@ -137,7 +137,7 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t rep
   CommandMessage reply;
   store_address_t storeAddress;
   ReturnValue_t result = ipcStore->addData(&storeAddress, data, dataSize);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "ActionHelper::reportData: Adding data to IPC store failed!" << std::endl;
 #else
@@ -158,7 +158,7 @@ ReturnValue_t ActionHelper::reportData(MessageQueueId_t reportTo, ActionId_t rep
     result = queueToUse->sendMessage(reportTo, &reply);
   }
 
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     ipcStore->deleteData(storeAddress);
   }
   return result;

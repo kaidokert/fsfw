@@ -16,25 +16,25 @@ ReturnValue_t MessageQueueSenderIF::sendMessage(MessageQueueId_t sendTo,
   switch (result) {
     case RTEMS_SUCCESSFUL:
       // message sent successfully
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     case RTEMS_INVALID_ID:
       // invalid queue id
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_INVALID_SIZE:
       // invalid message size
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_INVALID_ADDRESS:
       // buffer is NULL
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_UNSATISFIED:
       // out of message buffers
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_TOO_MANY:
       // queue's limit has been reached
       return MessageQueueIF::FULL;
 
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 

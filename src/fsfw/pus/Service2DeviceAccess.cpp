@@ -23,7 +23,7 @@ ReturnValue_t Service2DeviceAccess::isValidSubservice(uint8_t subservice) {
   switch (static_cast<Subservice>(subservice)) {
     case Subservice::COMMAND_RAW_COMMANDING:
     case Subservice::COMMAND_TOGGLE_WIRETAPPING:
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     default:
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::error << "Invalid Subservice" << std::endl;
@@ -51,7 +51,7 @@ ReturnValue_t Service2DeviceAccess::checkInterfaceAndAcquireMessageQueue(
     return CommandingServiceBase::INVALID_OBJECT;
   }
   *messageQueueToSet = possibleTarget->getCommandQueue();
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t Service2DeviceAccess::prepareCommand(CommandMessage* message, uint8_t subservice,
@@ -65,7 +65,7 @@ ReturnValue_t Service2DeviceAccess::prepareCommand(CommandMessage* message, uint
       return prepareWiretappingCommand(message, tcData, tcDataLen);
     } break;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
@@ -99,7 +99,7 @@ ReturnValue_t Service2DeviceAccess::handleReply(const CommandMessage* reply,
                                                 object_id_t objectId, bool* isStep) {
   switch (reply->getCommand()) {
     case CommandMessage::REPLY_COMMAND_OK:
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     case CommandMessage::REPLY_REJECTED:
       return reply->getReplyRejectedReason();
     default:
@@ -136,7 +136,7 @@ void Service2DeviceAccess::sendWiretappingTm(CommandMessage* reply, uint8_t subs
   const uint8_t* data = nullptr;
   size_t size = 0;
   ReturnValue_t result = IPCStore->getData(storeAddress, &data, &size);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service2DeviceAccess::sendWiretappingTm: Data Lost in "
                   "handleUnrequestedReply with failure ID "

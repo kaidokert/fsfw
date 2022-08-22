@@ -1,7 +1,7 @@
 #ifndef FSFW_DATAPOOL_POOLVARIABLEIF_H_
 #define FSFW_DATAPOOL_POOLVARIABLEIF_H_
 
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../serialize/SerializeIF.h"
 #include "ReadCommitIF.h"
 

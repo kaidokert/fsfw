@@ -12,11 +12,11 @@ ReturnValue_t DeviceTmReportingWrapper::serialize(uint8_t** buffer, size_t* size
                                                   Endianness streamEndianness) const {
   ReturnValue_t result =
       SerializeAdapter::serialize(&objectId, buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = SerializeAdapter::serialize(&actionId, buffer, size, maxSize, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return data->serialize(buffer, size, maxSize, streamEndianness);
@@ -29,11 +29,11 @@ size_t DeviceTmReportingWrapper::getSerializedSize() const {
 ReturnValue_t DeviceTmReportingWrapper::deSerialize(const uint8_t** buffer, size_t* size,
                                                     Endianness streamEndianness) {
   ReturnValue_t result = SerializeAdapter::deSerialize(&objectId, buffer, size, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   result = SerializeAdapter::deSerialize(&actionId, buffer, size, streamEndianness);
-  if (result != HasReturnvaluesIF::RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
   return data->deSerialize(buffer, size, streamEndianness);

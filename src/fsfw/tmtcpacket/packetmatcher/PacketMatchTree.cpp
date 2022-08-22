@@ -41,7 +41,7 @@ ReturnValue_t PacketMatchTree::addMatch(uint16_t apid, uint8_t type, uint8_t sub
       findOrInsertMatch<TmPacketMinimal*, ApidMatcher>(this->begin(), &testPacket, &lastTest);
   if (result == NEW_NODE_CREATED) {
     rollback = lastTest;
-  } else if (result != RETURN_OK) {
+  } else if (result != returnvalue::OK) {
     return result;
   }
   if (type == 0) {
@@ -50,7 +50,7 @@ ReturnValue_t PacketMatchTree::addMatch(uint16_t apid, uint8_t type, uint8_t sub
     if (lastTest.left() != this->end()) {
       removeElementAndAllChildren(lastTest.left());
     }
-    return RETURN_OK;
+    return returnvalue::OK;
   }
   // Type insertion required.
   result =
@@ -59,7 +59,7 @@ ReturnValue_t PacketMatchTree::addMatch(uint16_t apid, uint8_t type, uint8_t sub
     if (rollback == this->end()) {
       rollback = lastTest;
     }
-  } else if (result != RETURN_OK) {
+  } else if (result != returnvalue::OK) {
     if (rollback != this->end()) {
       removeElementAndAllChildren(rollback);
     }
@@ -70,20 +70,20 @@ ReturnValue_t PacketMatchTree::addMatch(uint16_t apid, uint8_t type, uint8_t sub
       // See above
       removeElementAndAllChildren(lastTest.left());
     }
-    return RETURN_OK;
+    return returnvalue::OK;
   }
   // Subtype insertion required.
   result = findOrInsertMatch<TmPacketMinimal*, SubServiceMatcher>(lastTest.left(), &testPacket,
                                                                   &lastTest);
   if (result == NEW_NODE_CREATED) {
-    return RETURN_OK;
-  } else if (result != RETURN_OK) {
+    return returnvalue::OK;
+  } else if (result != returnvalue::OK) {
     if (rollback != this->end()) {
       removeElementAndAllChildren(rollback);
     }
     return result;
   }
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 template <typename VALUE_T, typename INSERTION_T>
@@ -96,7 +96,7 @@ ReturnValue_t PacketMatchTree::findOrInsertMatch(iterator startAt, VALUE_T test,
     attachToBranch = OR;
     *lastTest = iter;
     if (isMatch) {
-      return RETURN_OK;
+      return returnvalue::OK;
     } else {
       // Go down OR branch.
       iter = iter.right();
@@ -116,7 +116,7 @@ ReturnValue_t PacketMatchTree::findOrInsertMatch(iterator startAt, VALUE_T test,
   *lastTest = insert(attachToBranch, *lastTest, newNode);
   if (*lastTest == end()) {
     // This actaully never fails, so creating a dedicated returncode seems an overshoot.
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
   return NEW_NODE_CREATED;
 }

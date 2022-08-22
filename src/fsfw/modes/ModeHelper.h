@@ -3,7 +3,7 @@
 
 #include "ModeMessage.h"
 #include "fsfw/ipc/MessageQueueIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/timemanager/Countdown.h"
 
 class HasModesIF;

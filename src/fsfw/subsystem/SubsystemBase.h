@@ -9,7 +9,7 @@
 #include "../ipc/MessageQueueIF.h"
 #include "../modes/HasModesIF.h"
 #include "../objectmanager/SystemObject.h"
-#include "../returnvalues/HasReturnvaluesIF.h"
+#include "../returnvalues/returnvalue.h"
 #include "../tasks/ExecutableObjectIF.h"
 #include "modes/HasModeSequenceIF.h"
 
@@ -20,7 +20,6 @@
 class SubsystemBase : public SystemObject,
                       public HasModesIF,
                       public HasHealthIF,
-                      public HasReturnvaluesIF,
                       public ExecutableObjectIF {
  public:
   static const uint8_t INTERFACE_ID = CLASS_ID::SUBSYSTEM_BASE;
@@ -43,7 +42,7 @@ class SubsystemBase : public SystemObject,
    * 	Also adds them to the internal childrenMap.
    *
    * @param objectId
-   * @return RETURN_OK if successful
+   * @return returnvalue::OK if successful
    * 		   CHILD_DOESNT_HAVE_MODES if Child is no HasHealthIF and no HasModesIF
    * 		   COULD_NOT_INSERT_CHILD If the Child could not be added to the ChildrenMap
    */

@@ -7,7 +7,7 @@
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
 #include "fsfw/objectmanager/SystemObject.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
 #include "fsfw/tmtcpacket/pus/tc.h"
 
@@ -35,8 +35,7 @@ void setStaticFrameworkObjectIds();
  */
 class PusServiceBase : public ExecutableObjectIF,
                        public AcceptsTelecommandsIF,
-                       public SystemObject,
-                       public HasReturnvaluesIF {
+                       public SystemObject {
   friend void(Factory::setStaticFrameworkObjectIds)();
 
  public:
@@ -76,14 +75,14 @@ class PusServiceBase : public ExecutableObjectIF,
    *
    * @return	The returned status_code is directly taken as main error code
    * 			in the Verification Report.
-   * 			On success, RETURN_OK shall be returned.
+   * 			On success, returnvalue::OK shall be returned.
    */
   virtual ReturnValue_t handleRequest(uint8_t subservice) = 0;
   /**
    * In performService, implementations can handle periodic,
    * non-TC-triggered activities.
    * The performService method is always called.
-   * @return	Currently, everything other that RETURN_OK only triggers
+   * @return	Currently, everything other that returnvalue::OK only triggers
    * 			diagnostic output.
    */
   virtual ReturnValue_t performService() = 0;
@@ -93,8 +92,8 @@ class PusServiceBase : public ExecutableObjectIF,
    * completion verification messages and deletes
    * the TC requests afterwards.
    * performService is always executed afterwards.
-   * @return	@c RETURN_OK if the periodic performService was successful.
-   * 			@c RETURN_FAILED else.
+   * @return	@c returnvalue::OK if the periodic performService was successful.
+   * 			@c returnvalue::FAILED else.
    */
   ReturnValue_t performOperation(uint8_t opCode) override;
   virtual uint16_t getIdentifier() override;

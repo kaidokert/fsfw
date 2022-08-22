@@ -51,7 +51,7 @@ class SerialLinkedListAdapter : public SinglyLinkedList<T>, public SerializeIF {
       count_t mySize = SinglyLinkedList<T>::getSize();
       ReturnValue_t result =
           SerializeAdapter::serialize(&mySize, buffer, size, maxSize, streamEndianness);
-      if (result != HasReturnvaluesIF::RETURN_OK) {
+      if (result != returnvalue::OK) {
         return result;
       }
     }
@@ -60,8 +60,8 @@ class SerialLinkedListAdapter : public SinglyLinkedList<T>, public SerializeIF {
 
   static ReturnValue_t serialize(const LinkedElement<T>* element, uint8_t** buffer, size_t* size,
                                  size_t maxSize, Endianness streamEndianness) {
-    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-    while ((result == HasReturnvaluesIF::RETURN_OK) and (element != nullptr)) {
+    ReturnValue_t result = returnvalue::OK;
+    while ((result == returnvalue::OK) and (element != nullptr)) {
       result = element->value->serialize(buffer, size, maxSize, streamEndianness);
       element = element->getNext();
     }
@@ -92,8 +92,8 @@ class SerialLinkedListAdapter : public SinglyLinkedList<T>, public SerializeIF {
 
   static ReturnValue_t deSerialize(LinkedElement<T>* element, const uint8_t** buffer, size_t* size,
                                    Endianness streamEndianness) {
-    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
-    while ((result == HasReturnvaluesIF::RETURN_OK) and (element != nullptr)) {
+    ReturnValue_t result = returnvalue::OK;
+    while ((result == returnvalue::OK) and (element != nullptr)) {
       result = element->value->deSerialize(buffer, size, streamEndianness);
       element = element->getNext();
     }

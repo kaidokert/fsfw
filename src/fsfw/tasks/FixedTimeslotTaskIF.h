@@ -15,7 +15,7 @@ class FixedTimeslotTaskIF : public PeriodicTaskIF {
   ~FixedTimeslotTaskIF() override = default;
 
   static constexpr ReturnValue_t SLOT_LIST_EMPTY =
-      HasReturnvaluesIF::makeReturnCode(CLASS_ID::FIXED_SLOT_TASK_IF, 0);
+      returnvalue::makeCode(CLASS_ID::FIXED_SLOT_TASK_IF, 0);
 
   /**
    * Add an object with a slot time and the execution step to the task.
@@ -51,11 +51,11 @@ class FixedTimeslotTaskIF : public PeriodicTaskIF {
   virtual ReturnValue_t checkSequence() = 0;
 
   ReturnValue_t addComponent(object_id_t object, uint8_t opCode) override {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   ReturnValue_t addComponent(ExecutableObjectIF* object, uint8_t opCode) override {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 };
 

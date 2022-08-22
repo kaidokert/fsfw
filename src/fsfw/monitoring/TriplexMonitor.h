@@ -49,7 +49,7 @@ class TriplexMonitor : public HasParametersIF {
         nAvailable++;
       }
     }
-    ReturnValue_t result = HasReturnvaluesIF::RETURN_FAILED;
+    ReturnValue_t result = returnvalue::FAILED;
     switch (nAvailable) {
       case 3:
         result = doTriplexMonitoring();
@@ -67,9 +67,9 @@ class TriplexMonitor : public HasParametersIF {
   ReturnValue_t initialize() {
     healthTable = ObjectManager::instance()->get<HealthTableIF>(objects::HEALTH_TABLE);
     if (healthTable == NULL) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
   ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId, ParameterWrapper *parameterWrapper,
@@ -84,7 +84,7 @@ class TriplexMonitor : public HasParametersIF {
       default:
         return INVALID_IDENTIFIER_ID;
     }
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
 
  protected:
@@ -96,7 +96,7 @@ class TriplexMonitor : public HasParametersIF {
   HealthTableIF *healthTable;
   uint8_t domainId;
   ReturnValue_t doTriplexMonitoring() {
-    ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+    ReturnValue_t result = returnvalue::OK;
     // Find middle value, by ordering indices
     uint8_t index[3] = {0, 1, 2};
     if (values[index[0]].value > values[index[1]].value) {
@@ -118,7 +118,7 @@ class TriplexMonitor : public HasParametersIF {
     if (values[index[2]] > (values[index[1]] + limit)) {
       EventManagerIF::triggerEvent(getRefereneceObject(index[2]), eventTripleCheck,
                                    HIGHEST_VALUE_OOL, 0);
-      if (result == HasReturnvaluesIF::RETURN_OK) {
+      if (result == returnvalue::OK) {
         result = HIGHEST_VALUE_OOL;
       } else {
         result = BOTH_VALUES_OOL;
@@ -142,7 +142,7 @@ class TriplexMonitor : public HasParametersIF {
         return DUPLEX_OOL;
       }
     }
-    return HasReturnvaluesIF::RETURN_OK;
+    return returnvalue::OK;
   }
   virtual bool checkObjectHealthState(uint8_t valueIndex) = 0;
   virtual object_id_t getRefereneceObject(uint8_t valueIndex) = 0;

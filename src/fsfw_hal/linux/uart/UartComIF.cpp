@@ -37,7 +37,7 @@ ReturnValue_t UartComIF::initializeInterface(CookieIF* cookie) {
   if (uartDeviceMapIter == uartDeviceMap.end()) {
     int fileDescriptor = configureUartPort(uartCookie);
     if (fileDescriptor < 0) {
-      return RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     size_t maxReplyLen = uartCookie->getMaxReplyLen();
     UartElements uartElements = {fileDescriptor, std::vector<uint8_t>(maxReplyLen), 0};
@@ -47,17 +47,17 @@ ReturnValue_t UartComIF::initializeInterface(CookieIF* cookie) {
       sif::warning << "UartComIF::initializeInterface: Failed to insert device " << deviceFile
                    << "to UART device map" << std::endl;
 #endif
-      return RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   } else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "UartComIF::initializeInterface: UART device " << deviceFile
                  << " already in use" << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 int UartComIF::configureUartPort(UartCookie* uartCookie) {
@@ -329,14 +329,14 @@ ReturnValue_t UartComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, 
   UartDeviceMapIter uartDeviceMapIter;
 
   if (sendLen == 0) {
-    return RETURN_OK;
+    return returnvalue::OK;
   }
 
   if (sendData == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "UartComIF::sendMessage: Send data is nullptr" << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   UartCookie* uartCookie = dynamic_cast<UartCookie*>(cookie);
@@ -354,7 +354,7 @@ ReturnValue_t UartComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, 
     sif::debug << "UartComIF::sendMessage: Device file " << deviceFile << "not in UART map"
                << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   fd = uartDeviceMapIter->second.fileDescriptor;
@@ -364,13 +364,13 @@ ReturnValue_t UartComIF::sendMessage(CookieIF* cookie, const uint8_t* sendData, 
     sif::error << "UartComIF::sendMessage: Failed to send data with error code " << errno
                << ": Error description: " << strerror(errno) << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
-ReturnValue_t UartComIF::getSendSuccess(CookieIF* cookie) { return RETURN_OK; }
+ReturnValue_t UartComIF::getSendSuccess(CookieIF* cookie) { return returnvalue::OK; }
 
 ReturnValue_t UartComIF::requestReceiveMessage(CookieIF* cookie, size_t requestLen) {
   std::string deviceFile;
@@ -389,7 +389,7 @@ ReturnValue_t UartComIF::requestReceiveMessage(CookieIF* cookie, size_t requestL
   uartDeviceMapIter = uartDeviceMap.find(deviceFile);
 
   if (uartMode == UartModes::NON_CANONICAL and requestLen == 0) {
-    return RETURN_OK;
+    return returnvalue::OK;
   }
 
   if (uartDeviceMapIter == uartDeviceMap.end()) {
@@ -397,7 +397,7 @@ ReturnValue_t UartComIF::requestReceiveMessage(CookieIF* cookie, size_t requestL
     sif::debug << "UartComIF::requestReceiveMessage: Device file " << deviceFile
                << " not in uart map" << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   if (uartMode == UartModes::CANONICAL) {
@@ -405,13 +405,13 @@ ReturnValue_t UartComIF::requestReceiveMessage(CookieIF* cookie, size_t requestL
   } else if (uartMode == UartModes::NON_CANONICAL) {
     return handleNoncanonicalRead(*uartCookie, uartDeviceMapIter, requestLen);
   } else {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 }
 
 ReturnValue_t UartComIF::handleCanonicalRead(UartCookie& uartCookie, UartDeviceMapIter& iter,
                                              size_t requestLen) {
-  ReturnValue_t result = HasReturnvaluesIF::RETURN_OK;
+  ReturnValue_t result = returnvalue::OK;
   uint8_t maxReadCycles = uartCookie.getReadCycles();
   uint8_t currentReadCycles = 0;
   int bytesRead = 0;
@@ -454,7 +454,7 @@ ReturnValue_t UartComIF::handleCanonicalRead(UartCookie& uartCookie, UartDeviceM
                           strerror(errno));
 #endif
 #endif
-        return RETURN_FAILED;
+        return returnvalue::FAILED;
       }
 
     } else if (bytesRead > 0) {
@@ -487,18 +487,18 @@ ReturnValue_t UartComIF::handleNoncanonicalRead(UartCookie& uartCookie, UartDevi
   }
   int bytesRead = read(fd, bufferPtr, requestLen);
   if (bytesRead < 0) {
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   } else if (bytesRead != static_cast<int>(requestLen)) {
     if (uartCookie.isReplySizeFixed()) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
       sif::warning << "UartComIF::requestReceiveMessage: Only read " << bytesRead << " of "
                    << requestLen << " bytes" << std::endl;
 #endif
-      return RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   }
   iter->second.replyLen = bytesRead;
-  return HasReturnvaluesIF::RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t UartComIF::readReceivedMessage(CookieIF* cookie, uint8_t** buffer, size_t* size) {
@@ -520,7 +520,7 @@ ReturnValue_t UartComIF::readReceivedMessage(CookieIF* cookie, uint8_t** buffer,
     sif::debug << "UartComIF::readReceivedMessage: Device file " << deviceFile << " not in uart map"
                << std::endl;
 #endif
-    return RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   *buffer = uartDeviceMapIter->second.replyBuffer.data();
@@ -529,7 +529,7 @@ ReturnValue_t UartComIF::readReceivedMessage(CookieIF* cookie, uint8_t** buffer,
   /* Length is reset to 0 to prevent reading the same data twice */
   uartDeviceMapIter->second.replyLen = 0;
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 ReturnValue_t UartComIF::flushUartRxBuffer(CookieIF* cookie) {
@@ -547,9 +547,9 @@ ReturnValue_t UartComIF::flushUartRxBuffer(CookieIF* cookie) {
   if (uartDeviceMapIter != uartDeviceMap.end()) {
     int fd = uartDeviceMapIter->second.fileDescriptor;
     tcflush(fd, TCIFLUSH);
-    return RETURN_OK;
+    return returnvalue::OK;
   }
-  return RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t UartComIF::flushUartTxBuffer(CookieIF* cookie) {
@@ -567,9 +567,9 @@ ReturnValue_t UartComIF::flushUartTxBuffer(CookieIF* cookie) {
   if (uartDeviceMapIter != uartDeviceMap.end()) {
     int fd = uartDeviceMapIter->second.fileDescriptor;
     tcflush(fd, TCOFLUSH);
-    return RETURN_OK;
+    return returnvalue::OK;
   }
-  return RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 ReturnValue_t UartComIF::flushUartTxAndRxBuf(CookieIF* cookie) {
@@ -587,9 +587,9 @@ ReturnValue_t UartComIF::flushUartTxAndRxBuf(CookieIF* cookie) {
   if (uartDeviceMapIter != uartDeviceMap.end()) {
     int fd = uartDeviceMapIter->second.fileDescriptor;
     tcflush(fd, TCIOFLUSH);
-    return RETURN_OK;
+    return returnvalue::OK;
   }
-  return RETURN_FAILED;
+  return returnvalue::FAILED;
 }
 
 void UartComIF::setUartMode(struct termios* options, UartCookie& uartCookie) {

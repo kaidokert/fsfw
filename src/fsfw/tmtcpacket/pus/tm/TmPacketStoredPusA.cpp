@@ -20,7 +20,7 @@ TmPacketStoredPusA::TmPacketStoredPusA(uint16_t apid, uint8_t service, uint8_t s
   size_t sizeToReserve = getPacketMinimumSize() + size + headerSize;
   ReturnValue_t returnValue = store->getFreeElement(&storeAddress, sizeToReserve, &pData);
 
-  if (returnValue != store->RETURN_OK) {
+  if (returnValue != returnvalue::OK) {
     handleStoreFailure("A", returnValue, sizeToReserve);
     return;
   }
@@ -49,7 +49,7 @@ TmPacketStoredPusA::TmPacketStoredPusA(uint16_t apid, uint8_t service, uint8_t s
   uint8_t *pData = nullptr;
   size_t sizeToReserve = getPacketMinimumSize() + sourceDataSize;
   ReturnValue_t returnValue = store->getFreeElement(&storeAddress, sizeToReserve, &pData);
-  if (returnValue != store->RETURN_OK) {
+  if (returnValue != returnvalue::OK) {
     handleStoreFailure("A", returnValue, sizeToReserve);
     return;
   }

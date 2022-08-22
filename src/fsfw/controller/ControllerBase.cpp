@@ -20,7 +20,7 @@ ControllerBase::~ControllerBase() { QueueFactory::instance()->deleteMessageQueue
 
 ReturnValue_t ControllerBase::initialize() {
   ReturnValue_t result = SystemObject::initialize();
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
@@ -28,7 +28,7 @@ ReturnValue_t ControllerBase::initialize() {
   if (parentId != objects::NO_OBJECT) {
     auto* parent = ObjectManager::instance()->get<SubsystemBase>(parentId);
     if (parent == nullptr) {
-      return RETURN_FAILED;
+      return returnvalue::FAILED;
     }
     parentQueue = parent->getCommandQueue();
 
@@ -36,16 +36,16 @@ ReturnValue_t ControllerBase::initialize() {
   }
 
   result = healthHelper.initialize(parentQueue);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
   result = modeHelper.initialize(parentQueue);
-  if (result != RETURN_OK) {
+  if (result != returnvalue::OK) {
     return result;
   }
 
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 MessageQueueId_t ControllerBase::getCommandQueue() const { return commandQueue->getId(); }
@@ -53,19 +53,19 @@ MessageQueueId_t ControllerBase::getCommandQueue() const { return commandQueue->
 void ControllerBase::handleQueue() {
   CommandMessage command;
   ReturnValue_t result;
-  for (result = commandQueue->receiveMessage(&command); result == RETURN_OK;
+  for (result = commandQueue->receiveMessage(&command); result == returnvalue::OK;
        result = commandQueue->receiveMessage(&command)) {
     result = modeHelper.handleModeCommand(&command);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       continue;
     }
 
     result = healthHelper.handleHealthCommand(&command);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       continue;
     }
     result = handleCommandMessage(&command);
-    if (result == RETURN_OK) {
+    if (result == returnvalue::OK) {
       continue;
     }
     command.setToUnknownCommand();
@@ -96,7 +96,7 @@ void ControllerBase::announceMode(bool recursive) { triggerEvent(MODE_INFO, mode
 ReturnValue_t ControllerBase::performOperation(uint8_t opCode) {
   handleQueue();
   performControlOperation();
-  return RETURN_OK;
+  return returnvalue::OK;
 }
 
 void ControllerBase::modeChanged(Mode_t mode_, Submode_t submode_) {}
@@ -106,7 +106,7 @@ ReturnValue_t ControllerBase::setHealth(HealthState health) {
     case HEALTHY:
     case EXTERNAL_CONTROL:
       healthHelper.setHealth(health);
-      return RETURN_OK;
+      return returnvalue::OK;
     default:
       return INVALID_HEALTH_STATE;
   }
@@ -117,4 +117,4 @@ void ControllerBase::setTaskIF(PeriodicTaskIF* task_) { executingTask = task_; }
 
 void ControllerBase::changeHK(Mode_t mode_, Submode_t submode_, bool enable) {}
 
-ReturnValue_t ControllerBase::initializeAfterTaskCreation() { return HasReturnvaluesIF::RETURN_OK; }
+ReturnValue_t ControllerBase::initializeAfterTaskCreation() { return returnvalue::OK; }

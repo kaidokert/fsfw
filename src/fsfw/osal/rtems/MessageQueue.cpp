@@ -32,7 +32,7 @@ ReturnValue_t MessageQueue::receiveMessage(MessageQueueMessageIF* message) {
     this->last = message->getSender();
     // Check size of incoming message.
     if (message->getMessageSize() < message->getMinimumMessageSize()) {
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     }
   } else {
     // No message was received. Keep lastPartner anyway, I might send something later.
@@ -66,7 +66,7 @@ ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo, MessageQueu
 
   ReturnValue_t returnCode = convertReturnCode(result);
   if (returnCode == MessageQueueIF::EMPTY) {
-    return HasReturnvaluesIF::RETURN_FAILED;
+    return returnvalue::FAILED;
   }
 
   return returnCode;
@@ -75,23 +75,23 @@ ReturnValue_t MessageQueue::sendMessageFrom(MessageQueueId_t sendTo, MessageQueu
 ReturnValue_t MessageQueue::convertReturnCode(rtems_status_code inValue) {
   switch (inValue) {
     case RTEMS_SUCCESSFUL:
-      return HasReturnvaluesIF::RETURN_OK;
+      return returnvalue::OK;
     case RTEMS_INVALID_ID:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_TIMEOUT:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_OBJECT_WAS_DELETED:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_INVALID_ADDRESS:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_INVALID_SIZE:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
     case RTEMS_TOO_MANY:
       return MessageQueueIF::FULL;
     case RTEMS_UNSATISFIED:
       return MessageQueueIF::EMPTY;
     default:
-      return HasReturnvaluesIF::RETURN_FAILED;
+      return returnvalue::FAILED;
   }
 }
 
