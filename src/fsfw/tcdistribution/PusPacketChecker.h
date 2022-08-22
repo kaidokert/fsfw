@@ -2,7 +2,7 @@
 #define FSFW_TCDISTRIBUTION_TCPACKETCHECKPUS_H_
 
 #include "fsfw/FSFW.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/tmtcpacket/pus/defs.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
 

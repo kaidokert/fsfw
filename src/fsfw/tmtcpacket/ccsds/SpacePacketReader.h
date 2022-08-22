@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/tmtcpacket/ReadablePacketIF.h"
 #include "fsfw/tmtcpacket/RedirectableDataPointerIF.h"
 #include "fsfw/tmtcpacket/ccsds/defs.h"

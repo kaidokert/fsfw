@@ -2,7 +2,7 @@
 #define FRAMEWORK_TMTCPACKET_PUS_TMPACKETMINIMAL_H_
 
 #include "PusTmIF.h"
-#include "fsfw/returnvalues/HasReturnvaluesIF.h"
+#include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
 #include "fsfw/tmtcpacket/pus/RawUserDataReaderIF.h"
 
