@@ -103,16 +103,15 @@ ReturnValue_t PusDistributor::callbackAfterSending(ReturnValue_t queueStatus) {
   if (queueStatus != returnvalue::OK) {
     tcStatus = queueStatus;
   }
-  if (tcStatus != returnvalue::OK) {
-    verifyChannel->sendFailureReport(
-        VerifFailureParams(tcverif::ACCEPTANCE_FAILURE, reader, tcStatus));
+  if (tcStatus != RETURN_OK) {
+    verifyChannel->sendFailureReport({tcverif::ACCEPTANCE_FAILURE, reader, tcStatus});
     // A failed packet is deleted immediately after reporting,
     // otherwise it will block memory.
     store->deleteData(currentMessage.getStorageId());
     return returnvalue::FAILED;
   } else {
-    verifyChannel->sendSuccessReport(VerifSuccessParams(tcverif::ACCEPTANCE_SUCCESS, reader));
-    return returnvalue::OK;
+    verifyChannel->sendSuccessReport({tcverif::ACCEPTANCE_SUCCESS, reader});
+    return RETURN_OK;
   }
 }
 
@@ -136,7 +135,7 @@ ReturnValue_t PusDistributor::initialize() {
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
   if (verifyChannel == nullptr) {
-    verifyChannel = ObjectManager::instance()->get<VerificationReporterIF>(objects::TC_VERIFICATOR);
+    verifyChannel = ObjectManager::instance()->get<VerificationReporterIF>(objects::VERIFICATION_REPORTER);
     if (verifyChannel == nullptr) {
       return ObjectManagerIF::CHILD_INIT_FAILED;
     }
