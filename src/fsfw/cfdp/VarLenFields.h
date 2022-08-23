@@ -74,6 +74,7 @@ struct TransactionSeqNum : public VarLenField {
 };
 
 struct TransactionId {
+  TransactionId() = default;
   TransactionId(EntityId entityId, TransactionSeqNum seqNum)
       : entityId(std::move(entityId)), seqNum(std::move(seqNum)) {}
 

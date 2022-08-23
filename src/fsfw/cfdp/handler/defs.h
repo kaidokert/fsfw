@@ -1,0 +1,9 @@
+#ifndef FSFW_CFDP_HANDLER_DEFS_H
+#define FSFW_CFDP_HANDLER_DEFS_H
+
+namespace cfdp {
+
+enum class CfdpStates { IDLE, BUSY_CLASS_1_NACKED, BUSY_CLASS_2_ACKED, SUSPENDED };
+
+}
+#endif  // FSFW_CFDP_HANDLER_DEFS_H

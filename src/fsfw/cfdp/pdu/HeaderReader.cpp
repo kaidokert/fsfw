@@ -139,3 +139,13 @@ bool HeaderReader::isNull() const {
 }
 
 HeaderReader::operator bool() const { return not isNull(); }
+
+void HeaderReader::fillConfig(PduConfig &cfg) const {
+  cfg.largeFile = getLargeFileFlag();
+  cfg.crcFlag = getCrcFlag();
+  cfg.mode = getTransmissionMode();
+  cfg.direction = getDirection();
+  getTransactionSeqNum(cfg.seqNum);
+  getSourceId(cfg.sourceId);
+  getDestId(cfg.destId);
+}

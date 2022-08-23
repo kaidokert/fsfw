@@ -45,6 +45,12 @@ class HeaderReader : public RedirectableDataPointerIF, public PduHeaderIF {
   explicit operator bool() const;
   [[nodiscard]] bool isNull() const;
 
+  /**
+   * Fill the provided PDU configuration from the fields detected by this reader.
+   * @param cfg
+   */
+  void fillConfig(PduConfig& cfg) const;
+
   [[nodiscard]] virtual size_t getHeaderSize() const;
 
   [[nodiscard]] size_t getPduDataFieldLen() const override;

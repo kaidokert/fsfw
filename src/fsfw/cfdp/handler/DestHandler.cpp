@@ -3,14 +3,19 @@
 #include <utility>
 
 #include "fsfw/cfdp/pdu/HeaderReader.h"
-#include "fsfw/cfdp/pdu/MetadataPduReader.h"
 #include "fsfw/objectmanager.h"
 #include "fsfw/serviceinterface.h"
 
 using namespace returnvalue;
 
 cfdp::DestHandler::DestHandler(DestHandlerParams params, FsfwParams fsfwParams)
-    : dp(std::move(params)), fp(fsfwParams), tlvVec(params.maxTlvsInOnePdu) {}
+    : tlvVec(params.maxTlvsInOnePdu),
+      userTlvVec(params.maxTlvsInOnePdu),
+      dp(std::move(params)),
+      fp(fsfwParams),
+      tp(params.maxFilenameLen) {
+  tp.pduConf.direction = cfdp::Direction::TOWARDS_SENDER;
+}
 
 ReturnValue_t cfdp::DestHandler::performStateMachine() {
   switch (step) {
@@ -73,10 +78,9 @@ ReturnValue_t cfdp::DestHandler::handleMetadataPdu(const PacketInfo& info) {
     // TODO: This is not a CFDP error. Event and/or warning?
     return constAccessorPair.first;
   }
-  cfdp::FileSize fileSize;
   cfdp::StringLv sourceFileName;
   cfdp::StringLv destFileName;
-  MetadataInfo metadataInfo(fileSize, sourceFileName, destFileName);
+  MetadataInfo metadataInfo(tp.fileSize, sourceFileName, destFileName);
   cfdp::Tlv* tlvArrayAsPtr = tlvVec.data();
   metadataInfo.setOptionsArray(&tlvArrayAsPtr, std::nullopt, tlvVec.size());
   MetadataPduReader reader(constAccessorPair.second.data(), constAccessorPair.second.size(),
@@ -89,7 +93,7 @@ ReturnValue_t cfdp::DestHandler::handleMetadataPdu(const PacketInfo& info) {
     return handleMetadataParseError(constAccessorPair.second.data(),
                                     constAccessorPair.second.size());
   }
-  return result;
+  return startTransaction(reader, metadataInfo);
 }
 
 ReturnValue_t cfdp::DestHandler::handleMetadataParseError(const uint8_t* rawData, size_t maxSize) {
@@ -125,4 +129,45 @@ ReturnValue_t cfdp::DestHandler::handleMetadataParseError(const uint8_t* rawData
   }
   // TODO: Appropriate returnvalue?
   return returnvalue::FAILED;
+}
+
+ReturnValue_t cfdp::DestHandler::startTransaction(MetadataPduReader& reader, MetadataInfo& info) {
+  if (cfdpState != CfdpStates::IDLE) {
+    // According to standard, discard metadata PDU if we are busy
+    return returnvalue::OK;
+  }
+  step = TransactionStep::TRANSACTION_START;
+  if (reader.getTransmissionMode() == TransmissionModes::UNACKNOWLEDGED) {
+    cfdpState = CfdpStates::BUSY_CLASS_1_NACKED;
+  } else if (reader.getTransmissionMode() == TransmissionModes::ACKNOWLEDGED) {
+    cfdpState = CfdpStates::BUSY_CLASS_2_ACKED;
+  }
+  tp.checksumType = info.getChecksumType();
+  tp.closureRequested = info.isClosureRequested();
+  size_t sourceNameSize = 0;
+  const uint8_t* sourceNamePtr = info.getSourceFileName().getValue(&sourceNameSize);
+  if (sourceNameSize > tp.sourceName.size()) {
+    // TODO: Warning, event etc.
+    return FAILED;
+  }
+  std::memcpy(tp.sourceName.data(), sourceNamePtr, sourceNameSize);
+  tp.sourceName[sourceNameSize] = '\0';
+  size_t destNameSize = 0;
+  const uint8_t* destNamePtr = info.getDestFileName().getValue(&destNameSize);
+  if (destNameSize > tp.destName.size()) {
+    // TODO: Warning, event etc.
+    return FAILED;
+  }
+  std::memcpy(tp.destName.data(), destNamePtr, destNameSize);
+  tp.destName[destNameSize] = '\0';
+  reader.fillConfig(tp.pduConf);
+  tp.pduConf.direction = Direction::TOWARDS_SENDER;
+  tp.transactionId.entityId = tp.pduConf.sourceId;
+  tp.transactionId.seqNum = tp.pduConf.seqNum;
+  if (not dp.remoteCfgTable.getRemoteCfg(tp.pduConf.destId, &tp.remoteCfg)) {
+    // TODO: Warning, event etc.
+    return FAILED;
+  }
+  step = TransactionStep::RECEIVING_FILE_DATA_PDUS;
+  return OK;
 }

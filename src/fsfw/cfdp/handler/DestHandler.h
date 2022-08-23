@@ -7,7 +7,9 @@
 
 #include "RemoteConfigTableIF.h"
 #include "UserBase.h"
+#include "defs.h"
 #include "fsfw/cfdp/handler/mib.h"
+#include "fsfw/cfdp/pdu/MetadataPduReader.h"
 #include "fsfw/cfdp/pdu/PduConfig.h"
 #include "fsfw/container/DynamicFIFO.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
@@ -28,7 +30,7 @@ struct PacketInfo {
 
 struct DestHandlerParams {
   DestHandlerParams(LocalEntityCfg cfg, UserBase& user, RemoteConfigTableIF& remoteCfgTable,
-                    etl::ilist<PacketInfo>& packetList, uint8_t maxTlvsInOnePdu)
+                    etl::ilist<PacketInfo>& packetList)
       : cfg(std::move(cfg)),
         user(user),
         remoteCfgTable(remoteCfgTable),
@@ -39,7 +41,8 @@ struct DestHandlerParams {
   RemoteConfigTableIF& remoteCfgTable;
 
   etl::ilist<PacketInfo>& packetListRef;
-  uint8_t maxTlvsInOnePdu;
+  uint8_t maxTlvsInOnePdu = 10;
+  size_t maxFilenameLen = 255;
 };
 
 struct FsfwParams {
@@ -67,8 +70,6 @@ class DestHandler {
   ReturnValue_t handleMetadataParseError(const uint8_t* rawData, size_t maxSize);
 
  private:
-  DestHandlerParams dp;
-  FsfwParams fp;
   enum class TransactionStep {
     IDLE = 0,
     TRANSACTION_START = 1,
@@ -77,8 +78,29 @@ class DestHandler {
     TRANSFER_COMPLETION = 4,
     SENDING_FINISHED_PDU = 5
   };
+  struct TransactionParams {
+    explicit TransactionParams(size_t maxFileNameLen)
+        : sourceName(maxFileNameLen), destName(maxFileNameLen) {}
+
+    ChecksumType checksumType = ChecksumType::NULL_CHECKSUM;
+    bool closureRequested{};
+    std::vector<char> sourceName;
+    std::vector<char> destName;
+    cfdp::FileSize fileSize;
+    TransactionId transactionId;
+    PduConfig pduConf;
+    RemoteEntityCfg* remoteCfg;
+  };
+
   TransactionStep step = TransactionStep::IDLE;
+  CfdpStates cfdpState = CfdpStates::IDLE;
   std::vector<cfdp::Tlv> tlvVec;
+  std::vector<cfdp::Tlv> userTlvVec;
+  DestHandlerParams dp;
+  FsfwParams fp;
+  TransactionParams tp;
+
+  ReturnValue_t startTransaction(MetadataPduReader& reader, MetadataInfo& info);
 };
 
 }  // namespace cfdp
