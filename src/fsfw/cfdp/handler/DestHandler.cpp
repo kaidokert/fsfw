@@ -169,5 +169,14 @@ ReturnValue_t cfdp::DestHandler::startTransaction(MetadataPduReader& reader, Met
     return FAILED;
   }
   step = TransactionStep::RECEIVING_FILE_DATA_PDUS;
+  MetadataRecvdParams params;
+  params.sourceId = tp.pduConf.sourceId;
+  params.fileSize = tp.fileSize.getSize();
+  params.destFileName = tp.destName.data();
+  params.sourceFileName = tp.sourceName.data();
+  params.id = tp.transactionId;
+  params.msgsToUserArray = dynamic_cast<MessageToUserTlv*>(userTlvVec.data());
+  params.msgsToUserLen = info.getOptionsLen();
+  dp.user.metadataRecvdIndication(params);
   return OK;
 }

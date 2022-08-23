@@ -29,10 +29,11 @@ struct TransactionFinishedParams {
 struct MetadataRecvdParams {
   TransactionId id;
   EntityId sourceId;
-  size_t fileSize;
-  const char* sourceFileName;
-  const char* destFileName;
-  std::vector<MessageToUserTlv*> msgsToUser;
+  uint64_t fileSize;
+  const char* sourceFileName = "";
+  const char* destFileName = "";
+  size_t msgsToUserLen = 0;
+  const MessageToUserTlv* msgsToUserArray = nullptr;
 };
 
 struct FileSegmentRecvdParams {
@@ -63,6 +64,16 @@ class UserBase {
   virtual void transactionIndication(TransactionId id) = 0;
   virtual void eofSentIndication(TransactionId id) = 0;
   virtual void transactionFinishedIndication(TransactionFinishedParams params) = 0;
+  /**
+   * Will be called if metadata was received.
+   *
+   * IMPORTANT: The passed struct contains the messages to the user in form of a raw C array.
+   * The TLVs in these arrays are zero-copy types, which means that they point to the raw data
+   * inside the metadata packet directly. The metadata packet will be deleted from the TC store
+   * shortly after it was processed. If some of the data is to be cached and/or used after the
+   * function call, it needs to be copied into another user-provided buffer.
+   * @param params
+   */
   virtual void metadataRecvdIndication(MetadataRecvdParams params) = 0;
   virtual void fileSegmentRecvdIndication(FileSegmentRecvdParams params) = 0;
   virtual void reportIndication(TransactionId id, StatusReportIF& report) = 0;
