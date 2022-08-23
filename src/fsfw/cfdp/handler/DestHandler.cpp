@@ -2,15 +2,31 @@
 
 #include <utility>
 
+#include "fsfw/cfdp/pdu/HeaderReader.h"
+#include "fsfw/cfdp/pdu/MetadataPduReader.h"
 #include "fsfw/objectmanager.h"
+#include "fsfw/serviceinterface.h"
 
-cfdp::DestHandler::DestHandler(DestHandlerParams params) : p(std::move(params)) {}
+using namespace returnvalue;
+
+cfdp::DestHandler::DestHandler(DestHandlerParams params, FsfwParams fsfwParams)
+    : dp(std::move(params)), fp(fsfwParams), tlvVec(params.maxTlvsInOnePdu) {}
 
 ReturnValue_t cfdp::DestHandler::performStateMachine() {
   switch (step) {
     case TransactionStep::IDLE: {
-      for (const auto& info : p.packetListRef) {
+      ReturnValue_t status = returnvalue::OK;
+      ReturnValue_t result;
+      for (const auto& info : dp.packetListRef) {
+        if (info.pduType == PduType::FILE_DIRECTIVE and
+            info.directiveType == FileDirectives::METADATA) {
+          result = handleMetadataPdu(info);
+          if (result != OK) {
+            status = result;
+          }
+        }
       }
+      return status;
     }
     case TransactionStep::TRANSACTION_START:
       break;
@@ -27,26 +43,86 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
 }
 
 ReturnValue_t cfdp::DestHandler::passPacket(PacketInfo packet) {
-  if (p.packetListRef.full()) {
+  if (dp.packetListRef.full()) {
     return returnvalue::FAILED;
   }
-  p.packetListRef.push_back(packet);
+  dp.packetListRef.push_back(packet);
   return returnvalue::OK;
 }
 
 ReturnValue_t cfdp::DestHandler::initialize() {
-  if (p.tmStore == nullptr) {
-    p.tmStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TM_STORE);
-    if (p.tmStore == nullptr) {
+  if (fp.tmStore == nullptr) {
+    fp.tmStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TM_STORE);
+    if (fp.tmStore == nullptr) {
       return returnvalue::FAILED;
     }
   }
 
-  if (p.tcStore == nullptr) {
-    p.tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
-    if (p.tcStore == nullptr) {
+  if (fp.tcStore == nullptr) {
+    fp.tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
+    if (fp.tcStore == nullptr) {
       return returnvalue::FAILED;
     }
   }
   return returnvalue::OK;
+}
+ReturnValue_t cfdp::DestHandler::handleMetadataPdu(const PacketInfo& info) {
+  // Process metadata PDU
+  auto constAccessorPair = fp.tcStore->getData(info.storeId);
+  if (constAccessorPair.first != OK) {
+    // TODO: This is not a CFDP error. Event and/or warning?
+    return constAccessorPair.first;
+  }
+  cfdp::FileSize fileSize;
+  cfdp::StringLv sourceFileName;
+  cfdp::StringLv destFileName;
+  MetadataInfo metadataInfo(fileSize, sourceFileName, destFileName);
+  cfdp::Tlv* tlvArrayAsPtr = tlvVec.data();
+  metadataInfo.setOptionsArray(&tlvArrayAsPtr, std::nullopt, tlvVec.size());
+  MetadataPduReader reader(constAccessorPair.second.data(), constAccessorPair.second.size(),
+                           metadataInfo);
+  ReturnValue_t result = reader.parseData();
+  // TODO: The standard does not really specify what happens if this kind of error happens
+  //       I think it might be a good idea to cache some sort of error code, which
+  //       is translated into a warning and/or event by an upper layer
+  if (result != OK) {
+    return handleMetadataParseError(constAccessorPair.second.data(),
+                                    constAccessorPair.second.size());
+  }
+  return result;
+}
+
+ReturnValue_t cfdp::DestHandler::handleMetadataParseError(const uint8_t* rawData, size_t maxSize) {
+  // TODO: try to extract destination ID for error
+  // TODO: Invalid metadata PDU.
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+  sif::warning << "Parsing Metadata PDU failed with code " << result << std::endl;
+#else
+#endif
+  HeaderReader headerReader(rawData, maxSize);
+  ReturnValue_t result = headerReader.parseData();
+  if (result != OK) {
+    // TODO: Now this really should not happen. Warning or error,
+    //       yield or cache appropriate returnvalue
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::warning << "Parsing Header failed" << std::endl;
+#else
+#endif
+    // TODO: Trigger appropriate event
+    return result;
+  }
+  cfdp::EntityId destId;
+  headerReader.getDestId(destId);
+  RemoteEntityCfg* remoteCfg;
+  if (not dp.remoteCfgTable.getRemoteCfg(destId, &remoteCfg)) {
+// TODO: No remote config for dest ID. I consider this a configuration error.
+//       Warning or error, yield or cache appropriate returnvalue
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::warning << "No remote config exists for destination ID" << std::endl;
+#else
+#endif
+    // TODO: Trigger appropriate event
+  }
+  // TODO: Appropriate returnvalue?
+  return returnvalue::FAILED;
 }

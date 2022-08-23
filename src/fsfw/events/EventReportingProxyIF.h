@@ -5,7 +5,7 @@
 
 class EventReportingProxyIF {
  public:
-  virtual ~EventReportingProxyIF() {}
+  virtual ~EventReportingProxyIF() = default;
 
   virtual void forwardEvent(Event event, uint32_t parameter1 = 0,
                             uint32_t parameter2 = 0) const = 0;

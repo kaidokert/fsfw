@@ -21,7 +21,7 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
 
   std::string firstFileName = "hello.txt";
   cfdp::StringLv sourceFileName(firstFileName);
-  cfdp::Lv destFileName;
+  cfdp::StringLv destFileName;
   FileSize fileSize(35);
   MetadataInfo info(false, ChecksumType::MODULAR, fileSize, sourceFileName, destFileName);
 
@@ -67,11 +67,10 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
     REQUIRE(mdBuffer[26] == 0);
 
     std::string otherFileName = "hello2.txt";
-    cfdp::Lv otherFileNameLv(reinterpret_cast<const uint8_t*>(otherFileName.data()),
-                             otherFileName.size());
+    cfdp::StringLv otherFileNameLv(otherFileName.data(), otherFileName.size());
     info.setSourceFileName(otherFileNameLv);
     size_t sizeOfOptions = options.size();
-    info.setOptionsArray(options.data(), &sizeOfOptions, &sizeOfOptions);
+    info.setOptionsArray(options.data(), sizeOfOptions, sizeOfOptions);
     REQUIRE(info.getMaxOptionsLen() == 2);
     info.setMaxOptionsLen(3);
     REQUIRE(info.getMaxOptionsLen() == 3);
@@ -129,7 +128,7 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
     }
     size_t sizeOfOptions = options.size();
     size_t maxSize = 4;
-    info.setOptionsArray(options.data(), &sizeOfOptions, &maxSize);
+    info.setOptionsArray(options.data(), sizeOfOptions, maxSize);
     REQUIRE(info.getOptionsLen() == 2);
     info.setChecksumType(cfdp::ChecksumType::CRC_32C);
     info.setClosureRequested(true);
@@ -166,9 +165,9 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
     }
     mdBuffer[1] = (36 >> 8) & 0xff;
     mdBuffer[2] = 36 & 0xff;
-    info.setOptionsArray(nullptr, nullptr, nullptr);
+    info.setOptionsArray(nullptr, std::nullopt, std::nullopt);
     REQUIRE(deserializer2.parseData() == cfdp::METADATA_CANT_PARSE_OPTIONS);
-    info.setOptionsArray(options.data(), &sizeOfOptions, nullptr);
+    info.setOptionsArray(options.data(), sizeOfOptions, std::nullopt);
     for (size_t maxSz = 0; maxSz < 46; maxSz++) {
       MetadataPduReader invalidSzDeser(mdBuffer.data(), maxSz, info);
       if (not invalidSzDeser.isNull()) {

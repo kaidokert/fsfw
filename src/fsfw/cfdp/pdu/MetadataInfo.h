@@ -1,30 +1,35 @@
 #ifndef FSFW_SRC_FSFW_CFDP_PDU_METADATAINFO_H_
 #define FSFW_SRC_FSFW_CFDP_PDU_METADATAINFO_H_
 
+#include <optional>
+
 #include "fsfw/cfdp/FileSize.h"
 #include "fsfw/cfdp/definitions.h"
 #include "fsfw/cfdp/tlv/Lv.h"
+#include "fsfw/cfdp/tlv/StringLv.h"
 #include "fsfw/cfdp/tlv/Tlv.h"
 
 class MetadataInfo {
  public:
+  MetadataInfo(cfdp::FileSize& fileSize, cfdp::StringLv& sourceFileName,
+               cfdp::StringLv& destFileName);
   MetadataInfo(bool closureRequested, cfdp::ChecksumType checksumType, cfdp::FileSize& fileSize,
-               cfdp::Lv& sourceFileName, cfdp::Lv& destFileName);
+               cfdp::StringLv& sourceFileName, cfdp::StringLv& destFileName);
 
   size_t getSerializedSize(bool fssLarge = false);
 
-  void setOptionsArray(cfdp::Tlv** optionsArray, const size_t* optionsLen,
-                       const size_t* maxOptionsLen);
+  void setOptionsArray(cfdp::Tlv** optionsArray, std::optional<size_t> optionsLen,
+                       std::optional<size_t> maxOptionsLen);
   [[nodiscard]] cfdp::ChecksumType getChecksumType() const;
   void setChecksumType(cfdp::ChecksumType checksumType);
   [[nodiscard]] bool isClosureRequested() const;
   void setClosureRequested(bool closureRequested = false);
 
-  void setDestFileName(cfdp::Lv& destFileName);
-  void setSourceFileName(cfdp::Lv& sourceFileName);
+  void setDestFileName(cfdp::StringLv& destFileName);
+  void setSourceFileName(cfdp::StringLv& sourceFileName);
 
-  cfdp::Lv& getDestFileName();
-  cfdp::Lv& getSourceFileName();
+  cfdp::StringLv& getDestFileName();
+  cfdp::StringLv& getSourceFileName();
   cfdp::FileSize& getFileSize();
 
   [[nodiscard]] bool hasOptions() const;
@@ -37,10 +42,10 @@ class MetadataInfo {
 
  private:
   bool closureRequested = false;
-  cfdp::ChecksumType checksumType;
+  cfdp::ChecksumType checksumType = cfdp::ChecksumType::NULL_CHECKSUM;
   cfdp::FileSize& fileSize;
-  cfdp::Lv& sourceFileName;
-  cfdp::Lv& destFileName;
+  cfdp::StringLv& sourceFileName;
+  cfdp::StringLv& destFileName;
 
   cfdp::Tlv** optionsArray = nullptr;
   size_t optionsLen = 0;
