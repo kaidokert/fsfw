@@ -40,6 +40,11 @@ class Parameter : public ParameterIF {
     return value;
   }
 
+  Parameter& operator =(const T& newValue){
+    value = newValue;
+    return *this;
+  }
+
 #ifdef FSFW_INTROSPECTION
   Types::ParameterType getType() override {
     return enumHelper<std::is_base_of<EnumIF, T>::value>::template getType<T>();
@@ -66,7 +71,6 @@ class Parameter : public ParameterIF {
 
   bool setFloating(double value) override {
     if (getType() != Types::FLOATING) {
-      puts("fups");
       return false;
     }
     this->value = T(value);
@@ -75,7 +79,6 @@ class Parameter : public ParameterIF {
 
   bool setSigned(int64_t value) override {
     if ((getType() != Types::SIGNED) && (getType() != Types::ENUM)) {
-      puts("sups");
       return false;
     }
     this->value = T(value);
