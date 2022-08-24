@@ -339,7 +339,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
    */
   virtual ReturnValue_t buildCommandFromCommand(DeviceCommandId_t deviceCommand,
                                                 const uint8_t *commandData,
-                                                size_t commandDataLen) {exit(0);}
+                                                size_t commandDataLen) {return HasReturnvaluesIF::RETURN_FAILED;}
 
   /* Reply handling */
   /**
