@@ -27,9 +27,11 @@ struct TransactionFinishedParams {
 };
 
 struct MetadataRecvdParams {
-  TransactionId id;
-  EntityId sourceId;
-  uint64_t fileSize;
+  MetadataRecvdParams(const TransactionId& id, const EntityId& sourceId):
+      id(id), sourceId(sourceId) {}
+  const TransactionId& id;
+  const EntityId& sourceId;
+  uint64_t fileSize = 0;
   const char* sourceFileName = "";
   const char* destFileName = "";
   size_t msgsToUserLen = 0;
@@ -44,21 +46,26 @@ struct FileSegmentRecvdParams {
   std::pair<const uint8_t*, size_t> segmentMetadata;
 };
 
+/**
+ * @brief Base class which provides a user interface to interact with CFDP handlers.
+ *
+ * @details
+ * This class is also used to pass the Virtual Filestore (VFS) Implementation to the CFDP
+ * handlers so the filestore operations can be mapped to the underlying filestore.
+ *
+ * It is used by implementing it in a child class and then passing it to the CFDP
+ * handler objects. The base class provides default implementation for the user indication
+ * primitives specified in the CFDP standard. The user can override these implementations
+ * to provide custom indication handlers.
+ *
+ * Please note that for all indication callbacks, the passed transaction ID reference will
+ * become invalid shortly after the function has been executed. If the transaction ID is to be
+ * cached or used, create an own copy of it.
+ * @param vfs Virtual Filestore Object. Will be used for all file operations
+ */
 class UserBase {
  public:
-  /**
-   * @brief Base class which provides a user interface to interact with CFDP handlers.
-   *
-   * @details
-   * This class is also used to pass the Virtual Filestore (VFS) Implementation to the CFDP
-   * handlers so the filestore operations can be mapped to the underlying filestore.
-   *
-   * It is used by implementing it in a child class and then passing it to the CFDP
-   * handler objects. The base class provides default implementation for the user indication
-   * primitives specified in the CFDP standard. The user can override these implementations
-   * to provide custom indication handlers.
-   * @param vfs Virtual Filestore Object. Will be used for all file operations
-   */
+
   explicit UserBase(HasFileSystemIF& vfs);
 
   virtual void transactionIndication(TransactionId id) = 0;
