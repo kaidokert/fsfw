@@ -81,7 +81,7 @@ class UserBase {
    * function call, it needs to be copied into another user-provided buffer.
    * @param params
    */
-  virtual void metadataRecvdIndication(MetadataRecvdParams params) = 0;
+  virtual void metadataRecvdIndication(const MetadataRecvdParams& params) = 0;
   virtual void fileSegmentRecvdIndication(FileSegmentRecvdParams params) = 0;
   virtual void reportIndication(TransactionId id, StatusReportIF& report) = 0;
   virtual void suspendedIndication(TransactionId id, ConditionCode code) = 0;
