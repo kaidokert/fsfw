@@ -18,31 +18,35 @@ cfdp::DestHandler::DestHandler(DestHandlerParams params, FsfwParams fsfwParams)
 }
 
 ReturnValue_t cfdp::DestHandler::performStateMachine() {
-  switch (step) {
-    case TransactionStep::IDLE: {
-      ReturnValue_t status = returnvalue::OK;
-      ReturnValue_t result;
-      for (const auto& info : dp.packetListRef) {
-        if (info.pduType == PduType::FILE_DIRECTIVE and
-            info.directiveType == FileDirectives::METADATA) {
-          result = handleMetadataPdu(info);
-          if (result != OK) {
-            status = result;
-          }
+  if (step == TransactionStep::IDLE) {
+    ReturnValue_t status = returnvalue::OK;
+    ReturnValue_t result;
+    for (const auto& info : dp.packetListRef) {
+      if (info.pduType == PduType::FILE_DIRECTIVE and
+          info.directiveType == FileDirectives::METADATA) {
+        result = handleMetadataPdu(info);
+        if (result != OK) {
+          status = result;
         }
       }
-      return status;
     }
-    case TransactionStep::TRANSACTION_START:
-      break;
-    case TransactionStep::RECEIVING_FILE_DATA_PDUS:
-      break;
-    case TransactionStep::SENDING_ACK_PDU:
-      break;
-    case TransactionStep::TRANSFER_COMPLETION:
-      break;
-    case TransactionStep::SENDING_FINISHED_PDU:
-      break;
+    if (step != TransactionStep::IDLE) {
+      return CALL_FSM_AGAIN;
+    }
+    return status;
+  }
+  if (cfdpState == CfdpStates::BUSY_CLASS_1_NACKED) {
+    for (const auto& info : dp.packetListRef) {
+      if (info.pduType == PduType::FILE_DATA) {
+      }
+    }
+    return returnvalue::OK;
+  }
+  if (cfdpState == CfdpStates::BUSY_CLASS_2_ACKED) {
+    // TODO: Will be implemented at a later stage
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::warning << "CFDP state machine for acknowledged mode not implemented yet" << std::endl;
+#endif
   }
   return returnvalue::OK;
 }
@@ -178,3 +182,5 @@ ReturnValue_t cfdp::DestHandler::startTransaction(MetadataPduReader& reader, Met
   dp.user.metadataRecvdIndication(params);
   return OK;
 }
+
+cfdp::CfdpStates cfdp::DestHandler::getCfdpState() const { return cfdpState; }

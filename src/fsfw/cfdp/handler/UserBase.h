@@ -27,8 +27,8 @@ struct TransactionFinishedParams {
 };
 
 struct MetadataRecvdParams {
-  MetadataRecvdParams(const TransactionId& id, const EntityId& sourceId):
-      id(id), sourceId(sourceId) {}
+  MetadataRecvdParams(const TransactionId& id, const EntityId& sourceId)
+      : id(id), sourceId(sourceId) {}
   const TransactionId& id;
   const EntityId& sourceId;
   uint64_t fileSize = 0;
@@ -65,7 +65,6 @@ struct FileSegmentRecvdParams {
  */
 class UserBase {
  public:
-
   explicit UserBase(HasFileSystemIF& vfs);
 
   virtual void transactionIndication(const TransactionId& id) = 0;
@@ -87,7 +86,8 @@ class UserBase {
   virtual void suspendedIndication(const TransactionId& id, ConditionCode code) = 0;
   virtual void resumedIndication(const TransactionId& id, size_t progress) = 0;
   virtual void faultIndication(const TransactionId& id, ConditionCode code, size_t progress) = 0;
-  virtual void abandonedIndication(const TransactionId& id, ConditionCode code, size_t progress) = 0;
+  virtual void abandonedIndication(const TransactionId& id, ConditionCode code,
+                                   size_t progress) = 0;
   virtual void eofRecvIndication(const TransactionId& id) = 0;
 
  private:

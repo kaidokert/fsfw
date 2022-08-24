@@ -58,8 +58,18 @@ struct FsfwParams {
 
 class DestHandler {
  public:
+  /**
+   * Will be returned if it is advisable to call the state machine operation call again
+   */
+  ReturnValue_t CALL_FSM_AGAIN = returnvalue::makeCode(1, 0);
   explicit DestHandler(DestHandlerParams handlerParams, FsfwParams fsfwParams);
 
+  /**
+   *
+   * @return
+   *  - @c returnvalue::OK  State machine OK for this execution cycle
+   *  - @c CALL_FSM_AGAIN   State machine should be called again.
+   */
   ReturnValue_t performStateMachine();
 
   ReturnValue_t passPacket(PacketInfo packet);
@@ -68,6 +78,8 @@ class DestHandler {
 
   ReturnValue_t handleMetadataPdu(const PacketInfo& info);
   ReturnValue_t handleMetadataParseError(const uint8_t* rawData, size_t maxSize);
+
+  [[nodiscard]] CfdpStates getCfdpState() const;
 
  private:
   enum class TransactionStep {
