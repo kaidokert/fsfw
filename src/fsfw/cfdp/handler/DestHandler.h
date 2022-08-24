@@ -89,7 +89,7 @@ class DestHandler {
     cfdp::FileSize fileSize;
     TransactionId transactionId;
     PduConfig pduConf;
-    RemoteEntityCfg* remoteCfg;
+    RemoteEntityCfg* remoteCfg = nullptr;
   };
 
   TransactionStep step = TransactionStep::IDLE;

@@ -1,17 +1,21 @@
 #include "UserMock.h"
 
+namespace cfdp {
+
 cfdp::UserMock::UserMock(HasFileSystemIF& vfs) : UserBase(vfs) {}
 
-void cfdp::UserMock::transactionIndication(cfdp::TransactionId id) {}
-void cfdp::UserMock::eofSentIndication(cfdp::TransactionId id) {}
-void cfdp::UserMock::abandonedIndication(cfdp::TransactionId id, cfdp::ConditionCode code,
+void UserMock::transactionIndication(const TransactionId& id) {}
+void UserMock::eofSentIndication(const TransactionId& id) {}
+void UserMock::abandonedIndication(const TransactionId& id, cfdp::ConditionCode code,
                                          uint64_t progress) {}
-void cfdp::UserMock::eofRecvIndication(cfdp::TransactionId id) {}
-void cfdp::UserMock::transactionFinishedIndication(TransactionFinishedParams finishedParams) {}
-void cfdp::UserMock::metadataRecvdIndication(const MetadataRecvdParams& params) {}
-void cfdp::UserMock::fileSegmentRecvdIndication(FileSegmentRecvdParams params) {}
-void cfdp::UserMock::reportIndication(TransactionId id, StatusReportIF& report) {}
-void cfdp::UserMock::suspendedIndication(TransactionId id, ConditionCode code) {}
-void cfdp::UserMock::resumedIndication(TransactionId id, size_t progress) {}
-void cfdp::UserMock::faultIndication(cfdp::TransactionId id, cfdp::ConditionCode code,
+void UserMock::eofRecvIndication(const TransactionId& id) {}
+void UserMock::transactionFinishedIndication(const TransactionFinishedParams& finishedParams) {}
+void UserMock::metadataRecvdIndication(const MetadataRecvdParams& params) {}
+void UserMock::fileSegmentRecvdIndication(const FileSegmentRecvdParams& params) {}
+void UserMock::reportIndication(const TransactionId& id, StatusReportIF& report) {}
+void UserMock::suspendedIndication(const TransactionId& id, ConditionCode code) {}
+void UserMock::resumedIndication(const TransactionId& id, size_t progress) {}
+void UserMock::faultIndication(const TransactionId& id, cfdp::ConditionCode code,
                                      size_t progress) {}
+
+}

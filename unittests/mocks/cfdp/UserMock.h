@@ -8,17 +8,17 @@ class UserMock : public UserBase {
  public:
   explicit UserMock(HasFileSystemIF& vfs);
 
-  void transactionIndication(TransactionId id) override;
-  void eofSentIndication(TransactionId id) override;
-  void abandonedIndication(TransactionId id, ConditionCode code, size_t progress) override;
-  void eofRecvIndication(TransactionId id) override;
-  void transactionFinishedIndication(TransactionFinishedParams params) override;
+  void transactionIndication(const TransactionId& id) override;
+  void eofSentIndication(const TransactionId& id) override;
+  void abandonedIndication(const TransactionId& id, ConditionCode code, size_t progress) override;
+  void eofRecvIndication(const TransactionId& id) override;
+  void transactionFinishedIndication(const TransactionFinishedParams& params) override;
   void metadataRecvdIndication(const MetadataRecvdParams& params) override;
-  void fileSegmentRecvdIndication(FileSegmentRecvdParams params) override;
-  void reportIndication(TransactionId id, StatusReportIF& report) override;
-  void suspendedIndication(TransactionId id, ConditionCode code) override;
-  void resumedIndication(TransactionId id, size_t progress) override;
-  void faultIndication(TransactionId id, ConditionCode code, size_t progress) override;
+  void fileSegmentRecvdIndication(const FileSegmentRecvdParams& params) override;
+  void reportIndication(const TransactionId& id, StatusReportIF& report) override;
+  void suspendedIndication(const TransactionId& id, ConditionCode code) override;
+  void resumedIndication(const TransactionId& id, size_t progress) override;
+  void faultIndication(const TransactionId& id, ConditionCode code, size_t progress) override;
 };
 
 }  // namespace cfdp

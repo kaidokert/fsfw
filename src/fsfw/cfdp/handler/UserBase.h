@@ -68,9 +68,9 @@ class UserBase {
 
   explicit UserBase(HasFileSystemIF& vfs);
 
-  virtual void transactionIndication(TransactionId id) = 0;
-  virtual void eofSentIndication(TransactionId id) = 0;
-  virtual void transactionFinishedIndication(TransactionFinishedParams params) = 0;
+  virtual void transactionIndication(const TransactionId& id) = 0;
+  virtual void eofSentIndication(const TransactionId& id) = 0;
+  virtual void transactionFinishedIndication(const TransactionFinishedParams& params) = 0;
   /**
    * Will be called if metadata was received.
    *
@@ -82,13 +82,13 @@ class UserBase {
    * @param params
    */
   virtual void metadataRecvdIndication(const MetadataRecvdParams& params) = 0;
-  virtual void fileSegmentRecvdIndication(FileSegmentRecvdParams params) = 0;
-  virtual void reportIndication(TransactionId id, StatusReportIF& report) = 0;
-  virtual void suspendedIndication(TransactionId id, ConditionCode code) = 0;
-  virtual void resumedIndication(TransactionId id, size_t progress) = 0;
-  virtual void faultIndication(TransactionId id, ConditionCode code, size_t progress) = 0;
-  virtual void abandonedIndication(TransactionId id, ConditionCode code, size_t progress) = 0;
-  virtual void eofRecvIndication(TransactionId id) = 0;
+  virtual void fileSegmentRecvdIndication(const FileSegmentRecvdParams& params) = 0;
+  virtual void reportIndication(const TransactionId& id, StatusReportIF& report) = 0;
+  virtual void suspendedIndication(const TransactionId& id, ConditionCode code) = 0;
+  virtual void resumedIndication(const TransactionId& id, size_t progress) = 0;
+  virtual void faultIndication(const TransactionId& id, ConditionCode code, size_t progress) = 0;
+  virtual void abandonedIndication(const TransactionId& id, ConditionCode code, size_t progress) = 0;
+  virtual void eofRecvIndication(const TransactionId& id) = 0;
 
  private:
   HasFileSystemIF& vfs;
