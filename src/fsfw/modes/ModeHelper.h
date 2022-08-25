@@ -39,6 +39,12 @@ class ModeHelper {
 
   void setForced(bool forced);
 
+  #ifdef FSFW_INTROSPECTION
+  std::vector<std::pair<Mode_t, const char *>> getModes() const;
+
+  std::vector<std::pair<Submode_t, const char *>> getSubmodes(Mode_t mode) const;
+#endif
+
  protected:
   HasModesIF *owner;
   MessageQueueId_t parentQueueId = MessageQueueIF::NO_QUEUE;

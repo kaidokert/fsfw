@@ -106,3 +106,33 @@ bool ModeHelper::isTimedOut() { return countdown.hasTimedOut(); }
 bool ModeHelper::isForced() { return forced; }
 
 void ModeHelper::setForced(bool forced) { this->forced = forced; }
+
+#ifdef FSFW_INTROSPECTION
+  std::vector<std::pair<Mode_t, const char *>> ModeHelper::getModes() const override {
+    std::vector<std::pair<Mode_t, const char *>> modeVector;
+    auto modeDefinitionHelper = owner->getModeDefinitionHelper();
+    EnumIF *mode = modeDefinitionHelper.mode;
+    for (size_t i = 0; i < mode->getSize(); i++) {
+      modeVector.push_back(
+          std::pair<Mode_t, const char *>(mode->getElements()[i], mode->getDescriptions()[i]));
+    }
+    modeDefinitionHelper.free();
+    return modeVector;
+  }
+
+  std::vector<std::pair<Submode_t, const char *>> ModeHelper::getSubmodes(Mode_t mode) const override {
+    auto modeDefinitionHelper = owner->getModeDefinitionHelper();
+    EnumIF *submode = modeDefinitionHelper.submode;
+    std::vector<std::pair<Submode_t, const char *>> submodeVector;
+    for (size_t i = 0; i < submode->getSize(); i++) {
+      uint32_t ignored;
+      if (owner->checkModeCommand(mode, submode->getElements()[i], &ignored) ==
+          HasReturnvaluesIF::RETURN_OK) {
+        submodeVector.push_back(std::pair<Submode_t, const char *>(submode->getElements()[i],
+                                                                   submode->getDescriptions()[i]));
+      }
+    }
+    modeDefinitionHelper.free();
+    return submodeVector;
+  }
+#endif

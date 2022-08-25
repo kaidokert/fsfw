@@ -1,10 +1,11 @@
 #pragma once
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 class EnumIF {
  public:
+  virtual ~EnumIF() {}
   virtual int64_t getValue() const = 0;
   virtual bool isValid() const = 0;
   virtual size_t getSize() const = 0;

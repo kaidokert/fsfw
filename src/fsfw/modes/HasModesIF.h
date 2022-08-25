@@ -6,6 +6,7 @@
 #include "../events/Event.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
 #include "ModeHelper.h"
+#include "ModeDefinitionHelper.h"
 #include "ModeMessage.h"
 
 class HasModesIF {
@@ -48,6 +49,7 @@ class HasModesIF {
 
   virtual ~HasModesIF() {}
   virtual MessageQueueId_t getCommandQueue() const = 0;
+  virtual ModeDefinitionHelper getModeDefinitionHelper()= 0;
   virtual void getMode(Mode_t *mode, Submode_t *submode) = 0;
 
  protected:
