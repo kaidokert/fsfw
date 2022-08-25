@@ -1,6 +1,8 @@
 #ifndef FSFW_MODES_MODEHELPER_H_
 #define FSFW_MODES_MODEHELPER_H_
 
+#include <vector>
+
 #include "ModeMessage.h"
 #include "fsfw/ipc/MessageQueueIF.h"
 #include "fsfw/returnvalues/HasReturnvaluesIF.h"
@@ -39,7 +41,7 @@ class ModeHelper {
 
   void setForced(bool forced);
 
-  #ifdef FSFW_INTROSPECTION
+#ifdef FSFW_INTROSPECTION
   std::vector<std::pair<Mode_t, const char *>> getModes() const;
 
   std::vector<std::pair<Submode_t, const char *>> getSubmodes(Mode_t mode) const;
