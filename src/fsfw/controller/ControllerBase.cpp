@@ -99,6 +99,10 @@ ReturnValue_t ControllerBase::performOperation(uint8_t opCode) {
   return RETURN_OK;
 }
 
+const ModeHelper * ControllerBase::getModeHelper() const {
+  return &modeHelper;
+}
+
 void ControllerBase::modeChanged(Mode_t mode, Submode_t submode) { return; }
 
 ReturnValue_t ControllerBase::setHealth(HealthState health) {

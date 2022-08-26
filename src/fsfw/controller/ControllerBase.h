@@ -40,6 +40,9 @@ class ControllerBase : public HasModesIF,
   virtual void setTaskIF(PeriodicTaskIF *task) override;
   virtual ReturnValue_t initializeAfterTaskCreation() override;
 
+  /** HasModeIF override */
+  const ModeHelper * getModeHelper() const override;
+
  protected:
   /**
    * Implemented by child class. Handle command messages which are not
