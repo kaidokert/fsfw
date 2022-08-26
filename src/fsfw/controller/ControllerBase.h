@@ -3,6 +3,7 @@
 
 #include "fsfw/health/HasHealthIF.h"
 #include "fsfw/health/HealthHelper.h"
+#include "fsfw/introspection/ClasslessEnum.h"
 #include "fsfw/modes/HasModesIF.h"
 #include "fsfw/modes/ModeHelper.h"
 #include "fsfw/objectmanager/SystemObject.h"
@@ -21,7 +22,9 @@ class ControllerBase : public HasModesIF,
                        public SystemObject,
                        public HasReturnvaluesIF {
  public:
-  static const Mode_t MODE_NORMAL = 2;
+  FSFW_CLASSLESS_ENUM(ControllerModes, Mode_t,
+                      ((CONTROLLER_MODE_ON, MODE_ON, "On"))((CONTROLLER_MODE_OFF, MODE_OFF,
+                                                             "Off"))((MODE_NORMAL, 2, "Normal")))
 
   ControllerBase(object_id_t setObjectId, object_id_t parentId, size_t commandQueueDepth = 3);
   virtual ~ControllerBase();
@@ -41,7 +44,7 @@ class ControllerBase : public HasModesIF,
   virtual ReturnValue_t initializeAfterTaskCreation() override;
 
   /** HasModeIF override */
-  const ModeHelper * getModeHelper() const override;
+  const ModeHelper *getModeHelper() const override;
 
  protected:
   /**
