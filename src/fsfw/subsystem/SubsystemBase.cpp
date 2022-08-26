@@ -324,3 +324,7 @@ ReturnValue_t SubsystemBase::setHealth(HealthState health) {
 HasHealthIF::HealthState SubsystemBase::getHealth() { return healthHelper.getHealth(); }
 
 void SubsystemBase::modeChanged() {}
+
+const ModeHelper * SubsystemBase::getModeHelper() const {
+  return &modeHelper;
+}
