@@ -4,9 +4,10 @@
 #include <cstdint>
 
 #include "../events/Event.h"
+#include "../introspection/ClasslessEnum.h"
 #include "../returnvalues/HasReturnvaluesIF.h"
-#include "ModeHelper.h"
 #include "ModeDefinitionHelper.h"
+#include "ModeHelper.h"
 #include "ModeMessage.h"
 
 class HasModesIF {
@@ -45,11 +46,14 @@ class HasModesIF {
           //!< interpreted
   static const Mode_t MODE_OFF = 0;  //!< The device is powered off. The only command accepted in
                                      //!< this mode is a mode change to on.
-  static const Submode_t SUBMODE_NONE = 0;  //!< To avoid checks against magic number "0".
+  FSFW_CLASSLESS_ENUM(DefaultSubmode, Submode_t,
+                      ((SUBMODE_NONE, 0,
+                        "Default")))  //!< To avoid checks against magic number "0".
 
   virtual ~HasModesIF() {}
   virtual MessageQueueId_t getCommandQueue() const = 0;
-  virtual ModeDefinitionHelper getModeDefinitionHelper()= 0;
+  virtual const ModeHelper * getModeHelper() const = 0;
+  virtual ModeDefinitionHelper getModeDefinitionHelper() = 0;
   virtual void getMode(Mode_t *mode, Submode_t *submode) = 0;
 
  protected:

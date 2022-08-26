@@ -1263,11 +1263,9 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* dataSet, DeviceCommandId_t r
   }
 }
 
-ActionHelper *DeviceHandlerBase::getActionHelper() {
-  return &actionHelper;
-}
+ActionHelper* DeviceHandlerBase::getActionHelper() { return &actionHelper; }
 
-ReturnValue_t DeviceHandlerBase::executeAction(Action *action) {
+ReturnValue_t DeviceHandlerBase::executeAction(Action* action) {
   ReturnValue_t result = acceptExternalDeviceCommands();
   if (result != HasReturnvaluesIF::RETURN_OK) {
     return result;
@@ -1507,4 +1505,10 @@ MessageQueueId_t DeviceHandlerBase::getCommanderQueueId(DeviceCommandId_t replyI
     return MessageQueueIF::NO_QUEUE;
   }
   return commandIter->second.sendReplyTo;
+}
+
+ModeHelper const* DeviceHandlerBase::getModeHelper() const { return &modeHelper; }
+
+ModeDefinitionHelper DeviceHandlerBase::getModeDefinitionHelper() {
+  return ModeDefinitionHelper::create<DeviceHandlerMode, DefaultSubmode>();
 }

@@ -4,6 +4,7 @@
 #include "../action/HasActionsIF.h"
 #include "../datapoollocal/localPoolDefinitions.h"
 #include "../events/Event.h"
+#include "../introspection/ClasslessEnum.h"
 #include "../ipc/MessageQueueSenderIF.h"
 #include "../modes/HasModesIF.h"
 #include "DeviceHandlerMessage.h"
@@ -37,23 +38,30 @@ class DeviceHandlerIF {
    * The mode of the device itself is transparent to the user but related to the mode of the
    * handler. MODE_ON and MODE_OFF are included in hasModesIF.h
    */
+  FSFW_CLASSLESS_ENUM(
+      DeviceHandlerMode, Mode_t,
+      //! The device is powered and ready to perform operations. In this mode, no
+      //! commands are sent by the device handler itself, but direct commands can be
+      //! commanded and will be executed/forwarded to the device
+      //! This is an alias of MODE_ON to have the FSFW_ENUM complete for introspection
+      ((DEVICEHANDLER_MODE_ON, HasModesIF::MODE_ON, "On"))
+      //! The device is powered off. The only command accepted in this
+      //! mode is a mode change to on.
+      //! This is an alias of MODE_OFF to have the FSFW_ENUM complete for introspection
+      ((DEVICEHANDLER_MODE_OFF, HasModesIF::MODE_OFF, "Off"))
+      //! The device is powered on and the device handler periodically sends
+      //! commands. The commands to be sent are selected by the handler
+      //! according to the submode.
+      ((MODE_NORMAL, 2, "Normal"))
+      //! The device is powered on and ready to perform operations. In this mode,
+      //! raw commands can be sent. The device handler will send all replies
+      //! received from the command back to the commanding object as raw TM
+      ((MODE_RAW, 3, "Raw"))
+      //! The device is shut down but the switch could not be turned off, so the
+      //! device still is powered. In this mode, only a mode change to @c MODE_OFF
+      //! can be commanded, which tries to switch off the device again.
+      ((MODE_ERROR_ON, 4, "Error")))
 
-  // MODE_ON = 0, //!< The device is powered and ready to perform operations. In this mode, no
-  // commands are sent by the device handler itself, but direct commands van be commanded and will
-  // be interpreted MODE_OFF = 1, //!< The device is powered off. The only command accepted in this
-  // mode is a mode change to on.
-  //! The device is powered on and the device handler periodically sends
-  //! commands. The commands to be sent are selected by the handler
-  //! according to the submode.
-  static const Mode_t MODE_NORMAL = 2;
-  //! The device is powered on and ready to perform operations. In this mode,
-  //! raw commands can be sent. The device handler will send all replies
-  //! received from the command back to the commanding object.
-  static const Mode_t MODE_RAW = 3;
-  //! The device is shut down but the switch could not be turned off, so the
-  //! device still is powered. In this mode, only a mode change to @c MODE_OFF
-  //! can be commanded, which tries to switch off the device again.
-  static const Mode_t MODE_ERROR_ON = 4;
   //! This is a transitional state which can not be commanded. The device
   //! handler performs all commands to get the device in a state ready to
   //! perform commands. When this is completed, the mode changes to @c MODE_ON.

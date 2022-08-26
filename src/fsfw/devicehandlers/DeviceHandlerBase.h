@@ -207,7 +207,9 @@ class DeviceHandlerBase : public DeviceHandlerIF,
 
   Mode_t getTransitionSourceMode() const;
   Submode_t getTransitionSourceSubMode() const;
-  virtual void getMode(Mode_t *mode, Submode_t *submode);
+  void getMode(Mode_t *mode, Submode_t *submode) override;
+  ModeHelper const * getModeHelper() const override;
+  ModeDefinitionHelper getModeDefinitionHelper() override;
   HealthState getHealth();
   ReturnValue_t setHealth(HealthState health);
   virtual ReturnValue_t getParameter(uint8_t domainId, uint8_t uniqueId,
