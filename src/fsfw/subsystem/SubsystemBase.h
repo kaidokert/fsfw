@@ -34,7 +34,9 @@ class SubsystemBase : public SystemObject,
                 uint16_t commandQueueDepth = 8);
   virtual ~SubsystemBase();
 
-  virtual MessageQueueId_t getCommandQueue() const override;
+  MessageQueueId_t getCommandQueue() const override;
+
+  const ModeHelper * getModeHelper() const override;
 
   /**
    * Function to register the child objects.
@@ -49,13 +51,13 @@ class SubsystemBase : public SystemObject,
    */
   ReturnValue_t registerChild(object_id_t objectId);
 
-  virtual ReturnValue_t initialize() override;
+  ReturnValue_t initialize() override;
 
-  virtual ReturnValue_t performOperation(uint8_t opCode) override;
+  ReturnValue_t performOperation(uint8_t opCode) override;
 
-  virtual ReturnValue_t setHealth(HealthState health) override;
+  ReturnValue_t setHealth(HealthState health) override;
 
-  virtual HasHealthIF::HealthState getHealth() override;
+  HasHealthIF::HealthState getHealth() override;
 
  protected:
   struct ChildInfo {
