@@ -14,7 +14,6 @@
 #include "internal/HasLocalDpIFManagerAttorney.h"
 #include "internal/LocalPoolDataSetAttorney.h"
 
-// TODO: Get rid of this. This should be a constructor argument, not something hardcoded in any way
 object_id_t LocalDataPoolManager::defaultHkDestination = objects::PUS_SERVICE_3_HOUSEKEEPING;
 
 LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQueueIF* queueToUse,
