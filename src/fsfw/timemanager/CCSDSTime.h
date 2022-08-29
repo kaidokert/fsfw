@@ -39,13 +39,13 @@ class CCSDSTime {
    * Struct for CDS day-segmented format.
    */
   struct CDS_short {
-    uint8_t pField;
-    uint8_t dayMSB;
-    uint8_t dayLSB;
-    uint8_t msDay_hh;
-    uint8_t msDay_h;
-    uint8_t msDay_l;
-    uint8_t msDay_ll;
+    uint8_t pField = P_FIELD_CDS_SHORT;
+    uint8_t dayMSB = 0;
+    uint8_t dayLSB = 0;
+    uint8_t msDay_hh = 0;
+    uint8_t msDay_h = 0;
+    uint8_t msDay_l = 0;
+    uint8_t msDay_ll = 0;
   };
   /**
    * Struct for the CCS fromat in day of month variation with max resolution
