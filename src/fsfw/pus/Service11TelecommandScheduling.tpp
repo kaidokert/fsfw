@@ -581,10 +581,11 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
   }
 
   // additional security check, this should never be true
-  if (itBegin->first > itEnd->first) {
+  if (itBegin > itEnd) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::error << "11::getMapFilterFromData: itBegin > itEnd\n" << std::endl;
 #else
-    sif::printError("11::GetMapFilterFromData: itBegin > itEnd\n");
+    sif::printError("11::getMapFilterFromData: itBegin > itEnd\n");
 #endif
     return returnvalue::FAILED;
   }
