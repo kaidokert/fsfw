@@ -12,7 +12,7 @@ MessageQueueMessage::MessageQueueMessage() : messageSize(getMinimumMessageSize()
 MessageQueueMessage::MessageQueueMessage(uint8_t* data, size_t size)
     : messageSize(MessageQueueMessage::HEADER_SIZE + size) {
   if (size <= MessageQueueMessage::MAX_DATA_SIZE) {
-    std::memcpy(internalBuffer + MessageQueueMessage::HEADER_SIZE, data, size);
+    std::memcpy(MessageQueueMessage::getData(), data, size);
     this->messageSize = MessageQueueMessage::HEADER_SIZE + size;
   } else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
