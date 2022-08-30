@@ -25,8 +25,7 @@ union DataUnion {
 };
 
 struct DataWrapper {
-
-
+  
   DataWrapper() = default;
 
   DataWrapper(const uint8_t* data, size_t size): type(DataTypes::RAW) {
