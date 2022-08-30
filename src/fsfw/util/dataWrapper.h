@@ -10,19 +10,19 @@
 namespace util {
 
 struct RawData {
-  const uint8_t* data;
-  size_t len;
+  const uint8_t* data = nullptr;
+  size_t len = 0;
 };
 
-enum DataTypes { RAW, SERIALIZABLE };
+enum DataTypes { NONE, RAW, SERIALIZABLE };
 
 union DataUnion {
   RawData raw;
-  SerializeIF* serializable;
+  SerializeIF* serializable = nullptr;
 };
 
 struct DataWrapper {
-  DataTypes type;
+  DataTypes type = DataTypes::NONE;
   DataUnion dataUnion;
   using BufPairT = std::pair<const uint8_t*, size_t>;
 
@@ -35,6 +35,14 @@ struct DataWrapper {
     return 0;
   }
 
+  [[nodiscard]] bool isNull() const {
+    if (type == DataTypes::RAW and dataUnion.raw.data == nullptr or
+        (type == DataTypes::SERIALIZABLE and dataUnion.serializable == nullptr) or
+        (type == DataTypes::NONE)) {
+      return true;
+    }
+    return false;
+  }
   void setRawData(BufPairT bufPair) {
     type = DataTypes::RAW;
     dataUnion.raw.data = bufPair.first;
