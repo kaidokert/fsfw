@@ -1257,30 +1257,40 @@ ReturnValue_t DeviceHandlerBase::letChildHandleMessage(CommandMessage* message) 
   return returnvalue::FAILED;
 }
 
-void DeviceHandlerBase::handleDeviceTM(SerializeIF* dataSet, DeviceCommandId_t replyId,
+void DeviceHandlerBase::handleDeviceTm(util::DataWrapper dataWrapper, DeviceCommandId_t replyId,
                                        bool forceDirectTm) {
-  if (dataSet == nullptr) {
+  if (dataWrapper.isNull()) {
     return;
   }
 
-  DeviceReplyMap::iterator iter = deviceReplyMap.find(replyId);
+  auto iter = deviceReplyMap.find(replyId);
   if (iter == deviceReplyMap.end()) {
     triggerEvent(DEVICE_UNKNOWN_REPLY, replyId);
     return;
   }
 
-  /* Regular replies to a command */
+  auto reportData = [&](MessageQueueId_t queueId) {
+    if (dataWrapper.type == util::DataTypes::SERIALIZABLE) {
+      return actionHelper.reportData(queueId, replyId, dataWrapper.dataUnion.serializable);
+    } else if (dataWrapper.type == util::DataTypes::RAW) {
+      return actionHelper.reportData(queueId, replyId, dataWrapper.dataUnion.raw.data,
+                                     dataWrapper.dataUnion.raw.len);
+    }
+    return returnvalue::FAILED;
+  };
+
+  // Regular replies to a command
   if (iter->second.command != deviceCommandMap.end()) {
     MessageQueueId_t queueId = iter->second.command->second.sendReplyTo;
 
+    // This may fail, but we'll ignore the fault.
     if (queueId != NO_COMMANDER) {
-      /* This may fail, but we'll ignore the fault. */
-      actionHelper.reportData(queueId, replyId, dataSet);
+      reportData(queueId);
     }
 
-    /* This check should make sure we get any TM but don't get anything doubled. */
+    // This check should make sure we get any TM but don't get anything doubled.
     if (wiretappingMode == TM && (requestedRawTraffic != queueId)) {
-      DeviceTmReportingWrapper wrapper(getObjectId(), replyId, dataSet);
+      DeviceTmReportingWrapper wrapper(getObjectId(), replyId, dataWrapper);
       actionHelper.reportData(requestedRawTraffic, replyId, &wrapper);
     }
 
@@ -1289,22 +1299,16 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* dataSet, DeviceCommandId_t r
       // hiding of sender needed so the service will handle it as
       // unexpected Data, no matter what state (progress or completed)
       // it is in
-      actionHelper.reportData(defaultRawReceiver, replyId, dataSet, true);
+      reportData(defaultRawReceiver);
     }
   }
-  /* Unrequested or aperiodic replies */
+  // Unrequested or aperiodic replies
   else {
-    DeviceTmReportingWrapper wrapper(getObjectId(), replyId, dataSet);
+    DeviceTmReportingWrapper wrapper(getObjectId(), replyId, dataWrapper);
     if (wiretappingMode == TM) {
       actionHelper.reportData(requestedRawTraffic, replyId, &wrapper);
     }
     if (forceDirectTm and defaultRawReceiver != MessageQueueIF::NO_QUEUE) {
-      //		    sid_t setSid = sid_t(this->getObjectId(), replyId);
-      //		    LocalPoolDataSetBase* dataset = getDataSetHandle(setSid);
-      //		    if(dataset != nullptr) {
-      //	            poolManager.generateHousekeepingPacket(setSid, dataset, true);
-      //		    }
-
       // hiding of sender needed so the service will handle it as
       // unexpected Data, no matter what state (progress or completed)
       // it is in

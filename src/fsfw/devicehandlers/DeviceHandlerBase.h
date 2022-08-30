@@ -23,6 +23,7 @@
 #include "fsfw/serviceinterface/serviceInterfaceDefintions.h"
 #include "fsfw/tasks/ExecutableObjectIF.h"
 #include "fsfw/tasks/PeriodicTaskIF.h"
+#include "fsfw/util/dataWrapper.h"
 
 namespace Factory {
 void setStaticFrameworkObjectIds();
@@ -1052,9 +1053,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
 
   bool isAwaitingReply();
 
-  void handleDeviceTM(SerializeIF *dataSet, DeviceCommandId_t replyId, bool forceDirectTm = false);
-  //	void handleDeviceTM(uint8_t* data, size_t dataSize, DeviceCommandId_t replyId,
-  //	        bool forceDirectTm);
+  void handleDeviceTm(util::DataWrapper dataWrapper, DeviceCommandId_t replyId,
+                      bool forceDirectTm = false);
 
   virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
                                          uint32_t *msToReachTheMode);
