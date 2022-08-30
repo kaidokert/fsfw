@@ -326,9 +326,10 @@ void LocalDataPoolManager::resetHkUpdateResetHelper() {
   }
 }
 
-ReturnValue_t  LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
-                                                                             float collectionInterval, bool isDiagnostics,
-                                                                             object_id_t packetDestination)  {
+ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
+                                                               float collectionInterval,
+                                                               bool isDiagnostics,
+                                                               object_id_t packetDestination) {
   struct HkReceiver hkReceiver;
   hkReceiver.dataId.sid = sid;
   hkReceiver.reportingType = ReportingType::PERIODIC;
