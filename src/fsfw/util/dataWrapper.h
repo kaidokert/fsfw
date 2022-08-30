@@ -9,6 +9,8 @@
 
 namespace util {
 
+using BufPair = std::pair<const uint8_t*, size_t>;
+
 struct RawData {
   RawData() = default;
   const uint8_t* data = nullptr;
@@ -23,9 +25,24 @@ union DataUnion {
 };
 
 struct DataWrapper {
+
+
+  DataWrapper() = default;
+
+  DataWrapper(const uint8_t* data, size_t size): type(DataTypes::RAW) {
+    setRawData({data, size});
+  }
+
+  explicit DataWrapper(BufPair raw): type(DataTypes::RAW) {
+    setRawData(raw);
+  }
+
+  explicit DataWrapper(SerializeIF& serializable): type(DataTypes::SERIALIZABLE) {
+    setSerializable(serializable);
+  }
+
   DataTypes type = DataTypes::NONE;
   DataUnion dataUnion;
-  using BufPairT = std::pair<const uint8_t*, size_t>;
 
   [[nodiscard]] size_t getLength() const {
     if (type == DataTypes::RAW) {
@@ -43,7 +60,7 @@ struct DataWrapper {
     }
     return false;
   }
-  void setRawData(BufPairT bufPair) {
+  void setRawData(BufPair bufPair) {
     type = DataTypes::RAW;
     dataUnion.raw.data = bufPair.first;
     dataUnion.raw.len = bufPair.second;
