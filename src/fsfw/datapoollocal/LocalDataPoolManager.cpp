@@ -14,6 +14,7 @@
 #include "internal/HasLocalDpIFManagerAttorney.h"
 #include "internal/LocalPoolDataSetAttorney.h"
 
+// TODO: Get rid of this. This should be a constructor argument, not something hardcoded in any way
 object_id_t LocalDataPoolManager::defaultHkDestination = objects::PUS_SERVICE_3_HOUSEKEEPING;
 
 LocalDataPoolManager::LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQueueIF* queueToUse,
@@ -325,28 +326,32 @@ void LocalDataPoolManager::resetHkUpdateResetHelper() {
   }
 }
 
-ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
-                                                               float collectionInterval,
-                                                               bool isDiagnostics,
-                                                               object_id_t packetDestination) {
+ReturnValue_t LocalDataPoolManager::subscribeForRegularPeriodicPacket(
+    subdp::RegularHkPeriodicParams params) {
+  return subscribeForPeriodicPacket(params);
+}
+
+ReturnValue_t LocalDataPoolManager::subscribeForDiagPeriodicPacket(
+    subdp::DiagnosticsHkPeriodicParams params) {
+  return subscribeForPeriodicPacket(params);
+}
+
+ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(subdp::ParamsBase& params) {
   struct HkReceiver hkReceiver;
-  hkReceiver.dataId.sid = sid;
+  hkReceiver.dataId.sid = params.sid;
   hkReceiver.reportingType = ReportingType::PERIODIC;
   hkReceiver.dataType = DataType::DATA_SET;
-  if (packetDestination != objects::NO_OBJECT) {
-    auto* receivedHkIF = ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
-    if (receivedHkIF->getHkQueue() == MessageQueueIF::NO_QUEUE) {
-      hkReceiver.destinationQueue = hkDestinationId;
-    } else {
-      hkReceiver.destinationQueue = receivedHkIF->getHkQueue();
-    }
+  if (params.receiver == MessageQueueIF::NO_QUEUE) {
+    hkReceiver.destinationQueue = hkDestinationId;
+  } else {
+    hkReceiver.destinationQueue = params.receiver;
   }
 
-  LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
+  LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, params.sid);
   if (dataSet != nullptr) {
-    LocalPoolDataSetAttorney::setReportingEnabled(*dataSet, enableReporting);
-    LocalPoolDataSetAttorney::setDiagnostic(*dataSet, isDiagnostics);
-    LocalPoolDataSetAttorney::initializePeriodicHelper(*dataSet, collectionInterval,
+    LocalPoolDataSetAttorney::setReportingEnabled(*dataSet, params.enableReporting);
+    LocalPoolDataSetAttorney::setDiagnostic(*dataSet, params.isDiagnostics());
+    LocalPoolDataSetAttorney::initializePeriodicHelper(*dataSet, params.collectionInterval,
                                                        owner->getPeriodicOperationFrequency());
   }
 
@@ -354,26 +359,30 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid, bool e
   return returnvalue::OK;
 }
 
-ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(sid_t sid, bool reportingEnabled,
-                                                             bool isDiagnostics,
-                                                             object_id_t packetDestination) {
+ReturnValue_t LocalDataPoolManager::subscribeForRegularUpdatePacket(
+    subdp::RegularHkUpdateParams params) {
+  return subscribeForUpdatePacket(params);
+}
+ReturnValue_t LocalDataPoolManager::subscribeForDiagUpdatePacket(
+    subdp::DiagnosticsHkUpdateParams params) {
+  return subscribeForUpdatePacket(params);
+}
+
+ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(subdp::ParamsBase& params) {
   struct HkReceiver hkReceiver;
-  hkReceiver.dataId.sid = sid;
+  hkReceiver.dataId.sid = params.sid;
   hkReceiver.reportingType = ReportingType::UPDATE_HK;
   hkReceiver.dataType = DataType::DATA_SET;
-  if (packetDestination != objects::NO_OBJECT) {
-    auto* receivedHkIF = ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
-    if (receivedHkIF->getHkQueue() == MessageQueueIF::NO_QUEUE) {
-      hkReceiver.destinationQueue = hkDestinationId;
-    } else {
-      hkReceiver.destinationQueue = receivedHkIF->getHkQueue();
-    }
+  if (params.receiver == MessageQueueIF::NO_QUEUE) {
+    hkReceiver.destinationQueue = hkDestinationId;
+  } else {
+    hkReceiver.destinationQueue = params.receiver;
   }
 
-  LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
+  LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, params.sid);
   if (dataSet != nullptr) {
     LocalPoolDataSetAttorney::setReportingEnabled(*dataSet, true);
-    LocalPoolDataSetAttorney::setDiagnostic(*dataSet, isDiagnostics);
+    LocalPoolDataSetAttorney::setDiagnostic(*dataSet, params.isDiagnostics());
   }
 
   hkReceivers.push_back(hkReceiver);
