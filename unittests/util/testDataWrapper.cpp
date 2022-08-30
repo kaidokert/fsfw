@@ -8,6 +8,7 @@ TEST_CASE("Data Wrapper", "[util]") {
   util::DataWrapper wrapper;
   SECTION("State") {
     REQUIRE(wrapper.isNull());
+    REQUIRE(wrapper.type == util::DataTypes::NONE);
   }
 
   SECTION("Set Raw Data") {
