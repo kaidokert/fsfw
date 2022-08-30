@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [unreleased]
 
+# [v6.0.0]
+
 ## Changes
 
 - Removed `HasReturnvaluesIF` class in favor of `returnvalue` namespace with `OK` and `FAILED`
@@ -20,6 +22,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   `util::DataWrapper` as the data input argument. This allows more flexibility in the possible
   types of telemetry.
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/669
+- Add `util::DataWrapper` class inside the `util` module. This is a tagged union which allows
+  to specify raw data either as a classic C-style raw pointer and size or as a `SerializeIF`
+  pointer.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/668
 - Add new `UnsignedByteField` class
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/660
 
