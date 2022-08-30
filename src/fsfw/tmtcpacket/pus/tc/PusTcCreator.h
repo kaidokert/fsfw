@@ -7,6 +7,7 @@
 #include "fsfw/tmtcpacket/pus/CustomUserDataIF.h"
 #include "fsfw/tmtcpacket/pus/defs.h"
 #include "fsfw/tmtcpacket/pus/tc/PusTcIF.h"
+#include "fsfw/util/dataWrapper.h"
 
 struct PusTcParams {
   PusTcParams(uint8_t service_, uint8_t subservice_) : service(service_), subservice(subservice_) {}
@@ -15,7 +16,7 @@ struct PusTcParams {
   uint8_t subservice;
   uint8_t ackFlags = ecss::ACK_ALL;
   uint16_t sourceId = 0;
-  ecss::DataWrapper dataWrapper{};
+  util::DataWrapper dataWrapper{};
   uint8_t pusVersion = ecss::PusVersion::PUS_C;
 };
 

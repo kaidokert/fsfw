@@ -37,14 +37,14 @@ ReturnValue_t PusTcCreator::serialize(uint8_t **buffer, size_t *size, size_t max
   if (result != returnvalue::OK) {
     return result;
   }
-  if (pusParams.dataWrapper.type == ecss::DataTypes::RAW) {
+  if (pusParams.dataWrapper.type == util::DataTypes::RAW) {
     const uint8_t *data = pusParams.dataWrapper.dataUnion.raw.data;
     if (data != nullptr and userDataLen > 0) {
       std::memcpy(*buffer, data, userDataLen);
       *buffer += userDataLen;
       *size += userDataLen;
     }
-  } else if (pusParams.dataWrapper.type == ecss::DataTypes::SERIALIZABLE and
+  } else if (pusParams.dataWrapper.type == util::DataTypes::SERIALIZABLE and
              pusParams.dataWrapper.dataUnion.serializable != nullptr) {
     result = pusParams.dataWrapper.dataUnion.serializable->serialize(buffer, size, maxSize,
                                                                      streamEndianness);

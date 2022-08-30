@@ -77,12 +77,12 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
     }
   }
 
-  if (pusParams.dataWrapper.type == ecss::DataTypes::RAW and
+  if (pusParams.dataWrapper.type == util::DataTypes::RAW and
       pusParams.dataWrapper.dataUnion.raw.data != nullptr) {
     std::memcpy(*buffer, pusParams.dataWrapper.dataUnion.raw.data, userDataLen);
     *buffer += userDataLen;
     *size += userDataLen;
-  } else if (pusParams.dataWrapper.type == ecss::DataTypes::SERIALIZABLE and
+  } else if (pusParams.dataWrapper.type == util::DataTypes::SERIALIZABLE and
              pusParams.dataWrapper.dataUnion.serializable != nullptr) {
     result = pusParams.dataWrapper.dataUnion.serializable->serialize(buffer, size, maxSize,
                                                                      streamEndianness);
