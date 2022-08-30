@@ -241,13 +241,13 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
   MutexIF* getMutexHandle();
 
   LocalDataPoolManager* getPoolManagerHandle() override;
-  ReturnValue_t subscribeForRegularPeriodicPacket(subdp::RegularHkPeriodicParams params) override;
-  ReturnValue_t subscribeForDiagPeriodicPacket(subdp::DiagnosticsHkPeriodicParams params) override;
-  ReturnValue_t subscribeForPeriodicPacket(subdp::ParamsBase& params);
+  ReturnValue_t subscribeForPeriodicPacket(sid_t sid, bool enableReporting,
+                                                   float collectionInterval, bool isDiagnostics,
+                                                   object_id_t packetDestination = objects::NO_OBJECT) override;
 
-  ReturnValue_t subscribeForRegularUpdatePacket(subdp::RegularHkUpdateParams params) override;
-  ReturnValue_t subscribeForDiagUpdatePacket(subdp::DiagnosticsHkUpdateParams params) override;
-  ReturnValue_t subscribeForUpdatePacket(subdp::ParamsBase& params);
+  ReturnValue_t subscribeForUpdatePacket(sid_t sid, bool reportingEnabled,
+                                                 bool isDiagnostics,
+                                                 object_id_t packetDestination = objects::NO_OBJECT) override;
 
  protected:
   /** Core data structure for the actual pool data */
