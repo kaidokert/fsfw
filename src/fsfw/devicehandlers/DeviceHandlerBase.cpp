@@ -8,6 +8,7 @@
 #include "fsfw/ipc/MessageQueueMessage.h"
 #include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/objectmanager/ObjectManager.h"
+#include "fsfw/serialize/SerialBufferAdapter.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
 #include "fsfw/subsystem/SubsystemBase.h"
@@ -1257,30 +1258,32 @@ ReturnValue_t DeviceHandlerBase::letChildHandleMessage(CommandMessage* message) 
   return returnvalue::FAILED;
 }
 
-void DeviceHandlerBase::handleDeviceTM(SerializeIF* dataSet, DeviceCommandId_t replyId,
-                                       bool forceDirectTm) {
-  if (dataSet == nullptr) {
-    return;
-  }
+void DeviceHandlerBase::handleDeviceTm(const uint8_t* rawData, size_t rawDataLen,
+                                       DeviceCommandId_t replyId, bool forceDirectTm) {
+  SerialBufferAdapter bufferWrapper(rawData, rawDataLen);
+  handleDeviceTm(bufferWrapper, replyId, forceDirectTm);
+}
 
-  DeviceReplyMap::iterator iter = deviceReplyMap.find(replyId);
+void DeviceHandlerBase::handleDeviceTm(SerializeIF& dataSet, DeviceCommandId_t replyId,
+                                       bool forceDirectTm) {
+  auto iter = deviceReplyMap.find(replyId);
   if (iter == deviceReplyMap.end()) {
     triggerEvent(DEVICE_UNKNOWN_REPLY, replyId);
     return;
   }
 
-  /* Regular replies to a command */
+  // Regular replies to a command
   if (iter->second.command != deviceCommandMap.end()) {
     MessageQueueId_t queueId = iter->second.command->second.sendReplyTo;
 
     if (queueId != NO_COMMANDER) {
-      /* This may fail, but we'll ignore the fault. */
-      actionHelper.reportData(queueId, replyId, dataSet);
+      // This may fail, but we'll ignore the fault.
+      actionHelper.reportData(queueId, replyId, &dataSet);
     }
 
-    /* This check should make sure we get any TM but don't get anything doubled. */
+    // This check should make sure we get any TM but don't get anything doubled.
     if (wiretappingMode == TM && (requestedRawTraffic != queueId)) {
-      DeviceTmReportingWrapper wrapper(getObjectId(), replyId, dataSet);
+      DeviceTmReportingWrapper wrapper(getObjectId(), replyId, &dataSet);
       actionHelper.reportData(requestedRawTraffic, replyId, &wrapper);
     }
 
@@ -1289,22 +1292,16 @@ void DeviceHandlerBase::handleDeviceTM(SerializeIF* dataSet, DeviceCommandId_t r
       // hiding of sender needed so the service will handle it as
       // unexpected Data, no matter what state (progress or completed)
       // it is in
-      actionHelper.reportData(defaultRawReceiver, replyId, dataSet, true);
+      actionHelper.reportData(defaultRawReceiver, replyId, &dataSet, true);
     }
   }
-  /* Unrequested or aperiodic replies */
+  // Unrequested or aperiodic replies
   else {
-    DeviceTmReportingWrapper wrapper(getObjectId(), replyId, dataSet);
+    DeviceTmReportingWrapper wrapper(getObjectId(), replyId, &dataSet);
     if (wiretappingMode == TM) {
       actionHelper.reportData(requestedRawTraffic, replyId, &wrapper);
     }
     if (forceDirectTm and defaultRawReceiver != MessageQueueIF::NO_QUEUE) {
-      //		    sid_t setSid = sid_t(this->getObjectId(), replyId);
-      //		    LocalPoolDataSetBase* dataset = getDataSetHandle(setSid);
-      //		    if(dataset != nullptr) {
-      //	            poolManager.generateHousekeepingPacket(setSid, dataset, true);
-      //		    }
-
       // hiding of sender needed so the service will handle it as
       // unexpected Data, no matter what state (progress or completed)
       // it is in

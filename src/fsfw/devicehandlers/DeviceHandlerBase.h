@@ -1052,9 +1052,9 @@ class DeviceHandlerBase : public DeviceHandlerIF,
 
   bool isAwaitingReply();
 
-  void handleDeviceTM(SerializeIF *dataSet, DeviceCommandId_t replyId, bool forceDirectTm = false);
-  //	void handleDeviceTM(uint8_t* data, size_t dataSize, DeviceCommandId_t replyId,
-  //	        bool forceDirectTm);
+  void handleDeviceTm(const uint8_t *rawData, size_t rawDataLen, DeviceCommandId_t replyId,
+                      bool forceDirectTm = false);
+  void handleDeviceTm(SerializeIF &dataSet, DeviceCommandId_t replyId, bool forceDirectTm = false);
 
   virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
                                          uint32_t *msToReachTheMode);
