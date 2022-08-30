@@ -5,7 +5,7 @@
 
 namespace tcverif {
 
-enum VerifFlags : uint8_t {
+enum VerificationFlags : uint8_t {
   NONE = 0b0000,
   ACCEPTANCE = 0b0001,
   START = 0b0010,

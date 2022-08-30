@@ -3,6 +3,11 @@ if [[ ! -f README.md ]]; then
   cd ..
 fi
 
+folder_list=(
+  "./src"
+  "./unittests"
+)
+
 cmake_fmt="cmake-format"
 file_selectors="-iname CMakeLists.txt"
 if command -v ${cmake_fmt} &> /dev/null; then
@@ -16,8 +21,10 @@ fi
 cpp_format="clang-format"
 file_selectors="-iname *.h -o -iname *.cpp -o -iname *.c -o -iname *.tpp"
 if command -v ${cpp_format} &> /dev/null; then
-  find ./src ${file_selectors} | xargs ${cpp_format} --style=file -i
-  find ./unittests ${file_selectors} | xargs ${cpp_format} --style=file -i
+  for dir in ${folder_list[@]}; do
+    echo "Auto-formatting ${dir} recursively"
+    find ${dir} ${file_selectors} | xargs clang-format --style=file -i
+  done
 else
   echo "No ${cpp_format} tool found, not formatting C++/C files"
 fi
