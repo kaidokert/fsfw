@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Added
 
+- DHB TM handler `handleDeviceTM` renamed to `handleDeviceTm` and now takes
+  `util::DataWrapper` as the data input argument. This allows more flexibility in the possible
+  types of telemetry.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/669
 - Add new `UnsignedByteField` class
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/660
 
