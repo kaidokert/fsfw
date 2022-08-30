@@ -11,6 +11,7 @@
 #include <fsfw/objectmanager/SystemObject.h>
 
 #include "fsfw/datapool/PoolEntry.h"
+#include "fsfw/housekeeping/AcceptsHkPacketsIF.h"
 #include "mocks/MessageQueueMock.h"
 #include "tests/TestsConfig.h"
 
@@ -104,8 +105,7 @@ class LocalPoolOwnerBase : public SystemObject, public HasLocalDataPoolIF {
   }
 
   ReturnValue_t subscribePeriodicHk(bool enableReporting) {
-    return poolManager.subscribeForRegularPeriodicPacket(
-        subdp::RegularHkPeriodicParams(lpool::testSid, enableReporting, 0.2));
+    return poolManager.subscribeForPeriodicPacket(lpool::testSid, enableReporting, 0.2, false);
   }
 
   ReturnValue_t subscribeWrapperSetUpdate(MessageQueueId_t receiverId) {
@@ -121,17 +121,9 @@ class LocalPoolOwnerBase : public SystemObject, public HasLocalDataPoolIF {
   ReturnValue_t subscribeWrapperSetUpdateHk(bool diagnostics = false,
                                             AcceptsHkPacketsIF* receiver = nullptr) {
     if (diagnostics) {
-      auto params = subdp::DiagnosticsHkUpdateParams(lpool::testSid, true);
-      if (receiver != nullptr) {
-        params.receiver = receiver->getHkQueue();
-      }
-      return poolManager.subscribeForDiagUpdatePacket(params);
+      return poolManager.subscribeForUpdatePacket(lpool::testSid, true, true);
     } else {
-      auto params = subdp::RegularHkUpdateParams(lpool::testSid, true);
-      if (receiver != nullptr) {
-        params.receiver = receiver->getHkQueue();
-      }
-      return poolManager.subscribeForRegularUpdatePacket(params);
+      return poolManager.subscribeForUpdatePacket(lpool::testSid, true, false);
     }
   }
 
