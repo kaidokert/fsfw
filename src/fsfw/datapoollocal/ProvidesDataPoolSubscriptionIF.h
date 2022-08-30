@@ -98,11 +98,6 @@ class ProvidesDataPoolSubscriptionIF {
   virtual ReturnValue_t subscribeForRegularUpdatePacket(subdp::RegularHkUpdateParams params) = 0;
   virtual ReturnValue_t subscribeForDiagUpdatePacket(subdp::DiagnosticsHkUpdateParams params) = 0;
 
-  //  virtual ReturnValue_t
-  //  subscribeForUpdatePacket(sid_t sid, bool reportingEnabled, bool isDiagnostics) {
-  //    return subscribeForUpdatePacket(sid, reportingEnabled, isDiagnostics, objects::NO_OBJECT);
-  //  }
-
   [[deprecated(
       "Please use the new API which takes all arguments as one wrapper "
       "struct")]] virtual ReturnValue_t
