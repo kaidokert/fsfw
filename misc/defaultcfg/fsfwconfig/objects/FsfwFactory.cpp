@@ -35,7 +35,7 @@ void Factory::produceFsfwObjects(void) {
 }
 
 void Factory::setStaticFrameworkObjectIds() {
-	PusServiceBase::packetSource = objects::NO_OBJECT;
+	PusServiceBase::PUS_DISTRIBUTOR = objects::NO_OBJECT;
 	PusServiceBase::PACKET_DESTINATION = objects::NO_OBJECT;
 
 	CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
