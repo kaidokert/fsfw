@@ -10,6 +10,7 @@
 namespace util {
 
 struct RawData {
+  RawData() = default;
   const uint8_t* data = nullptr;
   size_t len = 0;
 };
@@ -17,8 +18,8 @@ struct RawData {
 enum DataTypes { NONE, RAW, SERIALIZABLE };
 
 union DataUnion {
-  RawData raw;
-  SerializeIF* serializable = nullptr;
+  RawData raw{};
+  SerializeIF* serializable;
 };
 
 struct DataWrapper {
@@ -36,9 +37,8 @@ struct DataWrapper {
   }
 
   [[nodiscard]] bool isNull() const {
-    if (type == DataTypes::RAW and dataUnion.raw.data == nullptr or
-        (type == DataTypes::SERIALIZABLE and dataUnion.serializable == nullptr) or
-        (type == DataTypes::NONE)) {
+    if ((type == DataTypes::NONE) or (type == DataTypes::RAW and dataUnion.raw.data == nullptr) or
+        (type == DataTypes::SERIALIZABLE and dataUnion.serializable == nullptr)) {
       return true;
     }
     return false;

@@ -4,7 +4,7 @@
 
 #include "fsfw/util/UnsignedByteField.h"
 
-TEST_CASE("Unsigned Byte Field", "[unsigned-byte-field]") {
+TEST_CASE("Unsigned Byte Field", "[util]") {
   auto testByteField = UnsignedByteField<uint32_t>(10);
   auto u32ByteField = U32ByteField(10);
   auto u16ByteField = U16ByteField(5);
