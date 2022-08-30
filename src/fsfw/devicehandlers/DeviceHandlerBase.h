@@ -1054,7 +1054,8 @@ class DeviceHandlerBase : public DeviceHandlerIF,
 
   void handleDeviceTm(const uint8_t *rawData, size_t rawDataLen, DeviceCommandId_t replyId,
                       bool forceDirectTm = false);
-  void handleDeviceTm(SerializeIF &dataSet, DeviceCommandId_t replyId, bool forceDirectTm = false);
+  void handleDeviceTm(const SerializeIF &dataSet, DeviceCommandId_t replyId,
+                      bool forceDirectTm = false);
 
   virtual ReturnValue_t checkModeCommand(Mode_t mode, Submode_t submode,
                                          uint32_t *msToReachTheMode);

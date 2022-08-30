@@ -1264,7 +1264,7 @@ void DeviceHandlerBase::handleDeviceTm(const uint8_t* rawData, size_t rawDataLen
   handleDeviceTm(bufferWrapper, replyId, forceDirectTm);
 }
 
-void DeviceHandlerBase::handleDeviceTm(SerializeIF& dataSet, DeviceCommandId_t replyId,
+void DeviceHandlerBase::handleDeviceTm(const SerializeIF& dataSet, DeviceCommandId_t replyId,
                                        bool forceDirectTm) {
   auto iter = deviceReplyMap.find(replyId);
   if (iter == deviceReplyMap.end()) {
@@ -1278,12 +1278,12 @@ void DeviceHandlerBase::handleDeviceTm(SerializeIF& dataSet, DeviceCommandId_t r
 
     if (queueId != NO_COMMANDER) {
       // This may fail, but we'll ignore the fault.
-      actionHelper.reportData(queueId, replyId, &dataSet);
+      actionHelper.reportData(queueId, replyId, const_cast<SerializeIF*>(&dataSet));
     }
 
     // This check should make sure we get any TM but don't get anything doubled.
     if (wiretappingMode == TM && (requestedRawTraffic != queueId)) {
-      DeviceTmReportingWrapper wrapper(getObjectId(), replyId, &dataSet);
+      DeviceTmReportingWrapper wrapper(getObjectId(), replyId, dataSet);
       actionHelper.reportData(requestedRawTraffic, replyId, &wrapper);
     }
 
@@ -1292,12 +1292,13 @@ void DeviceHandlerBase::handleDeviceTm(SerializeIF& dataSet, DeviceCommandId_t r
       // hiding of sender needed so the service will handle it as
       // unexpected Data, no matter what state (progress or completed)
       // it is in
-      actionHelper.reportData(defaultRawReceiver, replyId, &dataSet, true);
+      actionHelper.reportData(defaultRawReceiver, replyId, const_cast<SerializeIF*>(&dataSet),
+                              true);
     }
   }
   // Unrequested or aperiodic replies
   else {
-    DeviceTmReportingWrapper wrapper(getObjectId(), replyId, &dataSet);
+    DeviceTmReportingWrapper wrapper(getObjectId(), replyId, dataSet);
     if (wiretappingMode == TM) {
       actionHelper.reportData(requestedRawTraffic, replyId, &wrapper);
     }
