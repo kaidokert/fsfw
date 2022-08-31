@@ -47,20 +47,21 @@ class HasFileSystemIF {
   //! [EXPORT] : Invalid parameters like file name or repository path
   static constexpr ReturnValue_t INVALID_PARAMETERS = MAKE_RETURN_CODE(5);
 
-  static constexpr ReturnValue_t FILE_DOES_NOT_EXIST = MAKE_RETURN_CODE(7);
-  static constexpr ReturnValue_t FILE_ALREADY_EXISTS = MAKE_RETURN_CODE(8);
-  static constexpr ReturnValue_t NOT_A_FILE = MAKE_RETURN_CODE(9);
-  static constexpr ReturnValue_t FILE_LOCKED = MAKE_RETURN_CODE(10);
+  static constexpr ReturnValue_t FILE_DOES_NOT_EXIST = MAKE_RETURN_CODE(10);
+  static constexpr ReturnValue_t FILE_ALREADY_EXISTS = MAKE_RETURN_CODE(11);
+  static constexpr ReturnValue_t NOT_A_FILE = MAKE_RETURN_CODE(12);
+  static constexpr ReturnValue_t FILE_LOCKED = MAKE_RETURN_CODE(13);
+  static constexpr ReturnValue_t PERMISSION_DENIED = MAKE_RETURN_CODE(14);
 
-  static constexpr ReturnValue_t DIRECTORY_DOES_NOT_EXIST = MAKE_RETURN_CODE(15);
-  static constexpr ReturnValue_t DIRECTORY_ALREADY_EXISTS = MAKE_RETURN_CODE(16);
-  static constexpr ReturnValue_t NOT_A_DIRECTORY = MAKE_RETURN_CODE(17);
-  static constexpr ReturnValue_t DIRECTORY_NOT_EMPTY = MAKE_RETURN_CODE(18);
+  static constexpr ReturnValue_t DIRECTORY_DOES_NOT_EXIST = MAKE_RETURN_CODE(21);
+  static constexpr ReturnValue_t DIRECTORY_ALREADY_EXISTS = MAKE_RETURN_CODE(22);
+  static constexpr ReturnValue_t NOT_A_DIRECTORY = MAKE_RETURN_CODE(23);
+  static constexpr ReturnValue_t DIRECTORY_NOT_EMPTY = MAKE_RETURN_CODE(24);
 
   //! [EXPORT] : P1: Sequence number missing
-  static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING_WRITE = MAKE_RETURN_CODE(15);
+  static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING_WRITE = MAKE_RETURN_CODE(30);
   //! [EXPORT] : P1: Sequence number missing
-  static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING_READ = MAKE_RETURN_CODE(16);
+  static constexpr ReturnValue_t SEQUENCE_PACKET_MISSING_READ = MAKE_RETURN_CODE(31);
 
   virtual ~HasFileSystemIF() = default;
 

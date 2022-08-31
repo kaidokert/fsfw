@@ -28,11 +28,11 @@ struct LocalEntityCfg {
 
 struct RemoteEntityCfg {
   EntityId remoteId;
-  size_t maxFileSegmentLen;
-  bool closureRequested;
-  bool crcOnTransmission;
-  TransmissionModes defaultTransmissionMode;
-  ChecksumType defaultChecksum;
+  size_t maxFileSegmentLen = 2048;
+  bool closureRequested = false;
+  bool crcOnTransmission = false;
+  TransmissionModes defaultTransmissionMode = TransmissionModes::UNACKNOWLEDGED;
+  ChecksumType defaultChecksum = ChecksumType::NULL_CHECKSUM;
   const uint8_t version = CFDP_VERSION_2;
 };
 
