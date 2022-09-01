@@ -44,7 +44,7 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
     REQUIRE(creator.getSubService() == 2);
     REQUIRE(creator.getService() == 17);
     auto& params = creator.getParams();
-    REQUIRE(params.dataWrapper.type == ecss::DataTypes::RAW);
+    REQUIRE(params.dataWrapper.type == util::DataTypes::RAW);
     REQUIRE(params.dataWrapper.dataUnion.raw.data == nullptr);
     REQUIRE(params.dataWrapper.dataUnion.raw.len == 0);
     REQUIRE(tmHelper.sendCounter == 0);
@@ -65,7 +65,7 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
     REQUIRE(tmHelper.prepareTmPacket(2, data.data(), data.size()) == returnvalue::OK);
     auto& creator = storeHelper.getCreatorRef();
     auto& params = creator.getParams();
-    REQUIRE(params.dataWrapper.type == ecss::DataTypes::RAW);
+    REQUIRE(params.dataWrapper.type == util::DataTypes::RAW);
     REQUIRE(params.dataWrapper.dataUnion.raw.data == data.data());
     REQUIRE(params.dataWrapper.dataUnion.raw.len == data.size());
   }
@@ -75,7 +75,7 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
     REQUIRE(tmHelper.prepareTmPacket(2, simpleSer) == returnvalue::OK);
     auto& creator = storeHelper.getCreatorRef();
     auto& params = creator.getParams();
-    REQUIRE(params.dataWrapper.type == ecss::DataTypes::SERIALIZABLE);
+    REQUIRE(params.dataWrapper.type == util::DataTypes::SERIALIZABLE);
     REQUIRE(params.dataWrapper.dataUnion.serializable == &simpleSer);
   }
 
@@ -86,7 +86,7 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
     REQUIRE(tmHelper.prepareTmPacket(2, dataWithObjId) == returnvalue::OK);
     auto& creator = storeHelper.getCreatorRef();
     auto& params = creator.getParams();
-    REQUIRE(params.dataWrapper.type == ecss::DataTypes::SERIALIZABLE);
+    REQUIRE(params.dataWrapper.type == util::DataTypes::SERIALIZABLE);
     REQUIRE(params.dataWrapper.dataUnion.serializable == &dataWithObjId);
   }
 
