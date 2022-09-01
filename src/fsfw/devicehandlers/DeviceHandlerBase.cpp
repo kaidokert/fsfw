@@ -1325,10 +1325,10 @@ ReturnValue_t DeviceHandlerBase::executeAction(ActionId_t actionId, MessageQueue
   } else if (iter->second.isExecuting) {
     result = COMMAND_ALREADY_SENT;
   } else {
+    iter->second.sendReplyTo = commandedBy;
     result = buildCommandFromCommand(actionId, data, size);
   }
   if (result == returnvalue::OK) {
-    iter->second.sendReplyTo = commandedBy;
     iter->second.isExecuting = true;
     cookieInfo.pendingCommand = iter;
     cookieInfo.state = COOKIE_WRITE_READY;
