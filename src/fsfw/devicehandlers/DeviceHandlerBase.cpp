@@ -1320,13 +1320,11 @@ ReturnValue_t DeviceHandlerBase::executeAction(ActionId_t actionId, MessageQueue
     return result;
   }
   DeviceCommandMap::iterator iter = deviceCommandMap.find(actionId);
-  MessageQueueId_t prevRecipient = MessageQueueIF::NO_QUEUE;
   if (iter == deviceCommandMap.end()) {
     result = COMMAND_NOT_SUPPORTED;
   } else if (iter->second.isExecuting) {
     result = COMMAND_ALREADY_SENT;
   } else {
-    prevRecipient = iter->second.sendReplyTo;
     iter->second.sendReplyTo = commandedBy;
     result = buildCommandFromCommand(actionId, data, size);
   }
@@ -1334,8 +1332,6 @@ ReturnValue_t DeviceHandlerBase::executeAction(ActionId_t actionId, MessageQueue
     iter->second.isExecuting = true;
     cookieInfo.pendingCommand = iter;
     cookieInfo.state = COOKIE_WRITE_READY;
-  } else {
-    iter->second.sendReplyTo = prevRecipient;
   }
   return result;
 }
