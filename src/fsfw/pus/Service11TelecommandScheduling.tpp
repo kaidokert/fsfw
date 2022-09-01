@@ -566,12 +566,17 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
       if (result != returnvalue::OK) {
         return result;
       }
+      if(fromTimestamp > toTimestamp) {
+        return INVALID_TIME_WINDOW;
+      }
       itBegin = telecommandMap.begin();
-      itEnd = telecommandMap.begin();
 
       while (itBegin->first < fromTimestamp && itBegin != telecommandMap.end()) {
         itBegin++;
       }
+
+      //start looking for end beginning at begin
+      itEnd = itBegin;
       while (itEnd->first <= toTimestamp && itEnd != telecommandMap.end()) {
         itEnd++;
       }
@@ -581,17 +586,6 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
     default:
       return returnvalue::FAILED;
   }
-
-  // additional security check, this should never be true
-  if (itBegin > itEnd) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "11::getMapFilterFromData: itBegin > itEnd\n" << std::endl;
-#else
-    sif::printError("11::getMapFilterFromData: itBegin > itEnd\n");
-#endif
-    return returnvalue::FAILED;
-  }
-
   // the map range should now be set according to the sent filter.
   return returnvalue::OK;
 }
