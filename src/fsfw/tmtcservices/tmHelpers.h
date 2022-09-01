@@ -11,13 +11,13 @@ class DataWithObjectIdPrefix : public SerializeIF {
  public:
   DataWithObjectIdPrefix(object_id_t objectId, const uint8_t* srcData, size_t srcDataLen)
       : objectId(objectId) {
-    dataWrapper.type = ecss::DataTypes::RAW;
+    dataWrapper.type = util::DataTypes::RAW;
     dataWrapper.dataUnion.raw.data = srcData;
     dataWrapper.dataUnion.raw.len = srcDataLen;
   }
 
   DataWithObjectIdPrefix(object_id_t objectId, SerializeIF& serializable) : objectId(objectId) {
-    dataWrapper.type = ecss::DataTypes::SERIALIZABLE;
+    dataWrapper.type = util::DataTypes::SERIALIZABLE;
     dataWrapper.dataUnion.serializable = &serializable;
   }
 
@@ -26,11 +26,11 @@ class DataWithObjectIdPrefix : public SerializeIF {
     if (*size + getSerializedSize() > maxSize) {
       return SerializeIF::BUFFER_TOO_SHORT;
     }
-    if (dataWrapper.type != ecss::DataTypes::RAW) {
+    if (dataWrapper.type != util::DataTypes::RAW) {
       if ((dataWrapper.dataUnion.raw.data == nullptr) and (dataWrapper.dataUnion.raw.len > 0)) {
         return returnvalue::FAILED;
       }
-    } else if (dataWrapper.type == ecss::DataTypes::SERIALIZABLE) {
+    } else if (dataWrapper.type == util::DataTypes::SERIALIZABLE) {
       if (dataWrapper.dataUnion.serializable == nullptr) {
         return returnvalue::FAILED;
       }
@@ -40,7 +40,7 @@ class DataWithObjectIdPrefix : public SerializeIF {
     if (result != returnvalue::OK) {
       return result;
     }
-    if (dataWrapper.type != ecss::DataTypes::RAW) {
+    if (dataWrapper.type != util::DataTypes::RAW) {
       std::memcpy(*buffer, dataWrapper.dataUnion.raw.data, dataWrapper.dataUnion.raw.len);
       *buffer += dataWrapper.dataUnion.raw.len;
       *size += dataWrapper.dataUnion.raw.len;
@@ -63,7 +63,7 @@ class DataWithObjectIdPrefix : public SerializeIF {
 
  private:
   object_id_t objectId;
-  ecss::DataWrapper dataWrapper{};
+  util::DataWrapper dataWrapper{};
 };
 
 }  // namespace telemetry

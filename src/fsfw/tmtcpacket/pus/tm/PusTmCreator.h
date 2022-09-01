@@ -4,6 +4,7 @@
 #include "PusTmIF.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketCreator.h"
 #include "fsfw/tmtcpacket/pus/CustomUserDataIF.h"
+#include "fsfw/util/dataWrapper.h"
 
 struct PusTmSecHeader {
   PusTmSecHeader() = default;
@@ -22,19 +23,19 @@ struct PusTmSecHeader {
 struct PusTmParams {
   PusTmParams() = default;
   explicit PusTmParams(PusTmSecHeader secHeader) : secHeader(secHeader){};
-  PusTmParams(PusTmSecHeader secHeader, ecss::DataWrapper dataWrapper)
+  PusTmParams(PusTmSecHeader secHeader, util::DataWrapper dataWrapper)
       : secHeader(secHeader), dataWrapper(dataWrapper) {}
 
   PusTmParams(uint8_t service, uint8_t subservice, TimeStamperIF* timeStamper)
       : secHeader(service, subservice, timeStamper) {}
 
   PusTmParams(uint8_t service, uint8_t subservice, TimeStamperIF* timeStamper,
-              ecss::DataWrapper dataWrapper_)
+              util::DataWrapper dataWrapper_)
       : PusTmParams(service, subservice, timeStamper) {
     dataWrapper = dataWrapper_;
   }
   PusTmSecHeader secHeader;
-  ecss::DataWrapper dataWrapper{};
+  util::DataWrapper dataWrapper{};
 };
 
 class TimeStamperIF;
