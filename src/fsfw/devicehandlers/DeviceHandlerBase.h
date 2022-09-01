@@ -1063,7 +1063,7 @@ class DeviceHandlerBase : public DeviceHandlerIF,
   void handleDeviceTm(const uint8_t *rawData, size_t rawDataLen, DeviceCommandId_t replyId,
                       bool forceDirectTm = false);
   /**
-   * Can be used to handle Service 8 replies. This will also generate the TM wiretapping
+   * Can be used to handle Service 8 data replies. This will also generate the TM wiretapping
    * packets accordingly.
    * @param dataSet
    * @param replyId
