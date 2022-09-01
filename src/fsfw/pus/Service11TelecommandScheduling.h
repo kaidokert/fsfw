@@ -38,8 +38,9 @@ class Service11TelecommandScheduling final : public PusServiceBase {
   static constexpr uint8_t CLASS_ID = CLASS_ID::PUS_SERVICE_11;
 
   static constexpr ReturnValue_t INVALID_TYPE_TIME_WINDOW = returnvalue::makeCode(CLASS_ID, 1);
-  static constexpr ReturnValue_t TIMESHIFTING_NOT_POSSIBLE = returnvalue::makeCode(CLASS_ID, 2);
-  static constexpr ReturnValue_t INVALID_RELATIVE_TIME = returnvalue::makeCode(CLASS_ID, 3);
+  static constexpr ReturnValue_t INVALID_TIME_WINDOW = returnvalue::makeCode(CLASS_ID, 2);
+  static constexpr ReturnValue_t TIMESHIFTING_NOT_POSSIBLE = returnvalue::makeCode(CLASS_ID, 3);
+  static constexpr ReturnValue_t INVALID_RELATIVE_TIME = returnvalue::makeCode(CLASS_ID, 4);
 
   static constexpr uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_11;
 
