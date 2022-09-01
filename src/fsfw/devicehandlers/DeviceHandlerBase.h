@@ -1052,8 +1052,23 @@ class DeviceHandlerBase : public DeviceHandlerIF,
 
   bool isAwaitingReply();
 
+  /**
+   * Wrapper function for @handleDeviceTm which wraps the raw buffer with @SerialBufferAdapter.
+   * For interpreted data, prefer the other function.
+   * @param rawData
+   * @param rawDataLen
+   * @param replyId
+   * @param forceDirectTm
+   */
   void handleDeviceTm(const uint8_t *rawData, size_t rawDataLen, DeviceCommandId_t replyId,
                       bool forceDirectTm = false);
+  /**
+   * Can be used to handle Service 8 replies. This will also generate the TM wiretapping
+   * packets accordingly.
+   * @param dataSet
+   * @param replyId
+   * @param forceDirectTm
+   */
   void handleDeviceTm(const SerializeIF &dataSet, DeviceCommandId_t replyId,
                       bool forceDirectTm = false);
 
