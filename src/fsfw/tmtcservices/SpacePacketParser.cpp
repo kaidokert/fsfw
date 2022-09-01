@@ -6,17 +6,9 @@
 SpacePacketParser::SpacePacketParser(std::vector<uint16_t> validPacketIds)
     : validPacketIds(validPacketIds) {}
 
-ReturnValue_t SpacePacketParser::parseSpacePackets(const uint8_t* buffer, const size_t maxSize,
-                                                   FoundPacketInfo& packetInfo,
-                                                   ParsingState& parsingState) {
-  const uint8_t** tempPtr = &buffer;
-  return parseSpacePackets(tempPtr, maxSize, packetInfo, parsingState);
-}
-
 ReturnValue_t SpacePacketParser::parseSpacePackets(const uint8_t** buffer, const size_t maxSize,
-                                                   FoundPacketInfo& packetInfo,
-                                                   ParsingState& parsingState) {
-  if (buffer == nullptr or parsingState.nextStartIdx > maxSize) {
+                                                   FoundPacketInfo& packetInfo) {
+  if (buffer == nullptr or nextStartIdx > maxSize) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "SpacePacketParser::parseSpacePackets: Frame invalid" << std::endl;
 #else
@@ -30,11 +22,7 @@ ReturnValue_t SpacePacketParser::parseSpacePackets(const uint8_t** buffer, const
     uint16_t lengthField = (bufPtr[localIdx + 4] << 8) | bufPtr[localIdx + 5];
     size_t packetSize = lengthField + 7;
     ReturnValue_t result = returnvalue::OK;
-    if (lengthField == 0) {
-      // Skip whole header for now
-      packetInfo.sizeFound = 6;
-      result = NO_PACKET_FOUND;
-    } else if (packetSize + localIdx + parsingState.amountRead > maxSize) {
+    if (packetSize + localIdx + amountRead > maxSize) {
       // Don't increment buffer and read length here, user has to decide what to do
       packetInfo.sizeFound = packetSize;
       return SPLIT_PACKET;
@@ -42,20 +30,20 @@ ReturnValue_t SpacePacketParser::parseSpacePackets(const uint8_t** buffer, const
       packetInfo.sizeFound = packetSize;
     }
     *buffer += packetInfo.sizeFound;
-    packetInfo.startIdx = localIdx + parsingState.amountRead;
-    parsingState.nextStartIdx = localIdx + parsingState.amountRead + packetInfo.sizeFound;
-    parsingState.amountRead = parsingState.nextStartIdx;
+    packetInfo.startIdx = localIdx + amountRead;
+    nextStartIdx = localIdx + amountRead + packetInfo.sizeFound;
+    amountRead = nextStartIdx;
     return result;
   };
 
   size_t idx = 0;
   // Space packet ID as start marker
   if (validPacketIds.size() > 0) {
-    while (idx + parsingState.amountRead < maxSize - 5) {
+    while (idx + amountRead < maxSize - 5) {
       uint16_t currentPacketId = (bufPtr[idx] << 8) | bufPtr[idx + 1];
       if (std::find(validPacketIds.begin(), validPacketIds.end(), currentPacketId) !=
           validPacketIds.end()) {
-        if (idx + parsingState.amountRead >= maxSize - 5) {
+        if (idx + amountRead >= maxSize - 5) {
           return SPLIT_PACKET;
         }
         return verifyLengthField(idx);
@@ -63,9 +51,9 @@ ReturnValue_t SpacePacketParser::parseSpacePackets(const uint8_t** buffer, const
         idx++;
       }
     }
-    parsingState.nextStartIdx = maxSize;
+    nextStartIdx = maxSize;
     packetInfo.sizeFound = maxSize;
-    parsingState.amountRead = maxSize;
+    amountRead = maxSize;
     *buffer += maxSize;
     return NO_PACKET_FOUND;
   }

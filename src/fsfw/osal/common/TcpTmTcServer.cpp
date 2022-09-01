@@ -335,13 +335,13 @@ ReturnValue_t TcpTmTcServer::handleTcRingBufferData(size_t availableReadData) {
   }
   ringBuffer.readData(receptionBuffer.data(), readAmount, true);
   const uint8_t* bufPtr = receptionBuffer.data();
-  FoundPacketInfo info;
-  ParsingState parseState;
-  while (parseState.amountRead < readAmount) {
-    if (spacePacketParser == nullptr) {
-      return returnvalue::FAILED;
-    }
-    result = spacePacketParser->parseSpacePackets(&bufPtr, readAmount, info, parseState);
+  SpacePacketParser::FoundPacketInfo info;
+  if (spacePacketParser == nullptr) {
+    return returnvalue::FAILED;
+  }
+  spacePacketParser->reset();
+  while (spacePacketParser->getAmountRead() < readAmount) {
+    result = spacePacketParser->parseSpacePackets(&bufPtr, readAmount, info);
     switch (result) {
       case (SpacePacketParser::NO_PACKET_FOUND):
       case (SpacePacketParser::SPLIT_PACKET): {
@@ -356,7 +356,6 @@ ReturnValue_t TcpTmTcServer::handleTcRingBufferData(size_t availableReadData) {
     }
     ringBuffer.deleteData(info.sizeFound);
     lastRingBufferSize = ringBuffer.getAvailableReadData();
-    // std::memset(receptionBuffer.data() + startIdx, 0, foundSize);
   }
   return status;
 }
