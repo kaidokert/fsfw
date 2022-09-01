@@ -7,6 +7,16 @@
 #include "fsfw/container/DynamicFIFO.h"
 #include "fsfw/returnvalues/FwClassIds.h"
 
+struct FoundPacketInfo {
+  size_t startIdx = 0;
+  size_t sizeFound = 0;
+};
+
+struct ParsingState {
+  size_t nextStartIdx = 0;
+  size_t amountRead = 0;
+};
+
 /**
  * @brief	This small helper class scans a given buffer for space packets.
  * 			Can be used if space packets are serialized in a tightly packed frame.
@@ -53,8 +63,8 @@ class SpacePacketParser {
    *      will be assigned.
    *  -@c returnvalue::OK if a packet was found
    */
-  ReturnValue_t parseSpacePackets(const uint8_t** buffer, const size_t maxSize, size_t& startIndex,
-                                  size_t& foundSize, size_t& readLen);
+  ReturnValue_t parseSpacePackets(const uint8_t** buffer, const size_t maxSize,
+                                  FoundPacketInfo& packetInfo, ParsingState& parsingState);
 
   /**
    * Parse a given frame for space packets
@@ -69,8 +79,8 @@ class SpacePacketParser {
    *      detected packet
    *  -@c returnvalue::OK if a packet was found
    */
-  ReturnValue_t parseSpacePackets(const uint8_t* buffer, const size_t maxSize, size_t& startIndex,
-                                  size_t& foundSize);
+  ReturnValue_t parseSpacePackets(const uint8_t* buffer, const size_t maxSize,
+                                  FoundPacketInfo& packetInfo, ParsingState& parsingState);
 
  private:
   std::vector<uint16_t> validPacketIds;
