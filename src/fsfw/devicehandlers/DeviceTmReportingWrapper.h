@@ -7,21 +7,22 @@
 
 class DeviceTmReportingWrapper : public SerializeIF {
  public:
-  DeviceTmReportingWrapper(object_id_t objectId, ActionId_t actionId, SerializeIF* data);
-  virtual ~DeviceTmReportingWrapper();
+  DeviceTmReportingWrapper(object_id_t objectId, ActionId_t actionId, const SerializeIF& data);
+  ~DeviceTmReportingWrapper() override;
 
-  virtual ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
-                                  Endianness streamEndianness) const override;
+  ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
+                          Endianness streamEndianness) const override;
 
-  virtual size_t getSerializedSize() const override;
-
-  virtual ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-                                    Endianness streamEndianness) override;
+  [[nodiscard]] size_t getSerializedSize() const override;
 
  private:
   object_id_t objectId;
   ActionId_t actionId;
-  SerializeIF* data;
+  const SerializeIF& data;
+
+  // Deserialization forbidden
+  ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
+                            Endianness streamEndianness) override;
 };
 
 #endif /* FSFW_DEVICEHANDLERS_DEVICETMREPORTINGWRAPPER_H_ */
