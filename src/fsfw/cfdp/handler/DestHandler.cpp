@@ -2,6 +2,7 @@
 
 #include <utility>
 
+#include "fsfw/cfdp/pdu/FileDataReader.h"
 #include "fsfw/cfdp/pdu/HeaderReader.h"
 #include "fsfw/objectmanager.h"
 #include "fsfw/serviceinterface.h"
@@ -18,28 +19,41 @@ cfdp::DestHandler::DestHandler(DestHandlerParams params, FsfwParams fsfwParams)
 }
 
 ReturnValue_t cfdp::DestHandler::performStateMachine() {
+  ReturnValue_t result;
+  ReturnValue_t status = returnvalue::OK;
   if (step == TransactionStep::IDLE) {
-    ReturnValue_t status = returnvalue::OK;
-    ReturnValue_t result;
-    for(auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
+    for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
       if (infoIter->pduType == PduType::FILE_DIRECTIVE and
           infoIter->directiveType == FileDirectives::METADATA) {
         result = handleMetadataPdu(*infoIter);
         if (result != OK) {
           status = result;
         }
-        fp.tcStore->deleteData(infoIter->storeId);
+        // metadata packet was deleted in metadata handler because a store guard is used
         dp.packetListRef.erase(infoIter++);
       }
     }
+    if (step == TransactionStep::IDLE) {
+      // To decrease the already high complexity of the software, all packets arriving before
+      // a metadata PDU are deleted.
+      for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
+        fp.tcStore->deleteData(infoIter->storeId);
+      }
+      dp.packetListRef.clear();
+    }
+
     if (step != TransactionStep::IDLE) {
       return CALL_FSM_AGAIN;
     }
     return status;
   }
   if (cfdpState == CfdpStates::BUSY_CLASS_1_NACKED) {
-    for (const auto& info : dp.packetListRef) {
-      if (info.pduType == PduType::FILE_DATA) {
+    for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
+      if (infoIter->pduType == PduType::FILE_DATA) {
+        result = handleFileDataPdu(*infoIter);
+        if (result != OK) {
+          status = result;
+        }
       }
     }
     return returnvalue::OK;
@@ -77,6 +91,7 @@ ReturnValue_t cfdp::DestHandler::initialize() {
   }
   return returnvalue::OK;
 }
+
 ReturnValue_t cfdp::DestHandler::handleMetadataPdu(const PacketInfo& info) {
   // Process metadata PDU
   auto constAccessorPair = fp.tcStore->getData(info.storeId);
@@ -100,6 +115,19 @@ ReturnValue_t cfdp::DestHandler::handleMetadataPdu(const PacketInfo& info) {
                                     constAccessorPair.second.size());
   }
   return startTransaction(reader, metadataInfo);
+}
+
+ReturnValue_t cfdp::DestHandler::handleFileDataPdu(const cfdp::PacketInfo& info) {
+  // Process file data PDU
+  auto constAccessorPair = fp.tcStore->getData(info.storeId);
+  if (constAccessorPair.first != OK) {
+    // TODO: This is not a CFDP error. Event and/or warning?
+    cfdp::FileSize offset;
+    FileDataInfo fdInfo(offset);
+    FileDataReader reader(constAccessorPair.second.data(), constAccessorPair.second.size(), fdInfo);
+    return constAccessorPair.first;
+  }
+  return returnvalue::OK;
 }
 
 ReturnValue_t cfdp::DestHandler::handleMetadataParseError(const uint8_t* rawData, size_t maxSize) {

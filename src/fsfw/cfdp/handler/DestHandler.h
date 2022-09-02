@@ -77,6 +77,7 @@ class DestHandler {
   ReturnValue_t initialize();
 
   ReturnValue_t handleMetadataPdu(const PacketInfo& info);
+  ReturnValue_t handleFileDataPdu(const PacketInfo& info);
   ReturnValue_t handleMetadataParseError(const uint8_t* rawData, size_t maxSize);
 
   [[nodiscard]] CfdpStates getCfdpState() const;
