@@ -21,13 +21,15 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
   if (step == TransactionStep::IDLE) {
     ReturnValue_t status = returnvalue::OK;
     ReturnValue_t result;
-    for (const auto& info : dp.packetListRef) {
-      if (info.pduType == PduType::FILE_DIRECTIVE and
-          info.directiveType == FileDirectives::METADATA) {
-        result = handleMetadataPdu(info);
+    for(auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
+      if (infoIter->pduType == PduType::FILE_DIRECTIVE and
+          infoIter->directiveType == FileDirectives::METADATA) {
+        result = handleMetadataPdu(*infoIter);
         if (result != OK) {
           status = result;
         }
+        fp.tcStore->deleteData(infoIter->storeId);
+        dp.packetListRef.erase(infoIter++);
       }
     }
     if (step != TransactionStep::IDLE) {
