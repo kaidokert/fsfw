@@ -49,19 +49,31 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
     return status;
   }
   if (cfdpState == CfdpStates::BUSY_CLASS_1_NACKED) {
-    for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
-      if (infoIter->pduType == PduType::FILE_DATA) {
-        result = handleFileDataPdu(*infoIter);
-        if (result != OK) {
-          status = result;
+    if (step == TransactionStep::RECEIVING_FILE_DATA_PDUS) {
+      for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
+        if (infoIter->pduType == PduType::FILE_DATA) {
+          result = handleFileDataPdu(*infoIter);
+          if (result != OK) {
+            status = result;
+          }
+          // Store data was deleted in PDU handler because a store guard is used
+          dp.packetListRef.erase(infoIter++);
         }
-        // Store data was deleted in PDU handler because a store guard is used
-        dp.packetListRef.erase(infoIter++);
+        // TODO: Support for check timer missing
+        if (infoIter->pduType == PduType::FILE_DIRECTIVE and
+            infoIter->directiveType == FileDirectives::EOF_DIRECTIVE) {
+          result = handleEofPdu(*infoIter);
+          if (result != OK) {
+            status = result;
+          }
+          // Store data was deleted in PDU handler because a store guard is used
+          dp.packetListRef.erase(infoIter++);
+        }
       }
-      if (infoIter->pduType == PduType::FILE_DIRECTIVE and
-          infoIter->directiveType == FileDirectives::EOF_DIRECTIVE) {
-        result = handleEofPdu(*infoIter);
-      }
+    }
+    if (step == TransactionStep::TRANSFER_COMPLETION) {
+    }
+    if (step == TransactionStep::SENDING_FINISHED_PDU) {
     }
     return OK;
   }
@@ -141,7 +153,6 @@ ReturnValue_t cfdp::DestHandler::handleFileDataPdu(const cfdp::PacketInfo& info)
   size_t fileSegmentLen = 0;
   const uint8_t* fileData = fdInfo.getFileData(&fileSegmentLen);
   FileOpParams fileOpParams(tp.sourceName.data(), fileSegmentLen);
-  result = dp.user.vfs.writeToFile(fileOpParams, fileData);
   if (dp.cfg.indicCfg.fileSegmentRecvIndicRequired) {
     FileSegmentRecvdParams segParams;
     segParams.offset = offset.value();
@@ -152,6 +163,10 @@ ReturnValue_t cfdp::DestHandler::handleFileDataPdu(const cfdp::PacketInfo& info)
     auto* segMetadata = fdInfo.getSegmentMetadata(&segmentMetadatLen);
     segParams.segmentMetadata = {segMetadata, segmentMetadatLen};
     dp.user.fileSegmentRecvdIndication(segParams);
+  }
+  result = dp.user.vfs.writeToFile(fileOpParams, fileData);
+  if (offset.value() + fileSegmentLen > tp.progress) {
+    tp.progress = offset.value() + fileSegmentLen;
   }
   if (result != returnvalue::OK) {
     // TODO: Proper Error handling
@@ -175,8 +190,15 @@ ReturnValue_t cfdp::DestHandler::handleEofPdu(const cfdp::PacketInfo& info) {
   if (result != OK) {
     return result;
   }
+  // TODO: Error handling
   if (eofInfo.getConditionCode() == ConditionCode::NO_ERROR) {
     tp.crc = eofInfo.getChecksum();
+    uint64_t fileSizeFromEof = eofInfo.getFileSize().value();
+    // CFDP 4.6.1.2.9: Declare file size error if progress exceeds file size
+    if (fileSizeFromEof > tp.progress) {
+      // TODO: File size error
+    }
+    tp.fileSize.setFileSize(fileSizeFromEof, std::nullopt);
   }
   return returnvalue::OK;
 }

@@ -1,6 +1,8 @@
 #ifndef FSFW_CFDP_FILESIZE_H_
 #define FSFW_CFDP_FILESIZE_H_
 
+#include <optional>
+
 #include "fsfw/serialize/SerializeAdapter.h"
 #include "fsfw/serialize/SerializeIF.h"
 
@@ -52,13 +54,15 @@ struct FileSize : public SerializeIF {
     }
   }
 
-  ReturnValue_t setFileSize(uint64_t fileSize_, bool largeFile_) {
+  ReturnValue_t setFileSize(uint64_t fileSize_, std::optional<bool> largeFile_) {
+    if (largeFile_) {
+      largeFile = largeFile_.value();
+    }
     if (not largeFile and fileSize > UINT32_MAX) {
       // TODO: emit warning here
       return returnvalue::FAILED;
     }
     this->fileSize = fileSize_;
-    this->largeFile = largeFile_;
     return returnvalue::OK;
   }
 

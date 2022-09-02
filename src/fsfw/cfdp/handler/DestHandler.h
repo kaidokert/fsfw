@@ -2,6 +2,7 @@
 #define FSFW_CFDP_CFDPDESTHANDLER_H
 
 #include <etl/list.h>
+#include <etl/set.h>
 
 #include <utility>
 
@@ -30,17 +31,23 @@ struct PacketInfo {
 
 struct DestHandlerParams {
   DestHandlerParams(LocalEntityCfg cfg, UserBase& user, RemoteConfigTableIF& remoteCfgTable,
-                    etl::ilist<PacketInfo>& packetList)
+                    etl::ilist<PacketInfo>& packetList,
+                    // TODO: This container can potentially take tons of space. For a better
+                    //       memory efficient implementation, an additional abstraction could be
+                    //       be used so users can use uint32_t as the pair type
+                    etl::iset<etl::pair<uint64_t, uint64_t>>& lostSegmentsContainer)
       : cfg(std::move(cfg)),
         user(user),
         remoteCfgTable(remoteCfgTable),
-        packetListRef(packetList) {}
+        packetListRef(packetList),
+        lostSegmentsContainer(lostSegmentsContainer) {}
 
   LocalEntityCfg cfg;
   UserBase& user;
   RemoteConfigTableIF& remoteCfgTable;
 
   etl::ilist<PacketInfo>& packetListRef;
+  etl::iset<etl::pair<uint64_t, uint64_t>>& lostSegmentsContainer;
   uint8_t maxTlvsInOnePdu = 10;
   size_t maxFilenameLen = 255;
 };
@@ -99,6 +106,7 @@ class DestHandler {
     TransactionId transactionId;
     PduConfig pduConf;
     uint32_t crc = 0;
+    uint64_t progress = 0;
     RemoteEntityCfg* remoteCfg = nullptr;
   };
 
