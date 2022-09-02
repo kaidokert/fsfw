@@ -1,8 +1,6 @@
 #ifndef FSFW_RETURNVALUES_RETURNVALUE_H_
 #define FSFW_RETURNVALUES_RETURNVALUE_H_
 
-#include <returnvalues/classIds.h>
-
 #include <cstdint>
 
 #include "FwClassIds.h"

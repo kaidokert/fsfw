@@ -4,8 +4,6 @@
 #include <stdint.h>
 
 #include "fwSubsystemIdRanges.h"
-// could be moved to more suitable location
-#include <events/subsystemIdRanges.h>
 
 using EventId_t = uint16_t;
 using EventSeverity_t = uint8_t;
