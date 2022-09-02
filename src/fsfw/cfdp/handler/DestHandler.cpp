@@ -72,10 +72,14 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
       }
     }
     if (step == TransactionStep::TRANSFER_COMPLETION) {
+      result = handleTransferCompletion();
+      if (result != OK) {
+        status = result;
+      }
     }
     if (step == TransactionStep::SENDING_FINISHED_PDU) {
     }
-    return OK;
+    return status;
   }
   if (cfdpState == CfdpStates::BUSY_CLASS_2_ACKED) {
     // TODO: Will be implemented at a later stage
@@ -200,6 +204,13 @@ ReturnValue_t cfdp::DestHandler::handleEofPdu(const cfdp::PacketInfo& info) {
     }
     tp.fileSize.setFileSize(fileSizeFromEof, std::nullopt);
   }
+  if (step == TransactionStep::RECEIVING_FILE_DATA_PDUS) {
+    if (cfdpState == CfdpStates::BUSY_CLASS_1_NACKED) {
+      step = TransactionStep::TRANSFER_COMPLETION;
+    } else if (cfdpState == CfdpStates::BUSY_CLASS_2_ACKED) {
+      step = TransactionStep::SENDING_ACK_PDU;
+    }
+  }
   return returnvalue::OK;
 }
 
@@ -287,3 +298,20 @@ ReturnValue_t cfdp::DestHandler::startTransaction(MetadataPduReader& reader, Met
 }
 
 cfdp::CfdpStates cfdp::DestHandler::getCfdpState() const { return cfdpState; }
+
+ReturnValue_t cfdp::DestHandler::handleTransferCompletion() {
+  // TODO: Checksum verification and notice of completion
+  if (cfdpState == CfdpStates::BUSY_CLASS_1_NACKED) {
+    if (tp.closureRequested) {
+      step = TransactionStep::SENDING_FINISHED_PDU;
+    } else {
+      finish();
+    }
+  } else if (cfdpState == CfdpStates::BUSY_CLASS_2_ACKED) {
+    step = TransactionStep::SENDING_FINISHED_PDU;
+  }
+}
+
+void cfdp::DestHandler::finish() {
+  // TODO: Clear PDU list, reset state to be ready for next transfer
+}

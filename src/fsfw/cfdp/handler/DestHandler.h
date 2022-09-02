@@ -123,6 +123,8 @@ class DestHandler {
   ReturnValue_t handleFileDataPdu(const PacketInfo& info);
   ReturnValue_t handleEofPdu(const PacketInfo& info);
   ReturnValue_t handleMetadataParseError(const uint8_t* rawData, size_t maxSize);
+  ReturnValue_t handleTransferCompletion();
+  void finish();
 };
 
 }  // namespace cfdp
