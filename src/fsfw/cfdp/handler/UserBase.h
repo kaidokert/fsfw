@@ -64,6 +64,8 @@ struct FileSegmentRecvdParams {
  * @param vfs Virtual Filestore Object. Will be used for all file operations
  */
 class UserBase {
+  friend class DestHandler;
+
  public:
   explicit UserBase(HasFileSystemIF& vfs);
 

@@ -76,10 +76,6 @@ class DestHandler {
 
   ReturnValue_t initialize();
 
-  ReturnValue_t handleMetadataPdu(const PacketInfo& info);
-  ReturnValue_t handleFileDataPdu(const PacketInfo& info);
-  ReturnValue_t handleMetadataParseError(const uint8_t* rawData, size_t maxSize);
-
   [[nodiscard]] CfdpStates getCfdpState() const;
 
  private:
@@ -96,12 +92,13 @@ class DestHandler {
         : sourceName(maxFileNameLen), destName(maxFileNameLen) {}
 
     ChecksumType checksumType = ChecksumType::NULL_CHECKSUM;
-    bool closureRequested{};
+    bool closureRequested = false;
     std::vector<char> sourceName;
     std::vector<char> destName;
     cfdp::FileSize fileSize;
     TransactionId transactionId;
     PduConfig pduConf;
+    uint32_t crc = 0;
     RemoteEntityCfg* remoteCfg = nullptr;
   };
 
@@ -114,6 +111,10 @@ class DestHandler {
   TransactionParams tp;
 
   ReturnValue_t startTransaction(MetadataPduReader& reader, MetadataInfo& info);
+  ReturnValue_t handleMetadataPdu(const PacketInfo& info);
+  ReturnValue_t handleFileDataPdu(const PacketInfo& info);
+  ReturnValue_t handleEofPdu(const PacketInfo& info);
+  ReturnValue_t handleMetadataParseError(const uint8_t* rawData, size_t maxSize);
 };
 
 }  // namespace cfdp

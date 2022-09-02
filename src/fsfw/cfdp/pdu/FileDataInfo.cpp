@@ -57,16 +57,16 @@ ReturnValue_t FileDataInfo::addSegmentMetadataInfo(cfdp::RecordContinuationState
   return returnvalue::OK;
 }
 
-const uint8_t *FileDataInfo::getFileData(size_t *fileSize) const {
-  if (fileSize != nullptr) {
-    *fileSize = this->fileSize;
+const uint8_t *FileDataInfo::getFileData(size_t *fileSize_) const {
+  if (fileSize_ != nullptr) {
+    *fileSize_ = this->fileSize;
   }
   return fileData;
 }
 
-const uint8_t *FileDataInfo::getSegmentMetadata(size_t *segmentMetadataLen) {
-  if (segmentMetadataLen != nullptr) {
-    *segmentMetadataLen = this->segmentMetadataLen;
+const uint8_t *FileDataInfo::getSegmentMetadata(size_t *segmentMetadataLen_) {
+  if (segmentMetadataLen_ != nullptr) {
+    *segmentMetadataLen_ = this->segmentMetadataLen;
   }
   return segmentMetadata;
 }

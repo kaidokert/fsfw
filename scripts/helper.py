@@ -51,7 +51,7 @@ def main():
     parser.add_argument(
         "-g",
         "--generators",
-        default = "Ninja",
+        default="Ninja",
         action="store",
         help="CMake generators",
     )
@@ -165,10 +165,18 @@ def create_tests_build_cfg(args):
     os.mkdir(UNITTEST_FOLDER_NAME)
     os.chdir(UNITTEST_FOLDER_NAME)
     if args.windows:
-        cmake_cmd = 'cmake -G "' + args.generators + '" -DFSFW_OSAL=host -DFSFW_BUILD_TESTS=ON \
+        cmake_cmd = (
+            'cmake -G "'
+            + args.generators
+            + '" -DFSFW_OSAL=host -DFSFW_BUILD_TESTS=ON \
         -DGCOVR_PATH="py -m gcovr" ..'
+        )
     else:
-        cmake_cmd = 'cmake -G "' + args.generators + '" -DFSFW_OSAL=host -DFSFW_BUILD_TESTS=ON ..'
+        cmake_cmd = (
+            'cmake -G "'
+            + args.generators
+            + '" -DFSFW_OSAL=host -DFSFW_BUILD_TESTS=ON ..'
+        )
     cmd_runner(cmake_cmd)
     os.chdir("..")
 

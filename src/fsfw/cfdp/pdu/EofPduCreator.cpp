@@ -1,19 +1,16 @@
-#include "EofPduSerializer.h"
+#include "EofPduCreator.h"
 
 #include "fsfw/FSFW.h"
-#include "fsfw/serviceinterface.h"
 
-EofPduSerializer::EofPduSerializer(PduConfig &conf, EofInfo &info)
+EofPduCreator::EofPduCreator(PduConfig &conf, EofInfo &info)
     : FileDirectiveCreator(conf, cfdp::FileDirectives::EOF_DIRECTIVE, 9), info(info) {
-  setDirectiveDataFieldLen(info.getSerializedSize(getLargeFileFlag()));
+  setDirectiveDataFieldLen(info.getSerializedSize(HeaderCreator::getLargeFileFlag()));
 }
 
-size_t EofPduSerializer::getSerializedSize() const {
-  return FileDirectiveCreator::getWholePduSize();
-}
+size_t EofPduCreator::getSerializedSize() const { return FileDirectiveCreator::getWholePduSize(); }
 
-ReturnValue_t EofPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
-                                          Endianness streamEndianness) const {
+ReturnValue_t EofPduCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
+                                       Endianness streamEndianness) const {
   ReturnValue_t result = FileDirectiveCreator::serialize(buffer, size, maxSize, streamEndianness);
   if (result != returnvalue::OK) {
     return result;

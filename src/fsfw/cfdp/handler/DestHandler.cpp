@@ -2,10 +2,11 @@
 
 #include <utility>
 
+#include "fsfw/FSFW.h"
+#include "fsfw/cfdp/pdu/EofPduReader.h"
 #include "fsfw/cfdp/pdu/FileDataReader.h"
 #include "fsfw/cfdp/pdu/HeaderReader.h"
 #include "fsfw/objectmanager.h"
-#include "fsfw/serviceinterface.h"
 
 using namespace returnvalue;
 
@@ -29,7 +30,7 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
         if (result != OK) {
           status = result;
         }
-        // metadata packet was deleted in metadata handler because a store guard is used
+        // Store data was deleted in PDU handler because a store guard is used
         dp.packetListRef.erase(infoIter++);
       }
     }
@@ -54,9 +55,15 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
         if (result != OK) {
           status = result;
         }
+        // Store data was deleted in PDU handler because a store guard is used
+        dp.packetListRef.erase(infoIter++);
+      }
+      if (infoIter->pduType == PduType::FILE_DIRECTIVE and
+          infoIter->directiveType == FileDirectives::EOF_DIRECTIVE) {
+        result = handleEofPdu(*infoIter);
       }
     }
-    return returnvalue::OK;
+    return OK;
   }
   if (cfdpState == CfdpStates::BUSY_CLASS_2_ACKED) {
     // TODO: Will be implemented at a later stage
@@ -64,32 +71,32 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
     sif::warning << "CFDP state machine for acknowledged mode not implemented yet" << std::endl;
 #endif
   }
-  return returnvalue::OK;
+  return OK;
 }
 
 ReturnValue_t cfdp::DestHandler::passPacket(PacketInfo packet) {
   if (dp.packetListRef.full()) {
-    return returnvalue::FAILED;
+    return FAILED;
   }
   dp.packetListRef.push_back(packet);
-  return returnvalue::OK;
+  return OK;
 }
 
 ReturnValue_t cfdp::DestHandler::initialize() {
   if (fp.tmStore == nullptr) {
     fp.tmStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TM_STORE);
     if (fp.tmStore == nullptr) {
-      return returnvalue::FAILED;
+      return FAILED;
     }
   }
 
   if (fp.tcStore == nullptr) {
     fp.tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
     if (fp.tcStore == nullptr) {
-      return returnvalue::FAILED;
+      return FAILED;
     }
   }
-  return returnvalue::OK;
+  return OK;
 }
 
 ReturnValue_t cfdp::DestHandler::handleMetadataPdu(const PacketInfo& info) {
@@ -122,10 +129,54 @@ ReturnValue_t cfdp::DestHandler::handleFileDataPdu(const cfdp::PacketInfo& info)
   auto constAccessorPair = fp.tcStore->getData(info.storeId);
   if (constAccessorPair.first != OK) {
     // TODO: This is not a CFDP error. Event and/or warning?
-    cfdp::FileSize offset;
-    FileDataInfo fdInfo(offset);
-    FileDataReader reader(constAccessorPair.second.data(), constAccessorPair.second.size(), fdInfo);
     return constAccessorPair.first;
+  }
+  cfdp::FileSize offset;
+  FileDataInfo fdInfo(offset);
+  FileDataReader reader(constAccessorPair.second.data(), constAccessorPair.second.size(), fdInfo);
+  ReturnValue_t result = reader.parseData();
+  if (result != OK) {
+    return result;
+  }
+  size_t fileSegmentLen = 0;
+  const uint8_t* fileData = fdInfo.getFileData(&fileSegmentLen);
+  FileOpParams fileOpParams(tp.sourceName.data(), fileSegmentLen);
+  result = dp.user.vfs.writeToFile(fileOpParams, fileData);
+  if (dp.cfg.indicCfg.fileSegmentRecvIndicRequired) {
+    FileSegmentRecvdParams segParams;
+    segParams.offset = offset.value();
+    segParams.id = tp.transactionId;
+    segParams.length = fileSegmentLen;
+    segParams.recContState = fdInfo.getRecordContinuationState();
+    size_t segmentMetadatLen = 0;
+    auto* segMetadata = fdInfo.getSegmentMetadata(&segmentMetadatLen);
+    segParams.segmentMetadata = {segMetadata, segmentMetadatLen};
+    dp.user.fileSegmentRecvdIndication(segParams);
+  }
+  if (result != returnvalue::OK) {
+    // TODO: Proper Error handling
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::error << "File write error" << std::endl;
+#endif
+  }
+  return result;
+}
+
+ReturnValue_t cfdp::DestHandler::handleEofPdu(const cfdp::PacketInfo& info) {
+  // Process EOF PDU
+  auto constAccessorPair = fp.tcStore->getData(info.storeId);
+  if (constAccessorPair.first != OK) {
+    // TODO: This is not a CFDP error. Event and/or warning?
+    return constAccessorPair.first;
+  }
+  EofInfo eofInfo(nullptr);
+  EofPduReader reader(constAccessorPair.second.data(), constAccessorPair.second.size(), eofInfo);
+  ReturnValue_t result = reader.parseData();
+  if (result != OK) {
+    return result;
+  }
+  if (eofInfo.getConditionCode() == ConditionCode::NO_ERROR) {
+    tp.crc = eofInfo.getChecksum();
   }
   return returnvalue::OK;
 }

@@ -1,8 +1,8 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw/cfdp/pdu/EofPduDeserializer.h"
-#include "fsfw/cfdp/pdu/EofPduSerializer.h"
+#include "fsfw/cfdp/pdu/EofPduCreator.h"
+#include "fsfw/cfdp/pdu/EofPduReader.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
 TEST_CASE("EOF PDU", "[cfdp][pdu]") {
@@ -22,7 +22,7 @@ TEST_CASE("EOF PDU", "[cfdp][pdu]") {
 
   PduConfig pduConf(sourceId, destId, TransmissionModes::ACKNOWLEDGED, seqNum);
 
-  auto eofSerializer = EofPduSerializer(pduConf, eofInfo);
+  auto eofSerializer = EofPduCreator(pduConf, eofInfo);
   SECTION("Serialize") {
     result = eofSerializer.serialize(&bufPtr, &sz, buf.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
@@ -45,7 +45,7 @@ TEST_CASE("EOF PDU", "[cfdp][pdu]") {
     eofInfo.setFileSize(0x10ffffff10, true);
     pduConf.largeFile = true;
     // Should serialize with fault location now
-    auto serializeWithFaultLocation = EofPduSerializer(pduConf, eofInfo);
+    auto serializeWithFaultLocation = EofPduCreator(pduConf, eofInfo);
     bufPtr = buf.data();
     sz = 0;
     result = serializeWithFaultLocation.serialize(&bufPtr, &sz, buf.size(),
@@ -83,7 +83,7 @@ TEST_CASE("EOF PDU", "[cfdp][pdu]") {
     REQUIRE(result == returnvalue::OK);
     EntityIdTlv tlv(destId);
     EofInfo emptyInfo(&tlv);
-    auto deserializer = EofPduDeserializer(buf.data(), buf.size(), emptyInfo);
+    auto deserializer = EofPduReader(buf.data(), buf.size(), emptyInfo);
     result = deserializer.parseData();
     REQUIRE(result == returnvalue::OK);
     REQUIRE(emptyInfo.getConditionCode() == cfdp::ConditionCode::NO_ERROR);
@@ -94,12 +94,12 @@ TEST_CASE("EOF PDU", "[cfdp][pdu]") {
     eofInfo.setFileSize(0x10ffffff10, true);
     pduConf.largeFile = true;
     // Should serialize with fault location now
-    auto serializeWithFaultLocation = EofPduSerializer(pduConf, eofInfo);
+    auto serializeWithFaultLocation = EofPduCreator(pduConf, eofInfo);
     bufPtr = buf.data();
     sz = 0;
     result = serializeWithFaultLocation.serialize(&bufPtr, &sz, buf.size(),
                                                   SerializeIF::Endianness::NETWORK);
-    auto deserializer2 = EofPduDeserializer(buf.data(), buf.size(), emptyInfo);
+    auto deserializer2 = EofPduReader(buf.data(), buf.size(), emptyInfo);
     result = deserializer2.parseData();
     REQUIRE(result == returnvalue::OK);
     REQUIRE(emptyInfo.getConditionCode() == cfdp::ConditionCode::FILESTORE_REJECTION);
@@ -110,7 +110,7 @@ TEST_CASE("EOF PDU", "[cfdp][pdu]") {
     uint16_t destId = emptyInfo.getFaultLoc()->getEntityId().getValue();
     REQUIRE(destId == 2);
     for (size_t maxSz = 0; maxSz < deserializer2.getWholePduSize() - 1; maxSz++) {
-      auto invalidDeser = EofPduDeserializer(buf.data(), maxSz, emptyInfo);
+      auto invalidDeser = EofPduReader(buf.data(), maxSz, emptyInfo);
       result = invalidDeser.parseData();
       REQUIRE(result != returnvalue::OK);
     }

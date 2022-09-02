@@ -1,12 +1,12 @@
-#include "EofPduDeserializer.h"
+#include "EofPduReader.h"
 
 #include "fsfw/FSFW.h"
 #include "fsfw/serviceinterface.h"
 
-EofPduDeserializer::EofPduDeserializer(const uint8_t* pduBuf, size_t maxSize, EofInfo& eofInfo)
+EofPduReader::EofPduReader(const uint8_t* pduBuf, size_t maxSize, EofInfo& eofInfo)
     : FileDirectiveReader(pduBuf, maxSize), info(eofInfo) {}
 
-ReturnValue_t EofPduDeserializer::parseData() {
+ReturnValue_t EofPduReader::parseData() {
   ReturnValue_t result = FileDirectiveReader::parseData();
   if (result != returnvalue::OK) {
     return result;

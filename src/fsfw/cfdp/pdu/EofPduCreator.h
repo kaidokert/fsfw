@@ -5,11 +5,11 @@
 #include "fsfw/cfdp/pdu/FileDirectiveCreator.h"
 #include "fsfw/cfdp/tlv/EntityIdTlv.h"
 
-class EofPduSerializer : public FileDirectiveCreator {
+class EofPduCreator : public FileDirectiveCreator {
  public:
-  EofPduSerializer(PduConfig& conf, EofInfo& info);
+  EofPduCreator(PduConfig& conf, EofInfo& info);
 
-  size_t getSerializedSize() const override;
+  [[nodiscard]] size_t getSerializedSize() const override;
 
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;

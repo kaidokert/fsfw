@@ -4,11 +4,11 @@
 #include "EofInfo.h"
 #include "fsfw/cfdp/pdu/FileDirectiveReader.h"
 
-class EofPduDeserializer : public FileDirectiveReader {
+class EofPduReader : public FileDirectiveReader {
  public:
-  EofPduDeserializer(const uint8_t* pduBuf, size_t maxSize, EofInfo& eofInfo);
+  EofPduReader(const uint8_t* pduBuf, size_t maxSize, EofInfo& eofInfo);
 
-  virtual ReturnValue_t parseData() override;
+  ReturnValue_t parseData() override;
 
  private:
   EofInfo& info;

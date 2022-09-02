@@ -8,9 +8,11 @@ namespace cfdp {
 
 struct FileSize : public SerializeIF {
  public:
-  FileSize() : largeFile(false){};
+  FileSize() = default;
 
   explicit FileSize(uint64_t fileSize, bool isLarge = false) { setFileSize(fileSize, isLarge); };
+
+  [[nodiscard]] uint64_t value() const { return fileSize; }
 
   ReturnValue_t serialize(bool isLarge, uint8_t **buffer, size_t *size, size_t maxSize,
                           Endianness streamEndianness) {
@@ -50,20 +52,20 @@ struct FileSize : public SerializeIF {
     }
   }
 
-  ReturnValue_t setFileSize(uint64_t fileSize, bool largeFile) {
+  ReturnValue_t setFileSize(uint64_t fileSize_, bool largeFile_) {
     if (not largeFile and fileSize > UINT32_MAX) {
       // TODO: emit warning here
       return returnvalue::FAILED;
     }
-    this->fileSize = fileSize;
-    this->largeFile = largeFile;
+    this->fileSize = fileSize_;
+    this->largeFile = largeFile_;
     return returnvalue::OK;
   }
 
   [[nodiscard]] bool isLargeFile() const { return largeFile; }
-  uint64_t getSize(bool *largeFile = nullptr) const {
-    if (largeFile != nullptr) {
-      *largeFile = this->largeFile;
+  uint64_t getSize(bool *largeFile_ = nullptr) const {
+    if (largeFile_ != nullptr) {
+      *largeFile_ = this->largeFile;
     }
     return fileSize;
   }

@@ -9,8 +9,8 @@ target_sources(
           AckPduSerializer.cpp
           AckPduDeserializer.cpp
           EofInfo.cpp
-          EofPduSerializer.cpp
-          EofPduDeserializer.cpp
+          EofPduCreator.cpp
+          EofPduReader.cpp
           NakInfo.cpp
           NakPduSerializer.cpp
           NakPduDeserializer.cpp
