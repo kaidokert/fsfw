@@ -566,7 +566,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
       if (result != returnvalue::OK) {
         return result;
       }
-      if(fromTimestamp > toTimestamp) {
+      if (fromTimestamp > toTimestamp) {
         return INVALID_TIME_WINDOW;
       }
       itBegin = telecommandMap.begin();
@@ -575,7 +575,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::getMapFilterFr
         itBegin++;
       }
 
-      //start looking for end beginning at begin
+      // start looking for end beginning at begin
       itEnd = itBegin;
       while (itEnd->first <= toTimestamp && itEnd != telecommandMap.end()) {
         itEnd++;
