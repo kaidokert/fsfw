@@ -1,12 +1,12 @@
 #ifndef FSFW_TMTCPACKET_TCPACKETDESERIALIZER_H
 #define FSFW_TMTCPACKET_TCPACKETDESERIALIZER_H
 
+#include "fsfw/serialize/SerialBufferAdapter.h"
 #include "fsfw/tmtcpacket/RedirectableDataPointerIF.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketCreator.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketIF.h"
 #include "fsfw/tmtcpacket/pus/CustomUserDataIF.h"
 #include "fsfw/tmtcpacket/pus/defs.h"
-#include "fsfw/serialize/SerialBufferAdapter.h"
 #include "fsfw/tmtcpacket/pus/tc/PusTcIF.h"
 
 struct PusTcParams {

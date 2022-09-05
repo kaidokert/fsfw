@@ -2,6 +2,7 @@
 #define FSFW_TMTCPACKET_TMPACKETCREATOR_H
 
 #include "PusTmIF.h"
+#include "fsfw/serialize/SerialBufferAdapter.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketCreator.h"
 #include "fsfw/tmtcpacket/pus/CustomUserDataIF.h"
 
