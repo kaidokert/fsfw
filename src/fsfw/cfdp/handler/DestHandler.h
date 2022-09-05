@@ -70,6 +70,16 @@ struct FsfwParams {
   StorageManagerIF* tmStore = nullptr;
 };
 
+enum class CallStatus { DONE, CALL_AFTER_DELAY, CALL_AGAIN };
+
+struct DestFsmResult {
+  ReturnValue_t result = returnvalue::OK;
+  CallStatus callStatus = CallStatus::CALL_AFTER_DELAY;
+  uint32_t packetsSent = 0;
+  uint8_t errors = 0;
+  std::array<ReturnValue_t, 3> errorCodes = {};
+};
+
 class DestHandler {
  public:
   enum class TransactionStep {
@@ -83,7 +93,8 @@ class DestHandler {
   /**
    * Will be returned if it is advisable to call the state machine operation call again
    */
-  ReturnValue_t CALL_FSM_AGAIN = returnvalue::makeCode(1, 0);
+  ReturnValue_t PARTIAL_SUCCESS = returnvalue::makeCode(0, 2);
+  ReturnValue_t FAILURE = returnvalue::makeCode(0, 3);
   explicit DestHandler(DestHandlerParams handlerParams, FsfwParams fsfwParams);
 
   /**
@@ -92,7 +103,7 @@ class DestHandler {
    *  - @c returnvalue::OK  State machine OK for this execution cycle
    *  - @c CALL_FSM_AGAIN   State machine should be called again.
    */
-  ReturnValue_t performStateMachine();
+  const DestFsmResult& performStateMachine();
 
   ReturnValue_t passPacket(PacketInfo packet);
 
@@ -145,16 +156,19 @@ class DestHandler {
   DestHandlerParams dp;
   FsfwParams fp;
   TransactionParams tp;
+  DestFsmResult fsmRes;
 
   ReturnValue_t startTransaction(MetadataPduReader& reader, MetadataInfo& info);
   ReturnValue_t handleMetadataPdu(const PacketInfo& info);
   ReturnValue_t handleFileDataPdu(const PacketInfo& info);
   ReturnValue_t handleEofPdu(const PacketInfo& info);
-  ReturnValue_t handleMetadataParseError(const uint8_t* rawData, size_t maxSize);
+  ReturnValue_t handleMetadataParseError(ReturnValue_t result, const uint8_t* rawData,
+                                         size_t maxSize);
   ReturnValue_t handleTransferCompletion();
   ReturnValue_t sendFinishedPdu();
   ReturnValue_t noticeOfCompletion();
   ReturnValue_t checksumVerification();
+  const DestFsmResult& updateFsmRes(uint8_t errors);
   void finish();
 };
 

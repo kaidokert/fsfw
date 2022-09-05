@@ -23,16 +23,19 @@ cfdp::DestHandler::DestHandler(DestHandlerParams params, FsfwParams fsfwParams)
   tp.pduConf.direction = cfdp::Direction::TOWARDS_SENDER;
 }
 
-ReturnValue_t cfdp::DestHandler::performStateMachine() {
+const cfdp::DestFsmResult& cfdp::DestHandler::performStateMachine() {
   ReturnValue_t result;
-  ReturnValue_t status = returnvalue::OK;
+  uint8_t errorIdx = 0;
+  fsmRes.callStatus = CallStatus::CALL_AFTER_DELAY;
+  fsmRes.result = OK;
   if (step == TransactionStep::IDLE) {
     for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
       if (infoIter->pduType == PduType::FILE_DIRECTIVE and
           infoIter->directiveType == FileDirectives::METADATA) {
         result = handleMetadataPdu(*infoIter);
-        if (result != OK) {
-          status = result;
+        if (result != OK and errorIdx < 3) {
+          fsmRes.errorCodes[errorIdx] = result;
+          errorIdx++;
         }
         // Store data was deleted in PDU handler because a store guard is used
         dp.packetListRef.erase(infoIter++);
@@ -50,17 +53,18 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
     }
 
     if (step != TransactionStep::IDLE) {
-      return CALL_FSM_AGAIN;
+      fsmRes.callStatus = CallStatus::CALL_AGAIN;
     }
-    return status;
+    return updateFsmRes(errorIdx);
   }
   if (cfdpState == CfdpStates::BUSY_CLASS_1_NACKED) {
     if (step == TransactionStep::RECEIVING_FILE_DATA_PDUS) {
       for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
         if (infoIter->pduType == PduType::FILE_DATA) {
           result = handleFileDataPdu(*infoIter);
-          if (result != OK) {
-            status = result;
+          if (result != OK and errorIdx < 3) {
+            fsmRes.errorCodes[errorIdx] = result;
+            errorIdx++;
           }
           // Store data was deleted in PDU handler because a store guard is used
           dp.packetListRef.erase(infoIter++);
@@ -69,8 +73,9 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
         if (infoIter->pduType == PduType::FILE_DIRECTIVE and
             infoIter->directiveType == FileDirectives::EOF_DIRECTIVE) {
           result = handleEofPdu(*infoIter);
-          if (result != OK) {
-            status = result;
+          if (result != OK and errorIdx < 3) {
+            fsmRes.errorCodes[errorIdx] = result;
+            errorIdx++;
           }
           // Store data was deleted in PDU handler because a store guard is used
           dp.packetListRef.erase(infoIter++);
@@ -80,18 +85,20 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
     }
     if (step == TransactionStep::TRANSFER_COMPLETION) {
       result = handleTransferCompletion();
-      if (result != OK) {
-        status = result;
+      if (result != OK and errorIdx < 3) {
+        fsmRes.errorCodes[errorIdx] = result;
+        errorIdx++;
       }
     }
     if (step == TransactionStep::SENDING_FINISHED_PDU) {
       result = sendFinishedPdu();
-      if (result != OK) {
-        status = result;
+      if (result != OK and errorIdx < 3) {
+        fsmRes.errorCodes[errorIdx] = result;
+        errorIdx++;
       }
       finish();
     }
-    return status;
+    return updateFsmRes(errorIdx);
   }
   if (cfdpState == CfdpStates::BUSY_CLASS_2_ACKED) {
     // TODO: Will be implemented at a later stage
@@ -99,7 +106,7 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
     sif::warning << "CFDP state machine for acknowledged mode not implemented yet" << std::endl;
 #endif
   }
-  return OK;
+  return updateFsmRes(errorIdx);
 }
 
 ReturnValue_t cfdp::DestHandler::passPacket(PacketInfo packet) {
@@ -146,7 +153,7 @@ ReturnValue_t cfdp::DestHandler::handleMetadataPdu(const PacketInfo& info) {
   //       I think it might be a good idea to cache some sort of error code, which
   //       is translated into a warning and/or event by an upper layer
   if (result != OK) {
-    return handleMetadataParseError(constAccessorPair.second.data(),
+    return handleMetadataParseError(result, constAccessorPair.second.data(),
                                     constAccessorPair.second.size());
   }
   return startTransaction(reader, metadataInfo);
@@ -228,7 +235,8 @@ ReturnValue_t cfdp::DestHandler::handleEofPdu(const cfdp::PacketInfo& info) {
   return returnvalue::OK;
 }
 
-ReturnValue_t cfdp::DestHandler::handleMetadataParseError(const uint8_t* rawData, size_t maxSize) {
+ReturnValue_t cfdp::DestHandler::handleMetadataParseError(ReturnValue_t result,
+                                                          const uint8_t* rawData, size_t maxSize) {
   // TODO: try to extract destination ID for error
   // TODO: Invalid metadata PDU.
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -236,7 +244,7 @@ ReturnValue_t cfdp::DestHandler::handleMetadataParseError(const uint8_t* rawData
 #else
 #endif
   HeaderReader headerReader(rawData, maxSize);
-  ReturnValue_t result = headerReader.parseData();
+  result = headerReader.parseData();
   if (result != OK) {
     // TODO: Now this really should not happen. Warning or error,
     //       yield or cache appropriate returnvalue
@@ -296,8 +304,13 @@ ReturnValue_t cfdp::DestHandler::startTransaction(MetadataPduReader& reader, Met
   tp.pduConf.direction = Direction::TOWARDS_SENDER;
   tp.transactionId.entityId = tp.pduConf.sourceId;
   tp.transactionId.seqNum = tp.pduConf.seqNum;
-  if (not dp.remoteCfgTable.getRemoteCfg(tp.pduConf.destId, &tp.remoteCfg)) {
+  if (not dp.remoteCfgTable.getRemoteCfg(tp.pduConf.sourceId, &tp.remoteCfg)) {
     // TODO: Warning, event etc.
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::warning << "cfdp::DestHandler" << __func__
+                 << ": No remote configuration found for destination ID "
+                 << tp.pduConf.destId.getValue() << std::endl;
+#endif
     return FAILED;
   }
   step = TransactionStep::RECEIVING_FILE_DATA_PDUS;
@@ -421,3 +434,12 @@ ReturnValue_t cfdp::DestHandler::sendFinishedPdu() {
 }
 
 cfdp::DestHandler::TransactionStep cfdp::DestHandler::getTransactionStep() const { return step; }
+
+const cfdp::DestFsmResult& cfdp::DestHandler::updateFsmRes(uint8_t errors) {
+  fsmRes.errors = errors;
+  fsmRes.result = OK;
+  if (fsmRes.errors > 0) {
+    fsmRes.result = FAILED;
+  }
+  return fsmRes;
+}

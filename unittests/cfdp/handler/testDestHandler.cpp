@@ -33,6 +33,9 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
   StorageManagerMock tcStore(2, storeCfg);
   StorageManagerMock tmStore(3, storeCfg);
   FsfwParams fp(tmReceiver, mqMock, eventReporterMock);
+  RemoteEntityCfg cfg;
+  cfg.remoteId = remoteId;
+  remoteCfgTableMock.addRemoteConfig(cfg);
   fp.tcStore = &tcStore;
   fp.tmStore = &tmStore;
   auto destHandler = DestHandler(dp, fp);
@@ -44,13 +47,17 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
   }
 
   SECTION("Idle State Machine Iteration") {
-    CHECK(destHandler.performStateMachine() == OK);
+    auto res = destHandler.performStateMachine();
+    CHECK(res.result == OK);
+    CHECK(res.callStatus == CallStatus::CALL_AFTER_DELAY);
+    CHECK(res.errors == 0);
     CHECK(destHandler.getCfdpState() == CfdpStates::IDLE);
     CHECK(destHandler.getTransactionStep() == DestHandler::TransactionStep::IDLE);
   }
 
   SECTION("Empty File Transfer") {
-    CHECK(destHandler.performStateMachine() == OK);
+    const DestFsmResult& res = destHandler.performStateMachine();
+    CHECK(res.result == OK);
     FileSize size(0);
     std::string srcNameString = "hello.txt";
     std::string destNameString = "hello-cpy.txt";
@@ -67,7 +74,8 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     CHECK(metadataPdu.serialize(ptr, serLen, metadataPdu.getSerializedSize()) == OK);
     PacketInfo packetInfo(metadataPdu.getPduType(), metadataPdu.getDirectiveCode(), storeId);
     packetInfoList.push_back(packetInfo);
-    //CHECK(destHandler.performStateMachine() == OK);
+    destHandler.performStateMachine();
+    CHECK(res.result == OK);
   }
 
   SECTION("Small File Transfer") {}
