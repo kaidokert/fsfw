@@ -71,7 +71,7 @@ TEST_CASE("PUS TC Creator", "[pus-tc-creator]") {
   SECTION("Test with Application Data Raw") {
     auto& params = creator.getPusParams();
     std::array<uint8_t, 3> data{1, 2, 3};
-    params.dataWrapper.setRawData({data.data(), data.size()});
+    params.setRawAppData(data.data(), data.size());
     // To get correct size information, the SP length field needs to be updated automatically
     REQUIRE(creator.getSerializedSize() == 13);
     creator.updateSpLengthField();

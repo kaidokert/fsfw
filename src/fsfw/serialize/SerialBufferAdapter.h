@@ -44,7 +44,7 @@ class SerialBufferAdapter : public SerializeIF {
   ~SerialBufferAdapter() override;
 
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
-                                  Endianness streamEndianness) const override;
+                          Endianness streamEndianness) const override;
 
   [[nodiscard]] size_t getSerializedSize() const override;
 
@@ -61,7 +61,7 @@ class SerialBufferAdapter : public SerializeIF {
    * @return
    */
   ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
-                                    Endianness streamEndianness) override;
+                            Endianness streamEndianness) override;
 
   uint8_t* getBuffer();
   [[nodiscard]] const uint8_t* getConstBuffer() const;

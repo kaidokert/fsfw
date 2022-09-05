@@ -7,16 +7,23 @@
 #include "fsfw/tmtcpacket/pus/CustomUserDataIF.h"
 #include "fsfw/tmtcpacket/pus/defs.h"
 #include "fsfw/tmtcpacket/pus/tc/PusTcIF.h"
-#include "fsfw/util/dataWrapper.h"
 
 struct PusTcParams {
   PusTcParams(uint8_t service_, uint8_t subservice_) : service(service_), subservice(subservice_) {}
+
+  void setRawAppData(const uint8_t *data, size_t len) {
+    bufAdapter.setConstBuffer(data, len);
+    appData = &bufAdapter;
+  }
+
+  void setSerializableAppData(const SerializeIF &serializable) { appData = &serializable; }
 
   uint8_t service;
   uint8_t subservice;
   uint8_t ackFlags = ecss::ACK_ALL;
   uint16_t sourceId = 0;
-  util::DataWrapper dataWrapper{};
+  SerialBufferAdapter<uint8_t> bufAdapter;
+  const SerializeIF *appData = nullptr;
   uint8_t pusVersion = ecss::PusVersion::PUS_C;
 };
 
@@ -52,7 +59,7 @@ class PusTcCreator : public PusTcIF, public SerializeIF, public CustomUserDataIF
   [[nodiscard]] uint8_t getSubService() const override;
   [[nodiscard]] uint16_t getSourceId() const override;
   ReturnValue_t setRawUserData(const uint8_t *data, size_t len) override;
-  ReturnValue_t setSerializableUserData(SerializeIF &serializable) override;
+  ReturnValue_t setSerializableUserData(const SerializeIF &serializable) override;
 
   // Load all big endian helpers into the class namespace
   using SerializeIF::serializeBe;

@@ -21,7 +21,7 @@ SerialBufferAdapter<count_t>::SerialBufferAdapter(uint8_t* buffer, count_t buffe
       bufferLength(bufferLength) {}
 
 template <typename count_t>
-SerialBufferAdapter<count_t>::~SerialBufferAdapter() {}
+SerialBufferAdapter<count_t>::~SerialBufferAdapter() = default;
 
 template <typename count_t>
 ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer, size_t* size,

@@ -4,7 +4,6 @@
 #include "PusTmIF.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketCreator.h"
 #include "fsfw/tmtcpacket/pus/CustomUserDataIF.h"
-#include "fsfw/util/dataWrapper.h"
 
 struct PusTmSecHeader {
   PusTmSecHeader() = default;
@@ -22,29 +21,26 @@ struct PusTmSecHeader {
 
 struct PusTmParams {
   PusTmParams() = default;
-  explicit PusTmParams(PusTmSecHeader secHeader) : secHeader(secHeader) {};
+  explicit PusTmParams(PusTmSecHeader secHeader) : secHeader(secHeader){};
   PusTmParams(PusTmSecHeader secHeader, const SerializeIF& data)
-      : secHeader(secHeader), data(&data) {}
+      : secHeader(secHeader), sourceData(&data) {}
   PusTmParams(PusTmSecHeader secHeader, const uint8_t* data, size_t dataLen)
-      : secHeader(secHeader), adapter(data, dataLen), data(&adapter) {
-  }
+      : secHeader(secHeader), adapter(data, dataLen), sourceData(&adapter) {}
   PusTmParams(uint8_t service, uint8_t subservice, TimeWriterIF* timeStamper)
       : secHeader(service, subservice, timeStamper) {}
 
   PusTmParams(uint8_t service, uint8_t subservice, TimeWriterIF* timeStamper,
               const SerializeIF& data_)
       : PusTmParams(service, subservice, timeStamper) {
-    data = &data_;
+    sourceData = &data_;
   }
 
-  PusTmParams(uint8_t service, uint8_t subservice, TimeWriterIF* timeStamper,
-              const uint8_t* data, size_t dataLen)
-      : secHeader(service, subservice, timeStamper),
-        adapter(data, dataLen),
-        data(&adapter) {}
+  PusTmParams(uint8_t service, uint8_t subservice, TimeWriterIF* timeStamper, const uint8_t* data,
+              size_t dataLen)
+      : secHeader(service, subservice, timeStamper), adapter(data, dataLen), sourceData(&adapter) {}
   PusTmSecHeader secHeader;
   SerialBufferAdapter<uint8_t> adapter;
-  const SerializeIF* data = nullptr;
+  const SerializeIF* sourceData = nullptr;
 };
 
 class TimeWriterIF;
