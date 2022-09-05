@@ -1,20 +1,18 @@
-#include "FinishedPduSerializer.h"
+#include "FinishedPduCreator.h"
 
-FinishPduSerializer::FinishPduSerializer(PduConfig &conf, FinishedInfo &finishInfo)
+FinishPduCreator::FinishPduCreator(PduConfig &conf, FinishedInfo &finishInfo)
     : FileDirectiveCreator(conf, cfdp::FileDirectives::FINISH, 0), finishInfo(finishInfo) {
   updateDirectiveFieldLen();
 }
 
-size_t FinishPduSerializer::getSerializedSize() const {
-  return FinishPduSerializer::getWholePduSize();
-}
+size_t FinishPduCreator::getSerializedSize() const { return FinishPduCreator::getWholePduSize(); }
 
-void FinishPduSerializer::updateDirectiveFieldLen() {
+void FinishPduCreator::updateDirectiveFieldLen() {
   setDirectiveDataFieldLen(finishInfo.getSerializedSize());
 }
 
-ReturnValue_t FinishPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
-                                             Endianness streamEndianness) const {
+ReturnValue_t FinishPduCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
+                                          Endianness streamEndianness) const {
   ReturnValue_t result = FileDirectiveCreator::serialize(buffer, size, maxSize, streamEndianness);
   if (result != returnvalue::OK) {
     return result;

@@ -1,12 +1,12 @@
-#ifndef FSFW_SRC_FSFW_CFDP_PDU_FINISHEDPDUDESERIALIZER_H_
-#define FSFW_SRC_FSFW_CFDP_PDU_FINISHEDPDUDESERIALIZER_H_
+#ifndef FSFW_CFDP_PDU_FINISHEDPDUDESERIALIZER_H_
+#define FSFW_CFDP_PDU_FINISHEDPDUDESERIALIZER_H_
 
 #include "fsfw/cfdp/pdu/FileDirectiveReader.h"
 #include "fsfw/cfdp/pdu/FinishedInfo.h"
 
-class FinishPduDeserializer : public FileDirectiveReader {
+class FinishPduReader : public FileDirectiveReader {
  public:
-  FinishPduDeserializer(const uint8_t* pduBuf, size_t maxSize, FinishedInfo& info);
+  FinishPduReader(const uint8_t* pduBuf, size_t maxSize, FinishedInfo& info);
 
   ReturnValue_t parseData() override;
 
@@ -19,4 +19,4 @@ class FinishPduDeserializer : public FileDirectiveReader {
                           cfdp::ConditionCode conditionCode);
 };
 
-#endif /* FSFW_SRC_FSFW_CFDP_PDU_FINISHEDPDUDESERIALIZER_H_ */
+#endif /* FSFW_CFDP_PDU_FINISHEDPDUDESERIALIZER_H_ */

@@ -1,10 +1,9 @@
-#include "FinishedPduDeserializer.h"
+#include "FinishedPduReader.h"
 
-FinishPduDeserializer::FinishPduDeserializer(const uint8_t* pduBuf, size_t maxSize,
-                                             FinishedInfo& info)
+FinishPduReader::FinishPduReader(const uint8_t* pduBuf, size_t maxSize, FinishedInfo& info)
     : FileDirectiveReader(pduBuf, maxSize), finishedInfo(info) {}
 
-ReturnValue_t FinishPduDeserializer::parseData() {
+ReturnValue_t FinishPduReader::parseData() {
   ReturnValue_t result = FileDirectiveReader::parseData();
   if (result != returnvalue::OK) {
     return result;
@@ -29,10 +28,10 @@ ReturnValue_t FinishPduDeserializer::parseData() {
   return result;
 }
 
-FinishedInfo& FinishPduDeserializer::getInfo() { return finishedInfo; }
+FinishedInfo& FinishPduReader::getInfo() { return finishedInfo; }
 
-ReturnValue_t FinishPduDeserializer::parseTlvs(size_t remLen, size_t currentIdx, const uint8_t* buf,
-                                               cfdp::ConditionCode conditionCode) {
+ReturnValue_t FinishPduReader::parseTlvs(size_t remLen, size_t currentIdx, const uint8_t* buf,
+                                         cfdp::ConditionCode conditionCode) {
   ReturnValue_t result = returnvalue::OK;
   size_t fsResponsesIdx = 0;
   auto endianness = getEndianness();

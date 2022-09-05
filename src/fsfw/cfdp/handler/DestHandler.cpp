@@ -7,8 +7,10 @@
 #include "fsfw/FSFW.h"
 #include "fsfw/cfdp/pdu/EofPduReader.h"
 #include "fsfw/cfdp/pdu/FileDataReader.h"
+#include "fsfw/cfdp/pdu/FinishedPduCreator.h"
 #include "fsfw/cfdp/pdu/HeaderReader.h"
 #include "fsfw/objectmanager.h"
+#include "fsfw/tmtcservices/TmTcMessage.h"
 
 using namespace returnvalue;
 
@@ -379,6 +381,7 @@ ReturnValue_t cfdp::DestHandler::checksumVerification() {
   }
   return OK;
 }
+
 ReturnValue_t cfdp::DestHandler::noticeOfCompletion() {
   if (dp.cfg.indicCfg.transactionFinishedIndicRequired) {
     TransactionFinishedParams params(tp.transactionId, tp.conditionCode, tp.deliveryCode,
@@ -388,4 +391,28 @@ ReturnValue_t cfdp::DestHandler::noticeOfCompletion() {
   return OK;
 }
 
-ReturnValue_t cfdp::DestHandler::sendFinishedPdu() { return 0; }
+ReturnValue_t cfdp::DestHandler::sendFinishedPdu() {
+  FinishedInfo info(tp.conditionCode, tp.deliveryCode, tp.deliveryStatus);
+  FinishPduCreator finishedPdu(tp.pduConf, info);
+  store_address_t storeId;
+  uint8_t* dataPtr = nullptr;
+  ReturnValue_t result =
+      fp.tcStore->getFreeElement(&storeId, finishedPdu.getSerializedSize(), &dataPtr);
+  if (result != OK) {
+    // TODO: Error handling and event, this is a non CFDP specific error (most likely store is full)
+    return result;
+  }
+  size_t serLen = 0;
+  result = finishedPdu.serialize(dataPtr, serLen, finishedPdu.getSerializedSize());
+  if (result != OK) {
+    // TODO: Error printout, this really should not happen
+    return result;
+  }
+  TmTcMessage msg(storeId);
+  result = fp.msgQueue.sendMessage(fp.packetDest.getReportReceptionQueue(), &msg);
+  if (result != OK) {
+    // TODO: Error handling and event, this is a non CFDP specific error (most likely store is full)
+    return result;
+  }
+  return OK;
+}

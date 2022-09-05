@@ -1,8 +1,8 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw/cfdp/pdu/FinishedPduDeserializer.h"
-#include "fsfw/cfdp/pdu/FinishedPduSerializer.h"
+#include "fsfw/cfdp/pdu/FinishedPduCreator.h"
+#include "fsfw/cfdp/pdu/FinishedPduReader.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
 TEST_CASE("Finished PDU", "[cfdp][pdu]") {
@@ -22,7 +22,7 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
                     cfdp::FileDeliveryStatus::DISCARDED_DELIBERATELY);
 
   SECTION("Serialize") {
-    FinishPduSerializer serializer(pduConf, info);
+    FinishPduCreator serializer(pduConf, info);
     result = serializer.serialize(&buffer, &sz, fnBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
     REQUIRE(serializer.getSerializedSize() == 12);
@@ -87,10 +87,10 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
 
   SECTION("Deserialize") {
     FinishedInfo emptyInfo;
-    FinishPduSerializer serializer(pduConf, info);
+    FinishPduCreator serializer(pduConf, info);
     result = serializer.serialize(&buffer, &sz, fnBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
-    FinishPduDeserializer deserializer(fnBuffer.data(), fnBuffer.size(), emptyInfo);
+    FinishPduReader deserializer(fnBuffer.data(), fnBuffer.size(), emptyInfo);
     result = deserializer.parseData();
     REQUIRE(result == returnvalue::OK);
     REQUIRE(emptyInfo.getFileStatus() == cfdp::FileDeliveryStatus::DISCARDED_DELIBERATELY);
@@ -114,7 +114,7 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
     FilestoreResponseTlv emptyResponse(firstNameLv, nullptr);
     responsePtr = &emptyResponse;
     emptyInfo.setFilestoreResponsesArray(&responsePtr, nullptr, &len);
-    FinishPduDeserializer deserializer2(fnBuffer.data(), fnBuffer.size(), emptyInfo);
+    FinishPduReader deserializer2(fnBuffer.data(), fnBuffer.size(), emptyInfo);
     result = deserializer2.parseData();
     REQUIRE(result == returnvalue::OK);
     REQUIRE(emptyInfo.getFsResponsesLen() == 1);
@@ -152,7 +152,7 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
     response.setFilestoreMessage(&emptyFsMsg);
     emptyInfo.setFilestoreResponsesArray(responses.data(), &len, &len);
     response2.setFilestoreMessage(&emptyFsMsg);
-    FinishPduDeserializer deserializer3(fnBuffer.data(), fnBuffer.size(), emptyInfo);
+    FinishPduReader deserializer3(fnBuffer.data(), fnBuffer.size(), emptyInfo);
     result = deserializer3.parseData();
     REQUIRE(result == returnvalue::OK);
     auto& infoRef = deserializer3.getInfo();
@@ -181,7 +181,7 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
     REQUIRE(result == cfdp::INVALID_TLV_TYPE);
 
     for (size_t maxSz = 0; maxSz < 45; maxSz++) {
-      FinishPduDeserializer faultyDeser(fnBuffer.data(), maxSz, emptyInfo);
+      FinishPduReader faultyDeser(fnBuffer.data(), maxSz, emptyInfo);
       result = faultyDeser.parseData();
       REQUIRE(result != returnvalue::OK);
     }

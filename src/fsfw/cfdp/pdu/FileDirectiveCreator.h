@@ -16,6 +16,10 @@ class FileDirectiveCreator : public HeaderCreator {
    */
   [[nodiscard]] size_t getSerializedSize() const override;
 
+  [[nodiscard]] ReturnValue_t serialize(uint8_t* buffer, size_t& serLen, size_t maxSize) const {
+    return SerializeIF::serialize(buffer, serLen, maxSize, SerializeIF::Endianness::NETWORK);
+  }
+
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;
 

@@ -15,8 +15,8 @@ target_sources(
           NakPduSerializer.cpp
           NakPduDeserializer.cpp
           FinishedInfo.cpp
-          FinishedPduSerializer.cpp
-          FinishedPduDeserializer.cpp
+          FinishedPduCreator.cpp
+          FinishedPduReader.cpp
           MetadataInfo.cpp
           MetadataPduCreator.cpp
           MetadataPduReader.cpp
