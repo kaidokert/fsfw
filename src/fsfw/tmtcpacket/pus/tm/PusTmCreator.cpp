@@ -51,7 +51,7 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
   if (result != returnvalue::OK) {
     return result;
   }
-  size_t userDataLen = pusParams.dataWrapper.getLength();
+  size_t userDataLen = pusParams.data->getSerializedSize();
   **buffer =
       ((pusParams.secHeader.pusVersion << 4) & 0xF0) | (pusParams.secHeader.scTimeRefStatus & 0x0F);
   *buffer += 1;
@@ -77,15 +77,8 @@ ReturnValue_t PusTmCreator::serialize(uint8_t** buffer, size_t* size, size_t max
     }
   }
 
-  if (pusParams.dataWrapper.type == util::DataTypes::RAW and
-      pusParams.dataWrapper.dataUnion.raw.data != nullptr) {
-    std::memcpy(*buffer, pusParams.dataWrapper.dataUnion.raw.data, userDataLen);
-    *buffer += userDataLen;
-    *size += userDataLen;
-  } else if (pusParams.dataWrapper.type == util::DataTypes::SERIALIZABLE and
-             pusParams.dataWrapper.dataUnion.serializable != nullptr) {
-    result = pusParams.dataWrapper.dataUnion.serializable->serialize(buffer, size, maxSize,
-                                                                     streamEndianness);
+  if (pusParams.data != nullptr) {
+    result = pusParams.data->serialize(buffer, size, maxSize, streamEndianness);
     if (result != returnvalue::OK) {
       return result;
     }
@@ -111,7 +104,7 @@ TimeWriterIF* PusTmCreator::getTimestamper() const { return pusParams.secHeader.
 SpacePacketParams& PusTmCreator::getSpParams() { return spCreator.getParams(); }
 
 void PusTmCreator::updateSpLengthField() {
-  size_t headerLen = PusTmIF::MIN_SEC_HEADER_LEN + pusParams.dataWrapper.getLength() +
+  size_t headerLen = PusTmIF::MIN_SEC_HEADER_LEN + pusParams.data->getSerializedSize() +
                      sizeof(ecss::PusChecksumT) - 1;
   if (pusParams.secHeader.timeStamper != nullptr) {
     headerLen += pusParams.secHeader.timeStamper->getSerializedSize();
@@ -134,12 +127,12 @@ void PusTmCreator::setMessageTypeCounter(uint16_t messageTypeCounter) {
 void PusTmCreator::setDestId(uint16_t destId) { pusParams.secHeader.destId = destId; }
 
 ReturnValue_t PusTmCreator::setRawUserData(const uint8_t* data, size_t len) {
-  pusParams.dataWrapper.setRawData({data, len});
+  pusParams.adapter.setConstBuffer(data, len);
   updateSpLengthField();
   return returnvalue::OK;
 }
-ReturnValue_t PusTmCreator::setSerializableUserData(SerializeIF& serializable) {
-  pusParams.dataWrapper.setSerializable(serializable);
+ReturnValue_t PusTmCreator::setSerializableUserData(const SerializeIF& serializable) {
+  pusParams.data = &serializable;
   updateSpLengthField();
   return returnvalue::OK;
 }

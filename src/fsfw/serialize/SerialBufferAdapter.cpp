@@ -125,6 +125,13 @@ void SerialBufferAdapter<count_t>::setBuffer(uint8_t* buffer, count_t bufferLeng
   this->bufferLength = bufferLength;
 }
 
+template <typename count_t>
+void SerialBufferAdapter<count_t>::setConstBuffer(const uint8_t* buf, count_t bufLen) {
+  this->buffer = nullptr;
+  this->bufferLength = bufLen;
+  this->constBuffer = buf;
+}
+
 // forward Template declaration for linker
 template class SerialBufferAdapter<uint8_t>;
 template class SerialBufferAdapter<uint16_t>;
