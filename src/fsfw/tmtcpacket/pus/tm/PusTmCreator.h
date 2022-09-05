@@ -2,9 +2,9 @@
 #define FSFW_TMTCPACKET_TMPACKETCREATOR_H
 
 #include "PusTmIF.h"
+#include "fsfw/serialize/SerialBufferAdapter.h"
 #include "fsfw/tmtcpacket/ccsds/SpacePacketCreator.h"
 #include "fsfw/tmtcpacket/pus/CustomUserDataIF.h"
-#include "fsfw/util/dataWrapper.h"
 
 struct PusTmSecHeader {
   PusTmSecHeader() = default;
@@ -23,19 +23,25 @@ struct PusTmSecHeader {
 struct PusTmParams {
   PusTmParams() = default;
   explicit PusTmParams(PusTmSecHeader secHeader) : secHeader(secHeader){};
-  PusTmParams(PusTmSecHeader secHeader, util::DataWrapper dataWrapper)
-      : secHeader(secHeader), dataWrapper(dataWrapper) {}
-
+  PusTmParams(PusTmSecHeader secHeader, const SerializeIF& data)
+      : secHeader(secHeader), sourceData(&data) {}
+  PusTmParams(PusTmSecHeader secHeader, const uint8_t* data, size_t dataLen)
+      : secHeader(secHeader), adapter(data, dataLen), sourceData(&adapter) {}
   PusTmParams(uint8_t service, uint8_t subservice, TimeWriterIF* timeStamper)
       : secHeader(service, subservice, timeStamper) {}
 
   PusTmParams(uint8_t service, uint8_t subservice, TimeWriterIF* timeStamper,
-              util::DataWrapper dataWrapper_)
+              const SerializeIF& data_)
       : PusTmParams(service, subservice, timeStamper) {
-    dataWrapper = dataWrapper_;
+    sourceData = &data_;
   }
+
+  PusTmParams(uint8_t service, uint8_t subservice, TimeWriterIF* timeStamper, const uint8_t* data,
+              size_t dataLen)
+      : secHeader(service, subservice, timeStamper), adapter(data, dataLen), sourceData(&adapter) {}
   PusTmSecHeader secHeader;
-  util::DataWrapper dataWrapper{};
+  SerialBufferAdapter<uint8_t> adapter;
+  const SerializeIF* sourceData = nullptr;
 };
 
 class TimeWriterIF;
@@ -88,7 +94,7 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CustomUserDataIF
   [[nodiscard]] size_t getSerializedSize() const override;
   [[nodiscard]] TimeWriterIF* getTimestamper() const;
   ReturnValue_t setRawUserData(const uint8_t* data, size_t len) override;
-  ReturnValue_t setSerializableUserData(SerializeIF& serializable) override;
+  ReturnValue_t setSerializableUserData(const SerializeIF& serializable) override;
 
   // Load all big endian (network endian) helpers into scope
   using SerializeIF::serializeBe;

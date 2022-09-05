@@ -44,9 +44,7 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
     REQUIRE(creator.getSubService() == 2);
     REQUIRE(creator.getService() == 17);
     auto& params = creator.getParams();
-    REQUIRE(params.dataWrapper.type == util::DataTypes::RAW);
-    REQUIRE(params.dataWrapper.dataUnion.raw.data == nullptr);
-    REQUIRE(params.dataWrapper.dataUnion.raw.len == 0);
+    REQUIRE(params.sourceData == nullptr);
     REQUIRE(tmHelper.sendCounter == 0);
     REQUIRE(tmHelper.storeAndSendTmPacket() == returnvalue::OK);
     REQUIRE(tmHelper.sendCounter == 1);
@@ -65,9 +63,9 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
     REQUIRE(tmHelper.prepareTmPacket(2, data.data(), data.size()) == returnvalue::OK);
     auto& creator = storeHelper.getCreatorRef();
     auto& params = creator.getParams();
-    REQUIRE(params.dataWrapper.type == util::DataTypes::RAW);
-    REQUIRE(params.dataWrapper.dataUnion.raw.data == data.data());
-    REQUIRE(params.dataWrapper.dataUnion.raw.len == data.size());
+    REQUIRE(params.sourceData != nullptr);
+    REQUIRE(params.sourceData->getSerializedSize() == data.size());
+    REQUIRE(params.adapter.getConstBuffer() == data.data());
   }
 
   SECTION("Serializable Helper") {
@@ -75,8 +73,7 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
     REQUIRE(tmHelper.prepareTmPacket(2, simpleSer) == returnvalue::OK);
     auto& creator = storeHelper.getCreatorRef();
     auto& params = creator.getParams();
-    REQUIRE(params.dataWrapper.type == util::DataTypes::SERIALIZABLE);
-    REQUIRE(params.dataWrapper.dataUnion.serializable == &simpleSer);
+    REQUIRE(params.sourceData == &simpleSer);
   }
 
   SECTION("Object ID prefix Helper") {
@@ -86,8 +83,7 @@ TEST_CASE("TM Store And Send Helper", "[tm-store-send-helper]") {
     REQUIRE(tmHelper.prepareTmPacket(2, dataWithObjId) == returnvalue::OK);
     auto& creator = storeHelper.getCreatorRef();
     auto& params = creator.getParams();
-    REQUIRE(params.dataWrapper.type == util::DataTypes::SERIALIZABLE);
-    REQUIRE(params.dataWrapper.dataUnion.serializable == &dataWithObjId);
+    REQUIRE(params.sourceData == &dataWithObjId);
   }
 
   // TODO: Error handling

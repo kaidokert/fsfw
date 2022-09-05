@@ -21,6 +21,7 @@
 template <typename count_t>
 class SerialBufferAdapter : public SerializeIF {
  public:
+  SerialBufferAdapter() = default;
   /**
    * Constructor for constant uint8_t buffer. Length field can be serialized optionally.
    * Type of length can be supplied as template type.
@@ -42,7 +43,7 @@ class SerialBufferAdapter : public SerializeIF {
 
   ~SerialBufferAdapter() override;
 
-  ReturnValue_t serialize(uint8_t** buffer_, size_t* size, size_t maxSize,
+  ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;
 
   [[nodiscard]] size_t getSerializedSize() const override;
@@ -59,12 +60,13 @@ class SerialBufferAdapter : public SerializeIF {
    * @param bigEndian
    * @return
    */
-  ReturnValue_t deSerialize(const uint8_t** buffer_, size_t* size,
+  ReturnValue_t deSerialize(const uint8_t** buffer, size_t* size,
                             Endianness streamEndianness) override;
 
   uint8_t* getBuffer();
   [[nodiscard]] const uint8_t* getConstBuffer() const;
-  void setBuffer(const uint8_t* buffer, count_t bufferLength);
+  void setBuffer(uint8_t* buffer, count_t bufferLength);
+  void setConstBuffer(const uint8_t* buf, count_t bufLen);
 
  private:
   bool serializeLength = false;
