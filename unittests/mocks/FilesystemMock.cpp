@@ -124,3 +124,17 @@ void FilesystemMock::reset() {
   std::queue<RenameInfo> empty;
   std::swap(renameQueue, empty);
 }
+
+bool FilesystemMock::fileExists(FilesystemParams params) {
+  std::string filename(params.path);
+  auto iter = fileMap.find(filename);
+  if (iter == fileMap.end()) {
+    return false;
+  }
+  return true;
+}
+
+ReturnValue_t FilesystemMock::truncateFile(FilesystemParams params) {
+  truncateCalledOnFile = params.path;
+  return returnvalue::OK;
+}

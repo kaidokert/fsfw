@@ -23,12 +23,11 @@ cfdp::DestHandler::DestHandler(DestHandlerParams params, FsfwParams fsfwParams)
   tp.pduConf.direction = cfdp::Direction::TOWARDS_SENDER;
 }
 
-const cfdp::DestFsmResult& cfdp::DestHandler::performStateMachine() {
+const cfdp::DestHandler::FsmResult& cfdp::DestHandler::performStateMachine() {
   ReturnValue_t result;
   uint8_t errorIdx = 0;
-  fsmRes.callStatus = CallStatus::CALL_AFTER_DELAY;
-  fsmRes.result = OK;
-  if (step == TransactionStep::IDLE) {
+  fsmRes.resetOfIteration();
+  if (fsmRes.step == TransactionStep::IDLE) {
     for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
       if (infoIter->pduType == PduType::FILE_DIRECTIVE and
           infoIter->directiveType == FileDirectives::METADATA) {
@@ -42,7 +41,7 @@ const cfdp::DestFsmResult& cfdp::DestHandler::performStateMachine() {
       }
       infoIter++;
     }
-    if (step == TransactionStep::IDLE) {
+    if (fsmRes.step == TransactionStep::IDLE) {
       // To decrease the already high complexity of the software, all packets arriving before
       // a metadata PDU are deleted.
       for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
@@ -52,13 +51,13 @@ const cfdp::DestFsmResult& cfdp::DestHandler::performStateMachine() {
       dp.packetListRef.clear();
     }
 
-    if (step != TransactionStep::IDLE) {
+    if (fsmRes.step != TransactionStep::IDLE) {
       fsmRes.callStatus = CallStatus::CALL_AGAIN;
     }
     return updateFsmRes(errorIdx);
   }
-  if (cfdpState == CfdpStates::BUSY_CLASS_1_NACKED) {
-    if (step == TransactionStep::RECEIVING_FILE_DATA_PDUS) {
+  if (fsmRes.state == CfdpStates::BUSY_CLASS_1_NACKED) {
+    if (fsmRes.step == TransactionStep::RECEIVING_FILE_DATA_PDUS) {
       for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
         if (infoIter->pduType == PduType::FILE_DATA) {
           result = handleFileDataPdu(*infoIter);
@@ -83,14 +82,14 @@ const cfdp::DestFsmResult& cfdp::DestHandler::performStateMachine() {
         infoIter++;
       }
     }
-    if (step == TransactionStep::TRANSFER_COMPLETION) {
+    if (fsmRes.step == TransactionStep::TRANSFER_COMPLETION) {
       result = handleTransferCompletion();
       if (result != OK and errorIdx < 3) {
         fsmRes.errorCodes[errorIdx] = result;
         errorIdx++;
       }
     }
-    if (step == TransactionStep::SENDING_FINISHED_PDU) {
+    if (fsmRes.step == TransactionStep::SENDING_FINISHED_PDU) {
       result = sendFinishedPdu();
       if (result != OK and errorIdx < 3) {
         fsmRes.errorCodes[errorIdx] = result;
@@ -100,7 +99,7 @@ const cfdp::DestFsmResult& cfdp::DestHandler::performStateMachine() {
     }
     return updateFsmRes(errorIdx);
   }
-  if (cfdpState == CfdpStates::BUSY_CLASS_2_ACKED) {
+  if (fsmRes.state == CfdpStates::BUSY_CLASS_2_ACKED) {
     // TODO: Will be implemented at a later stage
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "CFDP state machine for acknowledged mode not implemented yet" << std::endl;
@@ -225,11 +224,11 @@ ReturnValue_t cfdp::DestHandler::handleEofPdu(const cfdp::PacketInfo& info) {
     }
     tp.fileSize.setFileSize(fileSizeFromEof, std::nullopt);
   }
-  if (step == TransactionStep::RECEIVING_FILE_DATA_PDUS) {
-    if (cfdpState == CfdpStates::BUSY_CLASS_1_NACKED) {
-      step = TransactionStep::TRANSFER_COMPLETION;
-    } else if (cfdpState == CfdpStates::BUSY_CLASS_2_ACKED) {
-      step = TransactionStep::SENDING_ACK_PDU;
+  if (fsmRes.step == TransactionStep::RECEIVING_FILE_DATA_PDUS) {
+    if (fsmRes.state == CfdpStates::BUSY_CLASS_1_NACKED) {
+      fsmRes.step = TransactionStep::TRANSFER_COMPLETION;
+    } else if (fsmRes.state == CfdpStates::BUSY_CLASS_2_ACKED) {
+      fsmRes.step = TransactionStep::SENDING_ACK_PDU;
     }
   }
   return returnvalue::OK;
@@ -272,15 +271,15 @@ ReturnValue_t cfdp::DestHandler::handleMetadataParseError(ReturnValue_t result,
 }
 
 ReturnValue_t cfdp::DestHandler::startTransaction(MetadataPduReader& reader, MetadataInfo& info) {
-  if (cfdpState != CfdpStates::IDLE) {
+  if (fsmRes.state != CfdpStates::IDLE) {
     // According to standard, discard metadata PDU if we are busy
     return returnvalue::OK;
   }
-  step = TransactionStep::TRANSACTION_START;
+  fsmRes.step = TransactionStep::TRANSACTION_START;
   if (reader.getTransmissionMode() == TransmissionModes::UNACKNOWLEDGED) {
-    cfdpState = CfdpStates::BUSY_CLASS_1_NACKED;
+    fsmRes.state = CfdpStates::BUSY_CLASS_1_NACKED;
   } else if (reader.getTransmissionMode() == TransmissionModes::ACKNOWLEDGED) {
-    cfdpState = CfdpStates::BUSY_CLASS_2_ACKED;
+    fsmRes.state = CfdpStates::BUSY_CLASS_2_ACKED;
   }
   tp.checksumType = info.getChecksumType();
   tp.closureRequested = info.isClosureRequested();
@@ -313,7 +312,7 @@ ReturnValue_t cfdp::DestHandler::startTransaction(MetadataPduReader& reader, Met
 #endif
     return FAILED;
   }
-  step = TransactionStep::RECEIVING_FILE_DATA_PDUS;
+  fsmRes.step = TransactionStep::RECEIVING_FILE_DATA_PDUS;
   MetadataRecvdParams params(tp.transactionId, tp.pduConf.sourceId);
   params.fileSize = tp.fileSize.getSize();
   params.destFileName = tp.destName.data();
@@ -324,7 +323,7 @@ ReturnValue_t cfdp::DestHandler::startTransaction(MetadataPduReader& reader, Met
   return OK;
 }
 
-cfdp::CfdpStates cfdp::DestHandler::getCfdpState() const { return cfdpState; }
+cfdp::CfdpStates cfdp::DestHandler::getCfdpState() const { return fsmRes.state; }
 
 ReturnValue_t cfdp::DestHandler::handleTransferCompletion() {
   ReturnValue_t result;
@@ -339,14 +338,14 @@ ReturnValue_t cfdp::DestHandler::handleTransferCompletion() {
   result = noticeOfCompletion();
   if (result != OK) {
   }
-  if (cfdpState == CfdpStates::BUSY_CLASS_1_NACKED) {
+  if (fsmRes.state == CfdpStates::BUSY_CLASS_1_NACKED) {
     if (tp.closureRequested) {
-      step = TransactionStep::SENDING_FINISHED_PDU;
+      fsmRes.step = TransactionStep::SENDING_FINISHED_PDU;
     } else {
       finish();
     }
-  } else if (cfdpState == CfdpStates::BUSY_CLASS_2_ACKED) {
-    step = TransactionStep::SENDING_FINISHED_PDU;
+  } else if (fsmRes.state == CfdpStates::BUSY_CLASS_2_ACKED) {
+    fsmRes.step = TransactionStep::SENDING_FINISHED_PDU;
   }
   return OK;
 }
@@ -354,8 +353,8 @@ ReturnValue_t cfdp::DestHandler::handleTransferCompletion() {
 void cfdp::DestHandler::finish() {
   tp.reset();
   dp.packetListRef.clear();
-  cfdpState = CfdpStates::IDLE;
-  step = TransactionStep::IDLE;
+  fsmRes.state = CfdpStates::IDLE;
+  fsmRes.step = TransactionStep::IDLE;
 }
 
 ReturnValue_t cfdp::DestHandler::checksumVerification() {
@@ -430,12 +429,15 @@ ReturnValue_t cfdp::DestHandler::sendFinishedPdu() {
     // TODO: Error handling and event, this is a non CFDP specific error (most likely store is full)
     return result;
   }
+  fsmRes.packetsSent++;
   return OK;
 }
 
-cfdp::DestHandler::TransactionStep cfdp::DestHandler::getTransactionStep() const { return step; }
+cfdp::DestHandler::TransactionStep cfdp::DestHandler::getTransactionStep() const {
+  return fsmRes.step;
+}
 
-const cfdp::DestFsmResult& cfdp::DestHandler::updateFsmRes(uint8_t errors) {
+const cfdp::DestHandler::FsmResult& cfdp::DestHandler::updateFsmRes(uint8_t errors) {
   fsmRes.errors = errors;
   fsmRes.result = OK;
   if (fsmRes.errors > 0) {

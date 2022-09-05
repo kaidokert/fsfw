@@ -72,14 +72,6 @@ struct FsfwParams {
 
 enum class CallStatus { DONE, CALL_AFTER_DELAY, CALL_AGAIN };
 
-struct DestFsmResult {
-  ReturnValue_t result = returnvalue::OK;
-  CallStatus callStatus = CallStatus::CALL_AFTER_DELAY;
-  uint32_t packetsSent = 0;
-  uint8_t errors = 0;
-  std::array<ReturnValue_t, 3> errorCodes = {};
-};
-
 class DestHandler {
  public:
   enum class TransactionStep {
@@ -89,6 +81,24 @@ class DestHandler {
     SENDING_ACK_PDU = 3,
     TRANSFER_COMPLETION = 4,
     SENDING_FINISHED_PDU = 5
+  };
+
+  struct FsmResult {
+   public:
+    ReturnValue_t result = returnvalue::OK;
+    CallStatus callStatus = CallStatus::CALL_AFTER_DELAY;
+    TransactionStep step = TransactionStep::IDLE;
+    CfdpStates state = CfdpStates::IDLE;
+    uint32_t packetsSent = 0;
+    uint8_t errors = 0;
+    std::array<ReturnValue_t, 3> errorCodes = {};
+    void resetOfIteration() {
+      result = returnvalue::OK;
+      callStatus = CallStatus::CALL_AFTER_DELAY;
+      packetsSent = 0;
+      errors = 0;
+      errorCodes.fill(returnvalue::OK);
+    }
   };
   /**
    * Will be returned if it is advisable to call the state machine operation call again
@@ -103,7 +113,7 @@ class DestHandler {
    *  - @c returnvalue::OK  State machine OK for this execution cycle
    *  - @c CALL_FSM_AGAIN   State machine should be called again.
    */
-  const DestFsmResult& performStateMachine();
+  const FsmResult& performStateMachine();
 
   ReturnValue_t passPacket(PacketInfo packet);
 
@@ -149,14 +159,12 @@ class DestHandler {
     RemoteEntityCfg* remoteCfg = nullptr;
   };
 
-  TransactionStep step = TransactionStep::IDLE;
-  CfdpStates cfdpState = CfdpStates::IDLE;
   std::vector<cfdp::Tlv> tlvVec;
   std::vector<cfdp::Tlv> userTlvVec;
   DestHandlerParams dp;
   FsfwParams fp;
   TransactionParams tp;
-  DestFsmResult fsmRes;
+  FsmResult fsmRes;
 
   ReturnValue_t startTransaction(MetadataPduReader& reader, MetadataInfo& info);
   ReturnValue_t handleMetadataPdu(const PacketInfo& info);
@@ -168,7 +176,7 @@ class DestHandler {
   ReturnValue_t sendFinishedPdu();
   ReturnValue_t noticeOfCompletion();
   ReturnValue_t checksumVerification();
-  const DestFsmResult& updateFsmRes(uint8_t errors);
+  const FsmResult& updateFsmRes(uint8_t errors);
   void finish();
 };
 

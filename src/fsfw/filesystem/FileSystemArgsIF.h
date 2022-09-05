@@ -7,7 +7,7 @@
  */
 class FileSystemArgsIF {
  public:
-  virtual ~FileSystemArgsIF(){};
+  virtual ~FileSystemArgsIF() = default;
 };
 
 #endif /* FSFW_SRC_FSFW_MEMORY_FILESYSTEMARGS_H_ */

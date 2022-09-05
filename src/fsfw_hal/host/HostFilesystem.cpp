@@ -144,3 +144,17 @@ ReturnValue_t HostFilesystem::rename(const char *oldPath_, const char *newPath_,
   }
   return returnvalue::OK;
 }
+
+bool HostFilesystem::fileExists(FilesystemParams params) {
+  path path(params.path);
+  return filesystem::exists(path);
+}
+
+ReturnValue_t HostFilesystem::truncateFile(FilesystemParams params) {
+  path path(params.path);
+  if (not filesystem::exists(path)) {
+    return FILE_DOES_NOT_EXIST;
+  }
+  ofstream of(path);
+  return returnvalue::OK;
+}

@@ -73,6 +73,15 @@ class HasFileSystemIF {
     return MessageQueueIF::NO_QUEUE;
   }
 
+  virtual bool fileExists(FilesystemParams params) = 0;
+
+  /**
+   * Truncate a file, deleting its contents and setting its size to 0 accordingly.
+   * @param params
+   * @return
+   */
+  virtual ReturnValue_t truncateFile(FilesystemParams params) = 0;
+
   /**
    * @brief   Generic function to append to file.
    * @param fileOpInfo General information: File name, size to write, offset, additional arguments

@@ -8,6 +8,9 @@
 class HostFilesystem : public HasFileSystemIF {
  public:
   HostFilesystem();
+
+  bool fileExists(FilesystemParams params) override;
+  ReturnValue_t truncateFile(FilesystemParams params) override;
   ReturnValue_t writeToFile(FileOpParams params, const uint8_t *data) override;
   ReturnValue_t readFromFile(FileOpParams fileOpInfo, uint8_t **buffer, size_t &readSize,
                              size_t maxSize) override;

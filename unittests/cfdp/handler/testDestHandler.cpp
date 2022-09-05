@@ -56,7 +56,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
   }
 
   SECTION("Empty File Transfer") {
-    const DestFsmResult& res = destHandler.performStateMachine();
+    const DestHandler::FsmResult& res = destHandler.performStateMachine();
     CHECK(res.result == OK);
     FileSize size(0);
     std::string srcNameString = "hello.txt";
@@ -76,6 +76,8 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     packetInfoList.push_back(packetInfo);
     destHandler.performStateMachine();
     CHECK(res.result == OK);
+    CHECK(res.callStatus == CallStatus::CALL_AGAIN);
+    destHandler.performStateMachine();
   }
 
   SECTION("Small File Transfer") {}

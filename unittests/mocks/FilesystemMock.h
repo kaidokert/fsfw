@@ -53,8 +53,12 @@ class FilesystemMock : public HasFileSystemIF {
     std::string newName;
   };
   std::queue<RenameInfo> renameQueue;
-
+  std::string truncateCalledOnFile;
   ReturnValue_t feedFile(const std::string &filename, std::ifstream &file);
+
+  bool fileExists(FilesystemParams params) override;
+  ReturnValue_t truncateFile(FilesystemParams params) override;
+
   ReturnValue_t writeToFile(FileOpParams params, const uint8_t *data) override;
   ReturnValue_t readFromFile(FileOpParams params, uint8_t **buffer, size_t &readSize,
                              size_t maxSize) override;
