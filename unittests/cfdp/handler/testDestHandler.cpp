@@ -40,4 +40,16 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     CHECK(destHandler.getCfdpState() == CfdpStates::IDLE);
     CHECK(destHandler.getTransactionStep() == DestHandler::TransactionStep::IDLE);
   }
+
+  SECTION("Empty File Transfer") {
+
+  }
+
+  SECTION("Small File Transfer") {
+
+  }
+
+  SECTION("Segmented File Transfer") {
+    
+  }
 }
