@@ -143,6 +143,7 @@ class DestHandler {
   ReturnValue_t handleEofPdu(const PacketInfo& info);
   ReturnValue_t handleMetadataParseError(const uint8_t* rawData, size_t maxSize);
   ReturnValue_t handleTransferCompletion();
+  ReturnValue_t sendFinishedPdu();
   ReturnValue_t noticeOfCompletion();
   ReturnValue_t checksumVerification();
   void finish();

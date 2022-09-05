@@ -80,6 +80,11 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
       }
     }
     if (step == TransactionStep::SENDING_FINISHED_PDU) {
+      result = sendFinishedPdu();
+      if (result != OK) {
+        status = result;
+      }
+      finish();
     }
     return status;
   }
@@ -382,3 +387,5 @@ ReturnValue_t cfdp::DestHandler::noticeOfCompletion() {
   }
   return OK;
 }
+
+ReturnValue_t cfdp::DestHandler::sendFinishedPdu() { return 0; }
