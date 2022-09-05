@@ -360,7 +360,7 @@ if(NOT FSFW_CONFIG_PATH)
   if(NOT FSFW_BUILD_DOCS)
     message(
       WARNING
-        "${MSG_PREFIX} Flight Software Framework configuration path not set")
+        "${MSG_PREFIX} Flight Software Framework configuration path FSFW_CONFIG_PATH not set")
     message(
       WARNING
         "${MSG_PREFIX} Setting default configuration from ${DEF_CONF_PATH} ..")
