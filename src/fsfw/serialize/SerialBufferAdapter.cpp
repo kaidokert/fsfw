@@ -119,7 +119,8 @@ const uint8_t* SerialBufferAdapter<count_t>::getConstBuffer() const {
 }
 
 template <typename count_t>
-void SerialBufferAdapter<count_t>::setBuffer(const uint8_t* data, count_t len) {
+void SerialBufferAdapter<count_t>::setBuffer(uint8_t* data, count_t len) {
+  this->buffer = data;
   this->constBuffer = data;
   this->bufferLength = len;
 }

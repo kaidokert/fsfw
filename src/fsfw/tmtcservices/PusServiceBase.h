@@ -68,7 +68,7 @@ struct PsbParams {
    * a suitable global distributor with the static ID @PusServiceBase::pusDistributor and
    * register itself at that object.
    */
-  PUSDistributorIF* pusDistributor = nullptr;
+  PusDistributorIF* pusDistributor = nullptr;
   TimeWriterIF* timeStamper = nullptr;
 };
 
