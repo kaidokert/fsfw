@@ -68,8 +68,8 @@ struct PsbParams {
    * a suitable global distributor with the static ID @PusServiceBase::pusDistributor and
    * register itself at that object.
    */
-  PusDistributorIF* pusDistributor = nullptr;
-  TimeStamperIF* timeStamper = nullptr;
+  PUSDistributorIF* pusDistributor = nullptr;
+  TimeWriterIF* timeStamper = nullptr;
 };
 
 namespace Factory {

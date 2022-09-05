@@ -6,11 +6,6 @@
 
 CdsShortTimeStamper::CdsShortTimeStamper(object_id_t objectId) : SystemObject(objectId) {}
 
-ReturnValue_t CdsShortTimeStamper::addTimeStamp(uint8_t *buffer, const uint8_t maxSize) {
-  size_t serLen = 0;
-  return serialize(&buffer, &serLen, maxSize, SerializeIF::Endianness::NETWORK);
-}
-
 ReturnValue_t CdsShortTimeStamper::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                                              SerializeIF::Endianness streamEndianness) const {
   if (*size + getSerializedSize() > maxSize) {
@@ -33,15 +28,22 @@ size_t CdsShortTimeStamper::getSerializedSize() const { return getTimestampSize(
 
 ReturnValue_t CdsShortTimeStamper::deSerialize(const uint8_t **buffer, size_t *size,
                                                SerializeIF::Endianness streamEndianness) {
-  return returnvalue::FAILED;
-}
-
-ReturnValue_t CdsShortTimeStamper::readTimeStamp(const uint8_t *buffer, size_t maxSize) {
-  if (maxSize < getTimestampSize()) {
+  if (size == nullptr or buffer == nullptr) {
+    return returnvalue::FAILED;
+  }
+  if (*size < getTimestampSize()) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
   size_t foundLen = 0;
-  return CCSDSTime::convertFromCcsds(&readTime, buffer, &foundLen, maxSize);
+  if (((**buffer >> 4) & 0b111) != CCSDSTime::TimeCodeIdentification::CDS) {
+    return BAD_TIMESTAMP;
+  }
+  auto res = CCSDSTime::convertFromCcsds(&readTime, *buffer, &foundLen, *size);
+  if (res == returnvalue::OK) {
+    *size -= getSerializedSize();
+    *buffer += getSerializedSize();
+  }
+  return res;
 }
 
 timeval &CdsShortTimeStamper::getTime() { return readTime; }

@@ -4,9 +4,9 @@
 #include <array>
 
 #include "fsfw/timemanager/TimeReaderIF.h"
-#include "fsfw/timemanager/TimeStamperIF.h"
+#include "fsfw/timemanager/TimeWriterIF.h"
 
-class CdsShortTimestamperMock : public TimeStamperIF, public TimeReaderIF {
+class CdsShortTimestamperMock : public TimeWriterIF, public TimeReaderIF {
  public:
   unsigned int serializeCallCount = 0;
   unsigned int deserializeCallCount = 0;
@@ -61,7 +61,6 @@ class CdsShortTimestamperMock : public TimeStamperIF, public TimeReaderIF {
   }
 
   [[nodiscard]] size_t getTimestampSize() const override { return getSerializedSize(); }
-  ReturnValue_t addTimeStamp(uint8_t *buffer, uint8_t maxSize) override { return 0; }
 
   void reset() {
     serializeCallCount = 0;
@@ -75,9 +74,6 @@ class CdsShortTimestamperMock : public TimeStamperIF, public TimeReaderIF {
     serFailRetval = returnvalue::FAILED;
   }
 
-  ReturnValue_t readTimeStamp(const uint8_t *buffer, size_t maxSize) override {
-    return deSerialize(&buffer, &maxSize, SerializeIF::Endianness::NETWORK);
-  }
   timeval &getTime() override { return dummyTime; }
 
  private:

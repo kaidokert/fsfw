@@ -273,7 +273,7 @@ class CommandingServiceBase : public SystemObject,
   MessageQueueIF* commandQueue = nullptr;
   MessageQueueIF* requestQueue = nullptr;
 
-  TimeStamperIF* tmTimeStamper = nullptr;
+  TimeWriterIF* tmTimeStamper = nullptr;
   VerificationReporterIF* verificationReporter;
 
   InternalErrorReporterIF* errReporter = nullptr;

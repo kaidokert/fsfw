@@ -3,7 +3,7 @@
 #include <utility>
 
 #include "fsfw/globalfunctions/CRC.h"
-#include "fsfw/timemanager/TimeStamperIF.h"
+#include "fsfw/timemanager/TimeWriterIF.h"
 
 PusTmCreator::PusTmCreator(SpacePacketParams initSpParams, PusTmParams initPusParams)
     : pusParams(initPusParams), spCreator(std::move(initSpParams)) {
@@ -30,7 +30,7 @@ uint8_t PusTmCreator::getSubService() const { return pusParams.secHeader.subserv
 
 PusTmParams& PusTmCreator::getParams() { return pusParams; }
 
-void PusTmCreator::setTimeStamper(TimeStamperIF& timeStamper_) {
+void PusTmCreator::setTimeStamper(TimeWriterIF& timeStamper_) {
   pusParams.secHeader.timeStamper = &timeStamper_;
   updateSpLengthField();
 }
@@ -106,7 +106,7 @@ ReturnValue_t PusTmCreator::deSerialize(const uint8_t** buffer, size_t* size,
   return returnvalue::FAILED;
 }
 
-TimeStamperIF* PusTmCreator::getTimestamper() const { return pusParams.secHeader.timeStamper; }
+TimeWriterIF* PusTmCreator::getTimestamper() const { return pusParams.secHeader.timeStamper; }
 
 SpacePacketParams& PusTmCreator::getSpParams() { return spCreator.getParams(); }
 

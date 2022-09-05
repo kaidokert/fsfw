@@ -3,7 +3,7 @@
 
 #include "CCSDSTime.h"
 #include "TimeReaderIF.h"
-#include "TimeStamperIF.h"
+#include "TimeWriterIF.h"
 #include "fsfw/objectmanager/SystemObject.h"
 
 /**
@@ -15,7 +15,7 @@
  * overriding the #addTimeStamp function.
  * @ingroup utility
  */
-class CdsShortTimeStamper : public TimeStamperIF, public TimeReaderIF, public SystemObject {
+class CdsShortTimeStamper : public TimeWriterIF, public TimeReaderIF, public SystemObject {
  public:
   static constexpr size_t TIMESTAMP_LEN = 7;
   /**
@@ -25,20 +25,11 @@ class CdsShortTimeStamper : public TimeStamperIF, public TimeReaderIF, public Sy
    */
   explicit CdsShortTimeStamper(object_id_t objectId);
 
-  /**
-   * Adds a CCSDS CDC short 8 byte timestamp to the given buffer.
-   * This function can be overriden to use a custom timestamp.
-   * @param buffer
-   * @param maxSize
-   * @return
-   */
-  ReturnValue_t addTimeStamp(uint8_t *buffer, uint8_t maxSize) override;
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                           Endianness streamEndianness) const override;
   [[nodiscard]] size_t getSerializedSize() const override;
   ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
                             Endianness streamEndianness) override;
-  ReturnValue_t readTimeStamp(const uint8_t *buffer, size_t maxSize) override;
   timeval &getTime() override;
   [[nodiscard]] size_t getTimestampSize() const override;
 

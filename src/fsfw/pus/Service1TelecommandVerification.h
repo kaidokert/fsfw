@@ -47,7 +47,7 @@ class Service1TelecommandVerification : public AcceptsVerifyMessageIF,
 
   Service1TelecommandVerification(object_id_t objectId, uint16_t apid, uint8_t serviceId,
                                   object_id_t targetDestination, uint16_t messageQueueDepth,
-                                  TimeStamperIF* timeStamper = nullptr);
+                                  TimeWriterIF* timeStamper = nullptr);
   ~Service1TelecommandVerification() override;
 
   /**
@@ -87,7 +87,7 @@ class Service1TelecommandVerification : public AcceptsVerifyMessageIF,
   TmStoreHelper storeHelper;
   TmStoreAndSendWrapper tmHelper;
   InternalErrorReporterIF* errReporter = nullptr;
-  TimeStamperIF* timeStamper = nullptr;
+  TimeWriterIF* timeStamper = nullptr;
   StorageManagerIF* tmStore = nullptr;
   MessageQueueIF* tmQueue = nullptr;
 
