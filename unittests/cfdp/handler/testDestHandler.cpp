@@ -67,7 +67,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     CHECK(metadataPdu.serialize(ptr, serLen, metadataPdu.getSerializedSize()) == OK);
     PacketInfo packetInfo(metadataPdu.getPduType(), metadataPdu.getDirectiveCode(), storeId);
     packetInfoList.push_back(packetInfo);
-    CHECK(destHandler.performStateMachine() == OK);
+    //CHECK(destHandler.performStateMachine() == OK);
   }
 
   SECTION("Small File Transfer") {}
