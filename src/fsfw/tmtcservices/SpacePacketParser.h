@@ -17,7 +17,6 @@
  */
 class SpacePacketParser {
  public:
-
   struct FoundPacketInfo {
     size_t startIdx = 0;
     size_t sizeFound = 0;
@@ -51,9 +50,7 @@ class SpacePacketParser {
   ReturnValue_t parseSpacePackets(const uint8_t** buffer, const size_t maxSize,
                                   FoundPacketInfo& packetInfo);
 
-  size_t getAmountRead() {
-    return amountRead;
-  }
+  size_t getAmountRead() { return amountRead; }
 
   void reset() {
     nextStartIdx = 0;
