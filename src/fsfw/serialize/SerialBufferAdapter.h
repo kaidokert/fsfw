@@ -65,7 +65,7 @@ class SerialBufferAdapter : public SerializeIF {
 
   uint8_t* getBuffer();
   [[nodiscard]] const uint8_t* getConstBuffer() const;
-  void setBuffer(const uint8_t* buf, count_t bufLen);
+  void setConstBuffer(const uint8_t* buf, count_t bufLen);
 
  private:
   bool serializeLength = false;

@@ -27,7 +27,7 @@ cfdp::Lv& cfdp::Lv::operator=(const Lv& other) {
   if (otherVal == nullptr or otherSize == 0) {
     this->zeroLen = true;
   }
-  this->value.setBuffer(otherVal, otherSize);
+  this->value.setConstBuffer(otherVal, otherSize);
   return *this;
 }
 
@@ -76,7 +76,7 @@ ReturnValue_t cfdp::Lv::deSerialize(const uint8_t** buffer, size_t* size,
   }
   zeroLen = false;
   // Zero-copy implementation
-  value.setBuffer(const_cast<uint8_t*>(*buffer + 1), lengthField);
+  value.setConstBuffer(const_cast<uint8_t*>(*buffer + 1), lengthField);
   *buffer += 1 + lengthField;
   *size -= 1 + lengthField;
   return returnvalue::OK;
