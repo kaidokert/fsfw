@@ -103,8 +103,9 @@ class DestHandler {
 
  private:
   struct TransactionParams {
+    // Initialize char vectors with length + 1 for 0 termination
     explicit TransactionParams(size_t maxFileNameLen)
-        : sourceName(maxFileNameLen), destName(maxFileNameLen) {}
+        : sourceName(maxFileNameLen + 1), destName(maxFileNameLen + 1) {}
 
     void reset() {
       pduConf = PduConfig();

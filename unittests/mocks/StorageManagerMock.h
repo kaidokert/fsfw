@@ -32,6 +32,9 @@ class StorageManagerMock : public LocalPool {
   std::pair<bool, ReturnValue_t> nextModifyDataCallFails;
   std::pair<bool, ReturnValue_t> nextDeleteDataCallFails;
   std::pair<bool, ReturnValue_t> nextFreeElementCallFails;
+
+  using LocalPool::getFreeElement;
+
   void reset();
 };
 #endif  // FSFW_TESTS_STORAGEMANAGERMOCK_H

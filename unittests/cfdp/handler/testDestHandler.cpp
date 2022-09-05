@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "fsfw/cfdp.h"
+#include "fsfw/cfdp/pdu/MetadataPduCreator.h"
 #include "mocks/AcceptsTmMock.h"
 #include "mocks/EventReportingProxyMock.h"
 #include "mocks/FilesystemMock.h"
@@ -17,6 +18,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
   AcceptsTmMock tmReceiver(destQueueId);
   MessageQueueMock mqMock(destQueueId);
   EntityId localId = EntityId(UnsignedByteField<uint16_t>(2));
+  EntityId remoteId = EntityId(UnsignedByteField<uint16_t>(3));
   auto fhMock = FaultHandlerMock();
   auto localEntityCfg = LocalEntityCfg(localId, IndicationCfg(), fhMock);
   auto fsMock = FilesystemMock();
@@ -41,15 +43,34 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     CHECK(destHandler.getTransactionStep() == DestHandler::TransactionStep::IDLE);
   }
 
+  SECTION("Idle State Machine Iteration") {
+    CHECK(destHandler.performStateMachine() == OK);
+    CHECK(destHandler.getCfdpState() == CfdpStates::IDLE);
+    CHECK(destHandler.getTransactionStep() == DestHandler::TransactionStep::IDLE);
+  }
+
   SECTION("Empty File Transfer") {
-
+    CHECK(destHandler.performStateMachine() == OK);
+    FileSize size(0);
+    std::string srcNameString = "hello.txt";
+    std::string destNameString = "hello-cpy.txt";
+    StringLv srcName(srcNameString);
+    StringLv destName(destNameString);
+    MetadataInfo info(false, cfdp::ChecksumTypes::NULL_CHECKSUM, size, srcName, destName);
+    auto seqNum = TransactionSeqNum(UnsignedByteField<uint16_t>(1));
+    PduConfig conf(remoteId, localId, TransmissionModes::UNACKNOWLEDGED, seqNum);
+    MetadataPduCreator metadataPdu(conf, info);
+    store_address_t storeId;
+    uint8_t* ptr;
+    CHECK(tcStore.getFreeElement(&storeId, metadataPdu.getSerializedSize(), &ptr) == OK);
+    size_t serLen = 0;
+    CHECK(metadataPdu.serialize(ptr, serLen, metadataPdu.getSerializedSize()) == OK);
+    PacketInfo packetInfo(metadataPdu.getPduType(), metadataPdu.getDirectiveCode(), storeId);
+    packetInfoList.push_back(packetInfo);
+    CHECK(destHandler.performStateMachine() == OK);
   }
 
-  SECTION("Small File Transfer") {
+  SECTION("Small File Transfer") {}
 
-  }
-
-  SECTION("Segmented File Transfer") {
-    
-  }
+  SECTION("Segmented File Transfer") {}
 }

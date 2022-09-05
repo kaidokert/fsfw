@@ -37,12 +37,14 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
         // Store data was deleted in PDU handler because a store guard is used
         dp.packetListRef.erase(infoIter++);
       }
+      infoIter++;
     }
     if (step == TransactionStep::IDLE) {
       // To decrease the already high complexity of the software, all packets arriving before
       // a metadata PDU are deleted.
       for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
         fp.tcStore->deleteData(infoIter->storeId);
+        infoIter++;
       }
       dp.packetListRef.clear();
     }
@@ -73,6 +75,7 @@ ReturnValue_t cfdp::DestHandler::performStateMachine() {
           // Store data was deleted in PDU handler because a store guard is used
           dp.packetListRef.erase(infoIter++);
         }
+        infoIter++;
       }
     }
     if (step == TransactionStep::TRANSFER_COMPLETION) {

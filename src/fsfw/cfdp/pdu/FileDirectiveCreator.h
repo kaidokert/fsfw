@@ -8,6 +8,8 @@ class FileDirectiveCreator : public HeaderCreator {
   FileDirectiveCreator(PduConfig& pduConf, cfdp::FileDirectives directiveCode,
                        size_t directiveParamFieldLen);
 
+  [[nodiscard]] cfdp::FileDirectives getDirectiveCode() const;
+
   /**
    * This only returns the size of the PDU header + 1 for the directive code octet.
    * Use FileDirectiveCreator::getWholePduSize to get the full packet length, assuming

@@ -12,6 +12,9 @@ class StringLv : public Lv {
   StringLv();
   explicit StringLv(const std::string& fileName);
   explicit StringLv(const char* filename, size_t len);
+
+  // Delete the move constructor to avoid passing in a temporary
+  StringLv(const std::string&&) = delete;
 };
 
 }  // namespace cfdp

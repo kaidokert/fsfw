@@ -35,3 +35,5 @@ void FileDirectiveCreator::setDirectiveDataFieldLen(size_t len) {
   // Set length of data field plus 1 byte for the directive octet
   HeaderCreator::setPduDataFieldLen(len + 1);
 }
+
+cfdp::FileDirectives FileDirectiveCreator::getDirectiveCode() const { return directiveCode; }
