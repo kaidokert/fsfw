@@ -131,7 +131,7 @@ ReturnValue_t PusTmCreator::setRawUserData(const uint8_t* data, size_t len) {
   if (data == nullptr or len == 0) {
     pusParams.sourceData = nullptr;
   } else {
-    pusParams.adapter.setConstBuffer(data, len);
+    pusParams.adapter.setBuffer(data, len);
     pusParams.sourceData = &pusParams.adapter;
   }
   updateSpLengthField();

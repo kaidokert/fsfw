@@ -13,7 +13,7 @@ struct PusTcParams {
   PusTcParams(uint8_t service_, uint8_t subservice_) : service(service_), subservice(subservice_) {}
 
   void setRawAppData(const uint8_t *data, size_t len) {
-    bufAdapter.setConstBuffer(data, len);
+    bufAdapter.setBuffer(data, len);
     appData = &bufAdapter;
   }
 
