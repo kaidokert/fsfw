@@ -6,6 +6,7 @@
 #include "fsfw/tmtcpacket/ccsds/SpacePacketIF.h"
 #include "fsfw/tmtcpacket/pus/CustomUserDataIF.h"
 #include "fsfw/tmtcpacket/pus/defs.h"
+#include "fsfw/serialize/SerialBufferAdapter.h"
 #include "fsfw/tmtcpacket/pus/tc/PusTcIF.h"
 
 struct PusTcParams {
