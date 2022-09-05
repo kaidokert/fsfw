@@ -13,15 +13,15 @@ class MetadataInfo {
  public:
   MetadataInfo(cfdp::FileSize& fileSize, cfdp::StringLv& sourceFileName,
                cfdp::StringLv& destFileName);
-  MetadataInfo(bool closureRequested, cfdp::ChecksumType checksumType, cfdp::FileSize& fileSize,
+  MetadataInfo(bool closureRequested, cfdp::ChecksumTypes checksumType, cfdp::FileSize& fileSize,
                cfdp::StringLv& sourceFileName, cfdp::StringLv& destFileName);
 
   size_t getSerializedSize(bool fssLarge = false);
 
   void setOptionsArray(cfdp::Tlv** optionsArray, std::optional<size_t> optionsLen,
                        std::optional<size_t> maxOptionsLen);
-  [[nodiscard]] cfdp::ChecksumType getChecksumType() const;
-  void setChecksumType(cfdp::ChecksumType checksumType);
+  [[nodiscard]] cfdp::ChecksumTypes getChecksumType() const;
+  void setChecksumType(cfdp::ChecksumTypes checksumType);
   [[nodiscard]] bool isClosureRequested() const;
   void setClosureRequested(bool closureRequested = false);
 
@@ -42,7 +42,7 @@ class MetadataInfo {
 
  private:
   bool closureRequested = false;
-  cfdp::ChecksumType checksumType = cfdp::ChecksumType::NULL_CHECKSUM;
+  cfdp::ChecksumTypes checksumType = cfdp::ChecksumTypes::NULL_CHECKSUM;
   cfdp::FileSize& fileSize;
   cfdp::StringLv& sourceFileName;
   cfdp::StringLv& destFileName;

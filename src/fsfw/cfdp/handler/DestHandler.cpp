@@ -1,5 +1,7 @@
 #include "DestHandler.h"
 
+#include <etl/crc32.h>
+
 #include <utility>
 
 #include "fsfw/FSFW.h"
@@ -177,6 +179,8 @@ ReturnValue_t cfdp::DestHandler::handleFileDataPdu(const cfdp::PacketInfo& info)
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "File write error" << std::endl;
 #endif
+  } else {
+    tp.deliveryStatus = FileDeliveryStatus::RETAINED_IN_FILESTORE;
   }
   return result;
 }
@@ -300,7 +304,18 @@ ReturnValue_t cfdp::DestHandler::startTransaction(MetadataPduReader& reader, Met
 cfdp::CfdpStates cfdp::DestHandler::getCfdpState() const { return cfdpState; }
 
 ReturnValue_t cfdp::DestHandler::handleTransferCompletion() {
-  // TODO: Checksum verification and notice of completion
+  ReturnValue_t result;
+  if (tp.checksumType != ChecksumTypes::NULL_CHECKSUM) {
+    result = checksumVerification();
+    if (result != OK) {
+      // TODO: Warning / error handling?
+    }
+  } else {
+    tp.conditionCode = ConditionCode::NO_ERROR;
+  }
+  result = noticeOfCompletion();
+  if (result != OK) {
+  }
   if (cfdpState == CfdpStates::BUSY_CLASS_1_NACKED) {
     if (tp.closureRequested) {
       step = TransactionStep::SENDING_FINISHED_PDU;
@@ -310,8 +325,60 @@ ReturnValue_t cfdp::DestHandler::handleTransferCompletion() {
   } else if (cfdpState == CfdpStates::BUSY_CLASS_2_ACKED) {
     step = TransactionStep::SENDING_FINISHED_PDU;
   }
+  return OK;
 }
 
 void cfdp::DestHandler::finish() {
-  // TODO: Clear PDU list, reset state to be ready for next transfer
+  tp.reset();
+  dp.packetListRef.clear();
+  cfdpState = CfdpStates::IDLE;
+  step = TransactionStep::IDLE;
+}
+
+ReturnValue_t cfdp::DestHandler::checksumVerification() {
+  std::array<uint8_t, 1024> buf{};
+  // TODO: Checksum verification and notice of completion
+  etl::crc32 crcCalc;
+  uint64_t currentOffset = 0;
+  FileOpParams params(tp.sourceName.data(), buf.size());
+  while (currentOffset < tp.fileSize.value()) {
+    uint64_t readLen = 0;
+    if (currentOffset + buf.size() > tp.fileSize.value()) {
+      readLen = tp.fileSize.value() - currentOffset;
+    } else {
+      readLen = buf.size();
+    }
+    if (readLen > 0) {
+      params.offset = currentOffset;
+      params.size = readLen;
+      auto result = dp.user.vfs.readFromFile(params, buf.data(), buf.size());
+      if (result != OK) {
+        // TODO: Better error handling
+        return FAILED;
+      }
+      crcCalc.add(buf.begin(), buf.begin() + readLen);
+    }
+    currentOffset += readLen;
+  }
+
+  uint32_t value = crcCalc.value();
+  if (value == tp.crc) {
+    tp.conditionCode = ConditionCode::NO_ERROR;
+    tp.deliveryCode = FileDeliveryCode::DATA_COMPLETE;
+  } else {
+    // TODO: Proper error handling
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+    sif::error << "CRC check for file " << tp.sourceName.data() << " failed" << std::endl;
+#endif
+    tp.conditionCode = ConditionCode::FILE_CHECKSUM_FAILURE;
+  }
+  return OK;
+}
+ReturnValue_t cfdp::DestHandler::noticeOfCompletion() {
+  if (dp.cfg.indicCfg.transactionFinishedIndicRequired) {
+    TransactionFinishedParams params(tp.transactionId, tp.conditionCode, tp.deliveryCode,
+                                     tp.deliveryStatus);
+    dp.user.transactionFinishedIndication(params);
+  }
+  return OK;
 }

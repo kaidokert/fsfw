@@ -14,11 +14,11 @@
 namespace cfdp {
 
 struct TransactionFinishedParams {
-  TransactionFinishedParams(TransactionId id, ConditionCode code, FileDeliveryStatus status,
-                            FileDeliveryCode delivCode)
-      : id(std::move(id)), condCode(code), status(status), deliveryCode(delivCode) {}
+  TransactionFinishedParams(const TransactionId& id, ConditionCode code, FileDeliveryCode delivCode,
+                            FileDeliveryStatus status)
+      : id(id), condCode(code), status(status), deliveryCode(delivCode) {}
 
-  TransactionId id;
+  const TransactionId& id;
   ConditionCode condCode;
   FileDeliveryStatus status;
   FileDeliveryCode deliveryCode;

@@ -30,7 +30,7 @@ TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
   cfdp::StringLv sourceFileName(sourceFileString);
   std::string destFileString = "hello2.txt";
   cfdp::StringLv destFileName(destFileString);
-  MetadataInfo metadataInfo(false, cfdp::ChecksumType::CRC_32, fileSize, sourceFileName,
+  MetadataInfo metadataInfo(false, cfdp::ChecksumTypes::CRC_32, fileSize, sourceFileName,
                             destFileName);
   MetadataPduCreator creator(pduConf, metadataInfo);
   uint8_t* dataPtr = nullptr;

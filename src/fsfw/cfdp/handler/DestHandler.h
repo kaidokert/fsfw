@@ -98,13 +98,32 @@ class DestHandler {
     explicit TransactionParams(size_t maxFileNameLen)
         : sourceName(maxFileNameLen), destName(maxFileNameLen) {}
 
-    ChecksumType checksumType = ChecksumType::NULL_CHECKSUM;
+    void reset() {
+      pduConf = PduConfig();
+      transactionId = TransactionId();
+      std::fill(sourceName.begin(), sourceName.end(), '\0');
+      std::fill(destName.begin(), destName.end(), '\0');
+      fileSize.setFileSize(0, false);
+      conditionCode = ConditionCode::NO_ERROR;
+      deliveryCode = FileDeliveryCode::DATA_INCOMPLETE;
+      deliveryStatus = FileDeliveryStatus::DISCARDED_DELIBERATELY;
+      crc = 0;
+      progress = 0;
+      remoteCfg = nullptr;
+      closureRequested = false;
+      checksumType = ChecksumTypes::NULL_CHECKSUM;
+    }
+
+    ChecksumTypes checksumType = ChecksumTypes::NULL_CHECKSUM;
     bool closureRequested = false;
     std::vector<char> sourceName;
     std::vector<char> destName;
     cfdp::FileSize fileSize;
     TransactionId transactionId;
     PduConfig pduConf;
+    ConditionCode conditionCode = ConditionCode::NO_ERROR;
+    FileDeliveryCode deliveryCode = FileDeliveryCode::DATA_INCOMPLETE;
+    FileDeliveryStatus deliveryStatus = FileDeliveryStatus::DISCARDED_DELIBERATELY;
     uint32_t crc = 0;
     uint64_t progress = 0;
     RemoteEntityCfg* remoteCfg = nullptr;
@@ -124,6 +143,8 @@ class DestHandler {
   ReturnValue_t handleEofPdu(const PacketInfo& info);
   ReturnValue_t handleMetadataParseError(const uint8_t* rawData, size_t maxSize);
   ReturnValue_t handleTransferCompletion();
+  ReturnValue_t noticeOfCompletion();
+  ReturnValue_t checksumVerification();
   void finish();
 };
 

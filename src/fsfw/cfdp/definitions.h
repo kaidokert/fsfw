@@ -40,7 +40,7 @@ static constexpr ReturnValue_t FILESTORE_RESPONSE_CANT_PARSE_FS_MESSAGE =
 
 //! Checksum types according to the SANA Checksum Types registry
 //! https://sanaregistry.org/r/checksum_identifiers/
-enum ChecksumType {
+enum ChecksumTypes {
   // Modular legacy checksum
   MODULAR = 0,
   CRC_32_PROXIMITY_1 = 1,

@@ -32,7 +32,7 @@ struct RemoteEntityCfg {
   bool closureRequested = false;
   bool crcOnTransmission = false;
   TransmissionModes defaultTransmissionMode = TransmissionModes::UNACKNOWLEDGED;
-  ChecksumType defaultChecksum = ChecksumType::NULL_CHECKSUM;
+  ChecksumTypes defaultChecksum = ChecksumTypes::NULL_CHECKSUM;
   const uint8_t version = CFDP_VERSION_2;
 };
 

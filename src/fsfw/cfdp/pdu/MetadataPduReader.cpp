@@ -15,7 +15,7 @@ ReturnValue_t MetadataPduReader::parseData() {
     return SerializeIF::STREAM_TOO_SHORT;
   }
   info.setClosureRequested((*buf >> 6) & 0x01);
-  info.setChecksumType(static_cast<cfdp::ChecksumType>(*buf & 0x0f));
+  info.setChecksumType(static_cast<cfdp::ChecksumTypes>(*buf & 0x0f));
   remSize -= 1;
   buf += 1;
   auto endianness = getEndianness();
