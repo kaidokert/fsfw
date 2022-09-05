@@ -72,6 +72,14 @@ struct FsfwParams {
 
 class DestHandler {
  public:
+  enum class TransactionStep {
+    IDLE = 0,
+    TRANSACTION_START = 1,
+    RECEIVING_FILE_DATA_PDUS = 2,
+    SENDING_ACK_PDU = 3,
+    TRANSFER_COMPLETION = 4,
+    SENDING_FINISHED_PDU = 5
+  };
   /**
    * Will be returned if it is advisable to call the state machine operation call again
    */
@@ -91,16 +99,9 @@ class DestHandler {
   ReturnValue_t initialize();
 
   [[nodiscard]] CfdpStates getCfdpState() const;
+  [[nodiscard]] TransactionStep getTransactionStep() const;
 
  private:
-  enum class TransactionStep {
-    IDLE = 0,
-    TRANSACTION_START = 1,
-    RECEIVING_FILE_DATA_PDUS = 2,
-    SENDING_ACK_PDU = 3,
-    TRANSFER_COMPLETION = 4,
-    SENDING_FINISHED_PDU = 5
-  };
   struct TransactionParams {
     explicit TransactionParams(size_t maxFileNameLen)
         : sourceName(maxFileNameLen), destName(maxFileNameLen) {}

@@ -15,6 +15,7 @@ target_sources(
           CcsdsCheckerMock.cpp
           AcceptsTcMock.cpp
           StorageManagerMock.cpp
-          FilesystemMock.cpp)
+          FilesystemMock.cpp
+          EventReportingProxyMock.cpp)
 
 add_subdirectory(cfdp)

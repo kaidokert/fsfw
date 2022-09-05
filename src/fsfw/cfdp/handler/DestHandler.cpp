@@ -416,3 +416,5 @@ ReturnValue_t cfdp::DestHandler::sendFinishedPdu() {
   }
   return OK;
 }
+
+cfdp::DestHandler::TransactionStep cfdp::DestHandler::getTransactionStep() const { return step; }
