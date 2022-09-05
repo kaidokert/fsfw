@@ -29,13 +29,20 @@ struct PacketInfo {
   PacketInfo() = default;
 };
 
+template <size_t SIZE>
+using LostSegmentsList = etl::set<etl::pair<uint64_t, uint64_t>, SIZE>;
+template <size_t SIZE>
+using PacketInfoList = etl::list<PacketInfo, SIZE>;
+using LostSegmentsListBase = etl::iset<etl::pair<uint64_t, uint64_t>>;
+using PacketInfoListBase = etl::ilist<PacketInfo>;
+
 struct DestHandlerParams {
   DestHandlerParams(LocalEntityCfg cfg, UserBase& user, RemoteConfigTableIF& remoteCfgTable,
-                    etl::ilist<PacketInfo>& packetList,
+                    PacketInfoListBase& packetList,
                     // TODO: This container can potentially take tons of space. For a better
                     //       memory efficient implementation, an additional abstraction could be
                     //       be used so users can use uint32_t as the pair type
-                    etl::iset<etl::pair<uint64_t, uint64_t>>& lostSegmentsContainer)
+                    LostSegmentsListBase& lostSegmentsContainer)
       : cfg(std::move(cfg)),
         user(user),
         remoteCfgTable(remoteCfgTable),
@@ -46,8 +53,8 @@ struct DestHandlerParams {
   UserBase& user;
   RemoteConfigTableIF& remoteCfgTable;
 
-  etl::ilist<PacketInfo>& packetListRef;
-  etl::iset<etl::pair<uint64_t, uint64_t>>& lostSegmentsContainer;
+  PacketInfoListBase& packetListRef;
+  LostSegmentsListBase& lostSegmentsContainer;
   uint8_t maxTlvsInOnePdu = 10;
   size_t maxFilenameLen = 255;
 };
