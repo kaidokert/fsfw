@@ -84,7 +84,7 @@ SpacePacketParams &PusTcCreator::getSpParams() { return spCreator.getParams(); }
 
 ReturnValue_t PusTcCreator::setRawUserData(const uint8_t *data, size_t len) {
   // TODO: Check length field?
-  pusParams.bufAdapter.setBuffer(data, len);
+  pusParams.bufAdapter.setConstBuffer(data, len);
   pusParams.appData = &pusParams.bufAdapter;
   updateSpLengthField();
   return returnvalue::OK;
