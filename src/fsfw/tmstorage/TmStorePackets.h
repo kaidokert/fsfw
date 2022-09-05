@@ -7,7 +7,7 @@
 #include "fsfw/serialize/SerialLinkedListAdapter.h"
 #include "fsfw/serialize/SerializeElement.h"
 #include "fsfw/timemanager/CCSDSTime.h"
-#include "fsfw/timemanager/TimeStamperIF.h"
+#include "fsfw/timemanager/TimeWriterIF.h"
 #include "fsfw/tmtcpacket/pus/tm/PusTmMinimal.h"
 #include "tmStorageConf.h"
 

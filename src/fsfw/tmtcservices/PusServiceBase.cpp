@@ -178,7 +178,7 @@ ReturnValue_t PusServiceBase::initializeTmStoreHelper(TmStoreHelper& tmStoreHelp
   }
 
   if (psbParams.timeStamper == nullptr) {
-    auto timerStamper = ObjectManager::instance()->get<TimeStamperIF>(objects::TIME_STAMPER);
+    auto timerStamper = ObjectManager::instance()->get<TimeWriterIF>(objects::TIME_STAMPER);
     if (timerStamper != nullptr) {
       tmStoreHelper.setTimeStamper(*timerStamper);
     }

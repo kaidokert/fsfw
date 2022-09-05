@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "fsfw/timemanager/TimeStamperIF.h"
+#include "fsfw/timemanager/TimeWriterIF.h"
 #include "fsfw/tmtcpacket/pus/PusIF.h"
 #include "fsfw/tmtcpacket/pus/defs.h"
 

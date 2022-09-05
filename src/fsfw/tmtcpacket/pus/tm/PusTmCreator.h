@@ -8,12 +8,12 @@
 
 struct PusTmSecHeader {
   PusTmSecHeader() = default;
-  PusTmSecHeader(uint8_t service, uint8_t subservice, TimeStamperIF* timeStamper)
+  PusTmSecHeader(uint8_t service, uint8_t subservice, TimeWriterIF* timeStamper)
       : service(service), subservice(subservice), timeStamper(timeStamper) {}
 
   uint8_t service = 0;
   uint8_t subservice = 0;
-  TimeStamperIF* timeStamper = nullptr;
+  TimeWriterIF* timeStamper = nullptr;
   uint8_t pusVersion = ecss::PusVersion::PUS_C;
   uint8_t scTimeRefStatus = 0;
   uint16_t messageTypeCounter = 0;
@@ -26,10 +26,10 @@ struct PusTmParams {
   PusTmParams(PusTmSecHeader secHeader, util::DataWrapper dataWrapper)
       : secHeader(secHeader), dataWrapper(dataWrapper) {}
 
-  PusTmParams(uint8_t service, uint8_t subservice, TimeStamperIF* timeStamper)
+  PusTmParams(uint8_t service, uint8_t subservice, TimeWriterIF* timeStamper)
       : secHeader(service, subservice, timeStamper) {}
 
-  PusTmParams(uint8_t service, uint8_t subservice, TimeStamperIF* timeStamper,
+  PusTmParams(uint8_t service, uint8_t subservice, TimeWriterIF* timeStamper,
               util::DataWrapper dataWrapper_)
       : PusTmParams(service, subservice, timeStamper) {
     dataWrapper = dataWrapper_;
@@ -38,7 +38,7 @@ struct PusTmParams {
   util::DataWrapper dataWrapper{};
 };
 
-class TimeStamperIF;
+class TimeWriterIF;
 
 /**
  * This class provides a high-level interface to create PUS TM packets and then @serialize
@@ -56,7 +56,7 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CustomUserDataIF
   PusTmCreator(SpacePacketParams initSpParams, PusTmParams initPusParams);
   ~PusTmCreator() override = default;
 
-  void setTimeStamper(TimeStamperIF& timeStamper);
+  void setTimeStamper(TimeWriterIF& timeStamper);
   /**
    * This function disables the CRC16 calculation on serialization. This is useful to avoid
    * duplicate calculation if some lower level component needs to update fields like the sequence
@@ -86,7 +86,7 @@ class PusTmCreator : public SerializeIF, public PusTmIF, public CustomUserDataIF
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;
   [[nodiscard]] size_t getSerializedSize() const override;
-  [[nodiscard]] TimeStamperIF* getTimestamper() const;
+  [[nodiscard]] TimeWriterIF* getTimestamper() const;
   ReturnValue_t setRawUserData(const uint8_t* data, size_t len) override;
   ReturnValue_t setSerializableUserData(SerializeIF& serializable) override;
 

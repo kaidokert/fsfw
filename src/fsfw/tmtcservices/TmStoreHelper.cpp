@@ -11,7 +11,7 @@ TmStoreHelper::TmStoreHelper(uint16_t defaultApid, StorageManagerIF& tmStore) : 
 }
 
 TmStoreHelper::TmStoreHelper(uint16_t defaultApid, StorageManagerIF& tmStore,
-                             TimeStamperIF& timeStamper)
+                             TimeWriterIF& timeStamper)
     : tmStore(&tmStore) {
   creator.setApid(defaultApid);
   creator.setTimeStamper(timeStamper);
@@ -59,7 +59,7 @@ ReturnValue_t TmStoreHelper::addPacketToStore() {
                            SerializeIF::Endianness::NETWORK);
 }
 
-void TmStoreHelper::setTimeStamper(TimeStamperIF& timeStamper_) {
+void TmStoreHelper::setTimeStamper(TimeWriterIF& timeStamper_) {
   creator.setTimeStamper(timeStamper_);
 }
 
@@ -67,7 +67,7 @@ void TmStoreHelper::setApid(uint16_t apid) { creator.setApid(apid); }
 
 PusTmCreator& TmStoreHelper::getCreatorRef() { return creator; }
 
-TimeStamperIF* TmStoreHelper::getTimeStamper() const { return creator.getTimestamper(); }
+TimeWriterIF* TmStoreHelper::getTimeStamper() const { return creator.getTimestamper(); }
 
 uint16_t TmStoreHelper::getApid() const { return creator.getApid(); }
 

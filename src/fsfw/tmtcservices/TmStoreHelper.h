@@ -4,14 +4,14 @@
 #include "fsfw/internalerror/InternalErrorReporterIF.h"
 #include "fsfw/ipc/MessageQueueMessageIF.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
-#include "fsfw/timemanager/TimeStamperIF.h"
+#include "fsfw/timemanager/TimeWriterIF.h"
 #include "fsfw/tmtcpacket/pus/tm/PusTmCreator.h"
 
 class TmStoreHelper {
  public:
   explicit TmStoreHelper(uint16_t defaultApid);
   TmStoreHelper(uint16_t defaultApid, StorageManagerIF& tmStore);
-  TmStoreHelper(uint16_t defaultApid, StorageManagerIF& tmStore, TimeStamperIF& timeStamper);
+  TmStoreHelper(uint16_t defaultApid, StorageManagerIF& tmStore, TimeWriterIF& timeStamper);
 
   void disableCrcCalculation();
   [[nodiscard]] bool crcCalculationEnabled() const;
@@ -20,8 +20,8 @@ class TmStoreHelper {
 
   PusTmCreator& getCreatorRef();
 
-  void setTimeStamper(TimeStamperIF& timeStamper);
-  [[nodiscard]] TimeStamperIF* getTimeStamper() const;
+  void setTimeStamper(TimeWriterIF& timeStamper);
+  [[nodiscard]] TimeWriterIF* getTimeStamper() const;
 
   [[nodiscard]] StorageManagerIF* getTmStore() const;
   void setTmStore(StorageManagerIF& store);

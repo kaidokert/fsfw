@@ -8,7 +8,7 @@
 #include "../serialize/SerialLinkedListAdapter.h"
 #include "../serialize/SerializeElement.h"
 #include "../serviceinterface/ServiceInterface.h"
-#include "../timemanager/TimeStamperIF.h"
+#include "../timemanager/TimeWriterIF.h"
 #include "HasMonitorsIF.h"
 #include "MonitoringIF.h"
 #include "monitoringConf.h"
@@ -34,9 +34,9 @@ class MonitoringReportContent : public SerialLinkedListAdapter<SerializeIF> {
   SerializeElement<T> limitValue;
   SerializeElement<ReturnValue_t> oldState;
   SerializeElement<ReturnValue_t> newState;
-  uint8_t rawTimestamp[TimeStamperIF::MAXIMUM_TIMESTAMP_LEN] = {};
+  uint8_t rawTimestamp[TimeWriterIF::MAXIMUM_TIMESTAMP_LEN] = {};
   SerializeElement<SerialBufferAdapter<uint8_t>> timestampSerializer;
-  TimeStamperIF* timeStamper;
+  TimeWriterIF* timeStamper;
   MonitoringReportContent()
       : SerialLinkedListAdapter<SerializeIF>(&parameterObjectId),
         monitorId(0),
@@ -79,7 +79,7 @@ class MonitoringReportContent : public SerialLinkedListAdapter<SerializeIF> {
   }
   bool checkAndSetStamper() {
     if (timeStamper == nullptr) {
-      timeStamper = ObjectManager::instance()->get<TimeStamperIF>(timeStamperId);
+      timeStamper = ObjectManager::instance()->get<TimeWriterIF>(timeStamperId);
       if (timeStamper == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "MonitoringReportContent::checkAndSetStamper: "

@@ -65,7 +65,7 @@ struct PsbParams {
    * register itself at that object.
    */
   PUSDistributorIF* pusDistributor = nullptr;
-  TimeStamperIF* timeStamper = nullptr;
+  TimeWriterIF* timeStamper = nullptr;
 };
 
 namespace Factory {
