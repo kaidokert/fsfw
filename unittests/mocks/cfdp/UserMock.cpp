@@ -8,7 +8,9 @@ void UserMock::transactionIndication(const TransactionId& id) {}
 void UserMock::eofSentIndication(const TransactionId& id) {}
 void UserMock::abandonedIndication(const TransactionId& id, cfdp::ConditionCode code,
                                    uint64_t progress) {}
-void UserMock::eofRecvIndication(const TransactionId& id) {}
+
+void UserMock::eofRecvIndication(const TransactionId& id) { eofsRevd.push(id); }
+
 void UserMock::transactionFinishedIndication(const TransactionFinishedParams& finishedParams) {}
 
 void UserMock::metadataRecvdIndication(const MetadataRecvdParams& params) {
@@ -24,8 +26,8 @@ void UserMock::faultIndication(const TransactionId& id, cfdp::ConditionCode code
 }
 
 void UserMock::reset() {
-  auto empty = std::queue<cfdp::MetadataRecvdParams>();
-  metadataRecvd.swap(empty);
+  std::queue<TransactionId>().swap(eofsRevd);
+  std::queue<cfdp::MetadataRecvdParams>().swap(metadataRecvd);
 }
 
 }  // namespace cfdp

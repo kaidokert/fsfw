@@ -66,7 +66,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     StringLv destName(destNameString);
     FileSize cfdpFileSize(0);
     MetadataInfo info(false, cfdp::ChecksumTypes::NULL_CHECKSUM, size, srcName, destName);
-    auto seqNum = TransactionSeqNum(UnsignedByteField<uint16_t>(1));
+    TransactionSeqNum seqNum(UnsignedByteField<uint16_t>(1));
     PduConfig conf(remoteId, localId, TransmissionModes::UNACKNOWLEDGED, seqNum);
     MetadataPduCreator metadataCreator(conf, info);
     store_address_t storeId;
@@ -82,6 +82,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     REQUIRE(res.callStatus == CallStatus::CALL_AGAIN);
     // Assert that the packet was deleted after handling
     REQUIRE(not tcStore.hasDataAtId(storeId));
+    REQUIRE(packetInfoList.empty());
     destHandler.performStateMachine();
     REQUIRE(userMock.metadataRecvd.size() == 1);
     MetadataRecvdParams& params = userMock.metadataRecvd.back();
@@ -90,6 +91,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     REQUIRE(params.fileSize == 0);
     REQUIRE(strcmp(params.destFileName, "hello-cpy.txt") == 0);
     REQUIRE(strcmp(params.sourceFileName, "hello.txt") == 0);
+    userMock.metadataRecvd.pop();
     REQUIRE(fsMock.fileMap.find("hello-cpy.txt") != fsMock.fileMap.end());
     REQUIRE(res.result == OK);
     REQUIRE(res.callStatus == CallStatus::CALL_AFTER_DELAY);
@@ -99,6 +101,20 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     EofPduCreator eofCreator(conf, eofInfo);
     REQUIRE(tcStore.getFreeElement(&storeId, eofCreator.getSerializedSize(), &ptr) == OK);
     REQUIRE(eofCreator.serialize(ptr, serLen, eofCreator.getSerializedSize()) == OK);
+    packetInfo = PacketInfo(eofCreator.getPduType(), eofCreator.getDirectiveCode(), storeId);
+    packetInfoList.push_back(packetInfo);
+    auto transactionId = destHandler.getTransactionId();
+    // After EOF, operation is done because no closure was requested
+    destHandler.performStateMachine();
+    REQUIRE(res.result == OK);
+    REQUIRE(res.state == CfdpStates::IDLE);
+    REQUIRE(res.step == DestHandler::TransactionStep::IDLE);
+    // Assert that the packet was deleted after handling
+    REQUIRE(not tcStore.hasDataAtId(storeId));
+    REQUIRE(packetInfoList.empty());
+    REQUIRE(userMock.eofsRevd.size() == 1);
+    auto& eofId = userMock.eofsRevd.back();
+    CHECK(eofId == transactionId);
   }
 
   SECTION("Small File Transfer") {}

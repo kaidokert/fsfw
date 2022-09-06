@@ -224,6 +224,9 @@ ReturnValue_t cfdp::DestHandler::handleEofPdu(const cfdp::PacketInfo& info) {
     }
     tp.fileSize.setFileSize(fileSizeFromEof, std::nullopt);
   }
+  if (dp.cfg.indicCfg.eofRecvIndicRequired) {
+    dp.user.eofRecvIndication(getTransactionId());
+  }
   if (fsmRes.step == TransactionStep::RECEIVING_FILE_DATA_PDUS) {
     if (fsmRes.state == CfdpStates::BUSY_CLASS_1_NACKED) {
       fsmRes.step = TransactionStep::TRANSFER_COMPLETION;

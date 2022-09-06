@@ -24,6 +24,7 @@ class UserMock : public UserBase {
   void faultIndication(const TransactionId& id, ConditionCode code, size_t progress) override;
 
   std::queue<MetadataRecvdParams> metadataRecvd;
+  std::queue<TransactionId> eofsRevd;
   void reset();
 };
 
