@@ -32,10 +32,7 @@ const cfdp::DestHandler::FsmResult& cfdp::DestHandler::performStateMachine() {
       if (infoIter->pduType == PduType::FILE_DIRECTIVE and
           infoIter->directiveType == FileDirectives::METADATA) {
         result = handleMetadataPdu(*infoIter);
-        if (result != OK and errorIdx < 3) {
-          fsmRes.errorCodes[errorIdx] = result;
-          errorIdx++;
-        }
+        checkAndHandleError(result, errorIdx);
         // Store data was deleted in PDU handler because a store guard is used
         dp.packetListRef.erase(infoIter++);
       }
@@ -61,10 +58,7 @@ const cfdp::DestHandler::FsmResult& cfdp::DestHandler::performStateMachine() {
       for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
         if (infoIter->pduType == PduType::FILE_DATA) {
           result = handleFileDataPdu(*infoIter);
-          if (result != OK and errorIdx < 3) {
-            fsmRes.errorCodes[errorIdx] = result;
-            errorIdx++;
-          }
+          checkAndHandleError(result, errorIdx);
           // Store data was deleted in PDU handler because a store guard is used
           dp.packetListRef.erase(infoIter++);
         }
@@ -72,10 +66,7 @@ const cfdp::DestHandler::FsmResult& cfdp::DestHandler::performStateMachine() {
         if (infoIter->pduType == PduType::FILE_DIRECTIVE and
             infoIter->directiveType == FileDirectives::EOF_DIRECTIVE) {
           result = handleEofPdu(*infoIter);
-          if (result != OK and errorIdx < 3) {
-            fsmRes.errorCodes[errorIdx] = result;
-            errorIdx++;
-          }
+          checkAndHandleError(result, errorIdx);
           // Store data was deleted in PDU handler because a store guard is used
           dp.packetListRef.erase(infoIter++);
         }
@@ -84,17 +75,11 @@ const cfdp::DestHandler::FsmResult& cfdp::DestHandler::performStateMachine() {
     }
     if (fsmRes.step == TransactionStep::TRANSFER_COMPLETION) {
       result = handleTransferCompletion();
-      if (result != OK and errorIdx < 3) {
-        fsmRes.errorCodes[errorIdx] = result;
-        errorIdx++;
-      }
+      checkAndHandleError(result, errorIdx);
     }
     if (fsmRes.step == TransactionStep::SENDING_FINISHED_PDU) {
       result = sendFinishedPdu();
-      if (result != OK and errorIdx < 3) {
-        fsmRes.errorCodes[errorIdx] = result;
-        errorIdx++;
-      }
+      checkAndHandleError(result, errorIdx);
       finish();
     }
     return updateFsmRes(errorIdx);
@@ -457,3 +442,10 @@ const cfdp::DestHandler::FsmResult& cfdp::DestHandler::updateFsmRes(uint8_t erro
 }
 
 const cfdp::TransactionId& cfdp::DestHandler::getTransactionId() const { return tp.transactionId; }
+
+void cfdp::DestHandler::checkAndHandleError(ReturnValue_t result, uint8_t& errorIdx) {
+  if (result != OK and errorIdx < 3) {
+    fsmRes.errorCodes[errorIdx] = result;
+    errorIdx++;
+  }
+}

@@ -180,6 +180,7 @@ class DestHandler {
   ReturnValue_t noticeOfCompletion();
   ReturnValue_t checksumVerification();
   const FsmResult& updateFsmRes(uint8_t errors);
+  void checkAndHandleError(ReturnValue_t result, uint8_t& errorIdx);
   void finish();
 };
 

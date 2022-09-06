@@ -168,6 +168,11 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     PacketInfo packetInfo(fdPduCreator.getPduType(), storeId, std::nullopt);
     packetInfoList.push_back(packetInfo);
     destHandler.performStateMachine();
+    REQUIRE(res.result == OK);
+    REQUIRE(res.state == CfdpStates::BUSY_CLASS_1_NACKED);
+    REQUIRE(res.step == DestHandler::TransactionStep::RECEIVING_FILE_DATA_PDUS);
+    REQUIRE(not tcStore.hasDataAtId(storeId));
+    REQUIRE(packetInfoList.empty());
     eofPreparation(cfdpFileSize, crc32);
     // After EOF, operation is done because no closure was requested
     destHandler.performStateMachine();
