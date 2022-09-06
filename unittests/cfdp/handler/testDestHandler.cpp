@@ -1,3 +1,5 @@
+#include <etl/crc32.h>
+
 #include <catch2/catch_test_macros.hpp>
 
 #include "fsfw/cfdp.h"
@@ -39,8 +41,49 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
   remoteCfgTableMock.addRemoteConfig(cfg);
   fp.tcStore = &tcStore;
   fp.tmStore = &tmStore;
+  uint8_t* buf = nullptr;
+  size_t serLen = 0;
   auto destHandler = DestHandler(dp, fp);
   CHECK(destHandler.initialize() == OK);
+
+  auto metadataPreparation = [&](PduConfig& conf, FileSize cfdpFileSize, store_address_t& storeId) {
+    std::string srcNameString = "hello.txt";
+    std::string destNameString = "hello-cpy.txt";
+    StringLv srcName(srcNameString);
+    StringLv destName(destNameString);
+    MetadataInfo info(false, cfdp::ChecksumTypes::NULL_CHECKSUM, cfdpFileSize, srcName, destName);
+    TransactionSeqNum seqNum(UnsignedByteField<uint16_t>(1));
+    conf.sourceId = remoteId;
+    conf.destId = localId;
+    conf.mode = TransmissionModes::UNACKNOWLEDGED;
+    conf.seqNum = seqNum;
+    MetadataPduCreator metadataCreator(conf, info);
+    REQUIRE(tcStore.getFreeElement(&storeId, metadataCreator.getSerializedSize(), &buf) == OK);
+    REQUIRE(metadataCreator.serialize(buf, serLen, metadataCreator.getSerializedSize()) == OK);
+    PacketInfo packetInfo(metadataCreator.getPduType(), metadataCreator.getDirectiveCode(),
+                          storeId);
+    packetInfoList.push_back(packetInfo);
+  };
+
+  auto metadataCheck = [&](const cfdp::DestHandler::FsmResult& res, store_address_t storeId, const char* sourceName, const char* destName) {
+    REQUIRE(res.result == OK);
+    REQUIRE(res.callStatus == CallStatus::CALL_AGAIN);
+    // Assert that the packet was deleted after handling
+    REQUIRE(not tcStore.hasDataAtId(storeId));
+    REQUIRE(packetInfoList.empty());
+    REQUIRE(userMock.metadataRecvd.size() == 1);
+    auto& idMetadataPair = userMock.metadataRecvd.back();
+    REQUIRE(idMetadataPair.first == destHandler.getTransactionId());
+    REQUIRE(idMetadataPair.second.sourceId.getValue() == 3);
+    REQUIRE(idMetadataPair.second.fileSize == 0);
+    REQUIRE(strcmp(idMetadataPair.second.destFileName, destName) == 0);
+    REQUIRE(strcmp(idMetadataPair.second.sourceFileName, sourceName) == 0);
+    userMock.metadataRecvd.pop();
+    REQUIRE(fsMock.fileMap.find(destName) != fsMock.fileMap.end());
+    REQUIRE(res.result == OK);
+    REQUIRE(res.state == CfdpStates::BUSY_CLASS_1_NACKED);
+    REQUIRE(res.step == DestHandler::TransactionStep::RECEIVING_FILE_DATA_PDUS);
+  };
 
   SECTION("State") {
     CHECK(destHandler.getCfdpState() == CfdpStates::IDLE);
@@ -59,49 +102,19 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
   SECTION("Empty File Transfer") {
     const DestHandler::FsmResult& res = destHandler.performStateMachine();
     CHECK(res.result == OK);
-    FileSize size(0);
-    std::string srcNameString = "hello.txt";
-    std::string destNameString = "hello-cpy.txt";
-    StringLv srcName(srcNameString);
-    StringLv destName(destNameString);
     FileSize cfdpFileSize(0);
-    MetadataInfo info(false, cfdp::ChecksumTypes::NULL_CHECKSUM, size, srcName, destName);
-    TransactionSeqNum seqNum(UnsignedByteField<uint16_t>(1));
-    PduConfig conf(remoteId, localId, TransmissionModes::UNACKNOWLEDGED, seqNum);
-    MetadataPduCreator metadataCreator(conf, info);
     store_address_t storeId;
-    uint8_t* ptr;
-    REQUIRE(tcStore.getFreeElement(&storeId, metadataCreator.getSerializedSize(), &ptr) == OK);
-    size_t serLen = 0;
-    REQUIRE(metadataCreator.serialize(ptr, serLen, metadataCreator.getSerializedSize()) == OK);
-    PacketInfo packetInfo(metadataCreator.getPduType(), metadataCreator.getDirectiveCode(),
-                          storeId);
-    packetInfoList.push_back(packetInfo);
+    PduConfig conf;
+    metadataPreparation(conf, cfdpFileSize, storeId);
     destHandler.performStateMachine();
-    REQUIRE(res.result == OK);
-    REQUIRE(res.callStatus == CallStatus::CALL_AGAIN);
-    // Assert that the packet was deleted after handling
-    REQUIRE(not tcStore.hasDataAtId(storeId));
-    REQUIRE(packetInfoList.empty());
+    metadataCheck(res, storeId, "hello.txt", "hello-cpy.txt");
     destHandler.performStateMachine();
-    REQUIRE(userMock.metadataRecvd.size() == 1);
-    auto& idMetadataPair = userMock.metadataRecvd.back();
-    REQUIRE(idMetadataPair.first == destHandler.getTransactionId());
-    REQUIRE(idMetadataPair.second.sourceId.getValue() == 3);
-    REQUIRE(idMetadataPair.second.fileSize == 0);
-    REQUIRE(strcmp(idMetadataPair.second.destFileName, "hello-cpy.txt") == 0);
-    REQUIRE(strcmp(idMetadataPair.second.sourceFileName, "hello.txt") == 0);
-    userMock.metadataRecvd.pop();
-    REQUIRE(fsMock.fileMap.find("hello-cpy.txt") != fsMock.fileMap.end());
-    REQUIRE(res.result == OK);
     REQUIRE(res.callStatus == CallStatus::CALL_AFTER_DELAY);
-    REQUIRE(res.state == CfdpStates::BUSY_CLASS_1_NACKED);
-    REQUIRE(res.step == DestHandler::TransactionStep::RECEIVING_FILE_DATA_PDUS);
     EofInfo eofInfo(cfdp::ConditionCode::NO_ERROR, 0, cfdpFileSize);
     EofPduCreator eofCreator(conf, eofInfo);
-    REQUIRE(tcStore.getFreeElement(&storeId, eofCreator.getSerializedSize(), &ptr) == OK);
-    REQUIRE(eofCreator.serialize(ptr, serLen, eofCreator.getSerializedSize()) == OK);
-    packetInfo = PacketInfo(eofCreator.getPduType(), eofCreator.getDirectiveCode(), storeId);
+    REQUIRE(tcStore.getFreeElement(&storeId, eofCreator.getSerializedSize(), &buf) == OK);
+    REQUIRE(eofCreator.serialize(buf, serLen, eofCreator.getSerializedSize()) == OK);
+    PacketInfo packetInfo(eofCreator.getPduType(), eofCreator.getDirectiveCode(), storeId);
     packetInfoList.push_back(packetInfo);
     auto transactionId = destHandler.getTransactionId();
     // After EOF, operation is done because no closure was requested
@@ -121,7 +134,22 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     CHECK(idParamPair.second.condCode == ConditionCode::NO_ERROR);
   }
 
-  SECTION("Small File Transfer") {}
+  SECTION("Small File Transfer") {
+    const DestHandler::FsmResult& res = destHandler.performStateMachine();
+    CHECK(res.result == OK);
+    std::string fileData = "hello test data";
+    etl::crc32 crcCalc;
+    crcCalc.add(fileData.begin(), fileData.end());
+    uint32_t crc32 = crcCalc.value();
+    FileSize cfdpFileSize(0);
+    store_address_t storeId;
+    PduConfig conf;
+    metadataPreparation(conf, cfdpFileSize, storeId);
+    destHandler.performStateMachine();
+    metadataCheck(res, storeId, "hello.txt", "hello-cpy.txt");
+    destHandler.performStateMachine();
+    REQUIRE(res.callStatus == CallStatus::CALL_AFTER_DELAY);
+  }
 
   SECTION("Segmented File Transfer") {}
 }
