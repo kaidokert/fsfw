@@ -35,8 +35,9 @@ const cfdp::DestHandler::FsmResult& cfdp::DestHandler::performStateMachine() {
         checkAndHandleError(result, errorIdx);
         // Store data was deleted in PDU handler because a store guard is used
         dp.packetListRef.erase(infoIter++);
+      } else {
+        infoIter++;
       }
-      infoIter++;
     }
     if (fsmRes.step == TransactionStep::IDLE) {
       // To decrease the already high complexity of the software, all packets arriving before
@@ -61,16 +62,16 @@ const cfdp::DestHandler::FsmResult& cfdp::DestHandler::performStateMachine() {
           checkAndHandleError(result, errorIdx);
           // Store data was deleted in PDU handler because a store guard is used
           dp.packetListRef.erase(infoIter++);
-        }
-        // TODO: Support for check timer missing
-        if (infoIter->pduType == PduType::FILE_DIRECTIVE and
-            infoIter->directiveType == FileDirectives::EOF_DIRECTIVE) {
+        } else if (infoIter->pduType == PduType::FILE_DIRECTIVE and
+                   infoIter->directiveType == FileDirectives::EOF_DIRECTIVE) {
+          // TODO: Support for check timer missing
           result = handleEofPdu(*infoIter);
           checkAndHandleError(result, errorIdx);
           // Store data was deleted in PDU handler because a store guard is used
           dp.packetListRef.erase(infoIter++);
+        } else {
+          infoIter++;
         }
-        infoIter++;
       }
     }
     if (fsmRes.step == TransactionStep::TRANSFER_COMPLETION) {
@@ -160,6 +161,7 @@ ReturnValue_t cfdp::DestHandler::handleFileDataPdu(const cfdp::PacketInfo& info)
   size_t fileSegmentLen = 0;
   const uint8_t* fileData = fdInfo.getFileData(&fileSegmentLen);
   FileOpParams fileOpParams(tp.destName.data(), fileSegmentLen);
+  fileOpParams.offset = offset.value();
   if (dp.cfg.indicCfg.fileSegmentRecvIndicRequired) {
     FileSegmentRecvdParams segParams;
     segParams.offset = offset.value();

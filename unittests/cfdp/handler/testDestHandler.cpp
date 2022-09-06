@@ -1,8 +1,8 @@
 #include <etl/crc32.h>
 
 #include <catch2/catch_test_macros.hpp>
-#include <utility>
 #include <random>
+#include <utility>
 
 #include "fsfw/cfdp.h"
 #include "fsfw/cfdp/pdu/EofPduCreator.h"
@@ -118,11 +118,14 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     CHECK(idParamPair.second.condCode == ConditionCode::NO_ERROR);
   };
 
-  auto fileDataPduCheck = [&](const cfdp::DestHandler::FsmResult& res) {
+  auto fileDataPduCheck = [&](const cfdp::DestHandler::FsmResult& res,
+                              const std::vector<store_address_t>& idsToCheck) {
     REQUIRE(res.result == OK);
     REQUIRE(res.state == CfdpStates::BUSY_CLASS_1_NACKED);
     REQUIRE(res.step == DestHandler::TransactionStep::RECEIVING_FILE_DATA_PDUS);
-    REQUIRE(not tcStore.hasDataAtId(storeId));
+    for (const auto id : idsToCheck) {
+      REQUIRE(not tcStore.hasDataAtId(id));
+    }
     REQUIRE(packetInfoList.empty());
   };
 
@@ -179,7 +182,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     PacketInfo packetInfo(fdPduCreator.getPduType(), storeId, std::nullopt);
     packetInfoList.push_back(packetInfo);
     destHandler.performStateMachine();
-    fileDataPduCheck(res);
+    fileDataPduCheck(res, {storeId});
     eofPreparation(cfdpFileSize, crc32);
     // After EOF, operation is done because no closure was requested
     destHandler.performStateMachine();
@@ -193,7 +196,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     std::mt19937 rng(dev());
     std::uniform_int_distribution<std::mt19937::result_type> distU8(0, 255);
     std::array<uint8_t, 1024> largerFileData{};
-    for(auto& val: largerFileData) {
+    for (auto& val : largerFileData) {
       val = distU8(rng);
     }
     etl::crc32 crcCalc;
@@ -206,5 +209,37 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     destHandler.performStateMachine();
     REQUIRE(res.callStatus == CallStatus::CALL_AFTER_DELAY);
     auto transactionId = destHandler.getTransactionId();
+
+    std::vector<store_address_t> idsToCheck;
+    {
+      FileSize offset(0);
+      FileDataInfo fdPduInfo(offset, reinterpret_cast<const uint8_t*>(largerFileData.data()),
+                             largerFileData.size() / 2);
+      FileDataCreator fdPduCreator(conf, fdPduInfo);
+      REQUIRE(tcStore.getFreeElement(&storeId, fdPduCreator.getSerializedSize(), &buf) == OK);
+      REQUIRE(fdPduCreator.serialize(buf, serLen, fdPduCreator.getSerializedSize()) == OK);
+      PacketInfo packetInfo(fdPduCreator.getPduType(), storeId, std::nullopt);
+      idsToCheck.push_back(storeId);
+      packetInfoList.push_back(packetInfo);
+    }
+
+    {
+      FileSize offset(512);
+      FileDataInfo fdPduInfo(offset, reinterpret_cast<const uint8_t*>(largerFileData.data() + 512),
+                             largerFileData.size() / 2);
+      FileDataCreator fdPduCreator(conf, fdPduInfo);
+      REQUIRE(tcStore.getFreeElement(&storeId, fdPduCreator.getSerializedSize(), &buf) == OK);
+      REQUIRE(fdPduCreator.serialize(buf, serLen, fdPduCreator.getSerializedSize()) == OK);
+      PacketInfo packetInfo(fdPduCreator.getPduType(), storeId, std::nullopt);
+      idsToCheck.push_back(storeId);
+      packetInfoList.push_back(packetInfo);
+    }
+
+    destHandler.performStateMachine();
+    fileDataPduCheck(res, idsToCheck);
+    eofPreparation(cfdpFileSize, crc32);
+    // After EOF, operation is done because no closure was requested
+    destHandler.performStateMachine();
+    eofCheck(res, transactionId);
   }
 }
