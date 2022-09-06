@@ -2,6 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <utility>
+#include <random>
 
 #include "fsfw/cfdp.h"
 #include "fsfw/cfdp/pdu/EofPduCreator.h"
@@ -73,6 +74,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
                            const char* destName, size_t fileLen) {
     REQUIRE(res.result == OK);
     REQUIRE(res.callStatus == CallStatus::CALL_AGAIN);
+    REQUIRE(res.errors == 0);
     // Assert that the packet was deleted after handling
     REQUIRE(not tcStore.hasDataAtId(storeId));
     REQUIRE(packetInfoList.empty());
@@ -102,6 +104,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
   auto eofCheck = [&](const cfdp::DestHandler::FsmResult& res, const TransactionId& id) {
     REQUIRE(res.result == OK);
     REQUIRE(res.state == CfdpStates::IDLE);
+    REQUIRE(res.errors == 0);
     REQUIRE(res.step == DestHandler::TransactionStep::IDLE);
     // Assert that the packet was deleted after handling
     REQUIRE(not tcStore.hasDataAtId(storeId));
@@ -113,6 +116,14 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     auto& idParamPair = userMock.finishedRecvd.back();
     CHECK(idParamPair.first == id);
     CHECK(idParamPair.second.condCode == ConditionCode::NO_ERROR);
+  };
+
+  auto fileDataPduCheck = [&](const cfdp::DestHandler::FsmResult& res) {
+    REQUIRE(res.result == OK);
+    REQUIRE(res.state == CfdpStates::BUSY_CLASS_1_NACKED);
+    REQUIRE(res.step == DestHandler::TransactionStep::RECEIVING_FILE_DATA_PDUS);
+    REQUIRE(not tcStore.hasDataAtId(storeId));
+    REQUIRE(packetInfoList.empty());
   };
 
   SECTION("State") {
@@ -168,16 +179,32 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     PacketInfo packetInfo(fdPduCreator.getPduType(), storeId, std::nullopt);
     packetInfoList.push_back(packetInfo);
     destHandler.performStateMachine();
-    REQUIRE(res.result == OK);
-    REQUIRE(res.state == CfdpStates::BUSY_CLASS_1_NACKED);
-    REQUIRE(res.step == DestHandler::TransactionStep::RECEIVING_FILE_DATA_PDUS);
-    REQUIRE(not tcStore.hasDataAtId(storeId));
-    REQUIRE(packetInfoList.empty());
+    fileDataPduCheck(res);
     eofPreparation(cfdpFileSize, crc32);
     // After EOF, operation is done because no closure was requested
     destHandler.performStateMachine();
     eofCheck(res, transactionId);
   }
 
-  SECTION("Segmented File Transfer") {}
+  SECTION("Segmented File Transfer") {
+    const DestHandler::FsmResult& res = destHandler.performStateMachine();
+    CHECK(res.result == OK);
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> distU8(0, 255);
+    std::array<uint8_t, 1024> largerFileData{};
+    for(auto& val: largerFileData) {
+      val = distU8(rng);
+    }
+    etl::crc32 crcCalc;
+    crcCalc.add(largerFileData.begin(), largerFileData.end());
+    uint32_t crc32 = crcCalc.value();
+    FileSize cfdpFileSize(largerFileData.size());
+    metadataPreparation(cfdpFileSize, ChecksumTypes::CRC_32);
+    destHandler.performStateMachine();
+    metadataCheck(res, "hello.txt", "hello-cpy.txt", largerFileData.size());
+    destHandler.performStateMachine();
+    REQUIRE(res.callStatus == CallStatus::CALL_AFTER_DELAY);
+    auto transactionId = destHandler.getTransactionId();
+  }
 }
