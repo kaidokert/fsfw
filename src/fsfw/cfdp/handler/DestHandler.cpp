@@ -174,7 +174,7 @@ ReturnValue_t cfdp::DestHandler::handleFileDataPdu(const cfdp::PacketInfo& info)
   }
   size_t fileSegmentLen = 0;
   const uint8_t* fileData = fdInfo.getFileData(&fileSegmentLen);
-  FileOpParams fileOpParams(tp.sourceName.data(), fileSegmentLen);
+  FileOpParams fileOpParams(tp.destName.data(), fileSegmentLen);
   if (dp.cfg.indicCfg.fileSegmentRecvIndicRequired) {
     FileSegmentRecvdParams segParams;
     segParams.offset = offset.value();
@@ -372,9 +372,9 @@ ReturnValue_t cfdp::DestHandler::checksumVerification() {
   // TODO: Checksum verification and notice of completion
   etl::crc32 crcCalc;
   uint64_t currentOffset = 0;
-  FileOpParams params(tp.sourceName.data(), buf.size());
+  FileOpParams params(tp.destName.data(), tp.fileSize.value());
   while (currentOffset < tp.fileSize.value()) {
-    uint64_t readLen = 0;
+    uint64_t readLen;
     if (currentOffset + buf.size() > tp.fileSize.value()) {
       readLen = tp.fileSize.value() - currentOffset;
     } else {

@@ -4,6 +4,7 @@
 #include <etl/list.h>
 #include <etl/set.h>
 
+#include <optional>
 #include <utility>
 
 #include "RemoteConfigTableIF.h"
@@ -20,11 +21,12 @@
 namespace cfdp {
 
 struct PacketInfo {
-  PacketInfo(PduType type, FileDirectives directive, store_address_t storeId)
+  PacketInfo(PduType type, store_address_t storeId,
+             std::optional<FileDirectives> directive = std::nullopt)
       : pduType(type), directiveType(directive), storeId(storeId) {}
 
   PduType pduType = PduType::FILE_DATA;
-  FileDirectives directiveType = FileDirectives::INVALID_DIRECTIVE;
+  std::optional<FileDirectives> directiveType = FileDirectives::INVALID_DIRECTIVE;
   store_address_t storeId = store_address_t::invalid();
   PacketInfo() = default;
 };
@@ -121,7 +123,7 @@ class DestHandler {
 
   [[nodiscard]] CfdpStates getCfdpState() const;
   [[nodiscard]] TransactionStep getTransactionStep() const;
-  const TransactionId& getTransactionId() const;
+  [[nodiscard]] const TransactionId& getTransactionId() const;
 
  private:
   struct TransactionParams {

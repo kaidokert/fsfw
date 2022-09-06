@@ -15,13 +15,17 @@ void FileDataCreator::update() {
 
 ReturnValue_t FileDataCreator::serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                                          Endianness streamEndianness) const {
+  if (buffer == nullptr or size == nullptr) {
+    return returnvalue::FAILED;
+  }
+  if (*size + getSerializedSize() > maxSize) {
+    return SerializeIF::BUFFER_TOO_SHORT;
+  }
   ReturnValue_t result = HeaderCreator::serialize(buffer, size, maxSize, streamEndianness);
   if (result != returnvalue::OK) {
     return result;
   }
-  if (*size + this->getSerializedSize() > maxSize) {
-    return SerializeIF::BUFFER_TOO_SHORT;
-  }
+
   const uint8_t* readOnlyPtr = nullptr;
   if (this->hasSegmentMetadataFlag()) {
     size_t segmentMetadataLen = info.getSegmentMetadataLen();
