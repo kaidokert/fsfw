@@ -85,12 +85,12 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     REQUIRE(packetInfoList.empty());
     destHandler.performStateMachine();
     REQUIRE(userMock.metadataRecvd.size() == 1);
-    MetadataRecvdParams& params = userMock.metadataRecvd.back();
-    REQUIRE(params.id == destHandler.getTransactionId());
-    REQUIRE(params.sourceId.getValue() == 3);
-    REQUIRE(params.fileSize == 0);
-    REQUIRE(strcmp(params.destFileName, "hello-cpy.txt") == 0);
-    REQUIRE(strcmp(params.sourceFileName, "hello.txt") == 0);
+    auto& idMetadataPair = userMock.metadataRecvd.back();
+    REQUIRE(idMetadataPair.first == destHandler.getTransactionId());
+    REQUIRE(idMetadataPair.second.sourceId.getValue() == 3);
+    REQUIRE(idMetadataPair.second.fileSize == 0);
+    REQUIRE(strcmp(idMetadataPair.second.destFileName, "hello-cpy.txt") == 0);
+    REQUIRE(strcmp(idMetadataPair.second.sourceFileName, "hello.txt") == 0);
     userMock.metadataRecvd.pop();
     REQUIRE(fsMock.fileMap.find("hello-cpy.txt") != fsMock.fileMap.end());
     REQUIRE(res.result == OK);
@@ -115,6 +115,10 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     REQUIRE(userMock.eofsRevd.size() == 1);
     auto& eofId = userMock.eofsRevd.back();
     CHECK(eofId == transactionId);
+    REQUIRE(userMock.finishedRecvd.size() == 1);
+    auto& idParamPair = userMock.finishedRecvd.back();
+    CHECK(idParamPair.first == transactionId);
+    CHECK(idParamPair.second.condCode == ConditionCode::NO_ERROR);
   }
 
   SECTION("Small File Transfer") {}
