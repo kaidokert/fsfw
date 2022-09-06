@@ -452,3 +452,5 @@ const cfdp::DestHandler::FsmResult& cfdp::DestHandler::updateFsmRes(uint8_t erro
   }
   return fsmRes;
 }
+
+const cfdp::TransactionId& cfdp::DestHandler::getTransactionId() const { return tp.transactionId; }

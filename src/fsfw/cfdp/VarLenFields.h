@@ -78,7 +78,7 @@ struct TransactionId {
   TransactionId(EntityId entityId, TransactionSeqNum seqNum)
       : entityId(std::move(entityId)), seqNum(std::move(seqNum)) {}
 
-  bool operator==(const TransactionId &other) {
+  bool operator==(const TransactionId &other) const {
     return entityId == other.entityId and seqNum == other.seqNum;
   }
 

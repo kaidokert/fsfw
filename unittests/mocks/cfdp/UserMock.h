@@ -1,7 +1,10 @@
 #ifndef FSFW_TESTS_CFDP_USERMOCK_H
 #define FSFW_TESTS_CFDP_USERMOCK_H
 
+#include <queue>
+
 #include "fsfw/cfdp/handler/UserBase.h"
+
 namespace cfdp {
 
 class UserMock : public UserBase {
@@ -19,6 +22,9 @@ class UserMock : public UserBase {
   void suspendedIndication(const TransactionId& id, ConditionCode code) override;
   void resumedIndication(const TransactionId& id, size_t progress) override;
   void faultIndication(const TransactionId& id, ConditionCode code, size_t progress) override;
+
+  std::queue<MetadataRecvdParams> metadataRecvd;
+  void reset();
 };
 
 }  // namespace cfdp

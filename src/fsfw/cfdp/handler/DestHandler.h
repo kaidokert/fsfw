@@ -121,6 +121,7 @@ class DestHandler {
 
   [[nodiscard]] CfdpStates getCfdpState() const;
   [[nodiscard]] TransactionStep getTransactionStep() const;
+  const TransactionId& getTransactionId() const;
 
  private:
   struct TransactionParams {

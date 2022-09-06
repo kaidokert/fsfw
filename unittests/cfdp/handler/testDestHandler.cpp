@@ -1,8 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "fsfw/cfdp.h"
-#include "fsfw/cfdp/pdu/MetadataPduCreator.h"
 #include "fsfw/cfdp/pdu/EofPduCreator.h"
+#include "fsfw/cfdp/pdu/MetadataPduCreator.h"
 #include "mocks/AcceptsTmMock.h"
 #include "mocks/EventReportingProxyMock.h"
 #include "mocks/FilesystemMock.h"
@@ -20,11 +20,11 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
   MessageQueueMock mqMock(destQueueId);
   EntityId localId = EntityId(UnsignedByteField<uint16_t>(2));
   EntityId remoteId = EntityId(UnsignedByteField<uint16_t>(3));
-  auto fhMock = FaultHandlerMock();
-  auto localEntityCfg = LocalEntityCfg(localId, IndicationCfg(), fhMock);
-  auto fsMock = FilesystemMock();
-  auto userMock = UserMock(fsMock);
-  auto remoteCfgTableMock = RemoteConfigTableMock();
+  FaultHandlerMock fhMock;
+  LocalEntityCfg localEntityCfg(localId, IndicationCfg(), fhMock);
+  FilesystemMock fsMock;
+  UserMock userMock(fsMock);
+  RemoteConfigTableMock remoteCfgTableMock;
   PacketInfoList<64> packetInfoList;
   LostSegmentsList<128> lostSegmentsList;
   DestHandlerParams dp(localEntityCfg, userMock, remoteCfgTableMock, packetInfoList,
@@ -74,7 +74,8 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     REQUIRE(tcStore.getFreeElement(&storeId, metadataCreator.getSerializedSize(), &ptr) == OK);
     size_t serLen = 0;
     REQUIRE(metadataCreator.serialize(ptr, serLen, metadataCreator.getSerializedSize()) == OK);
-    PacketInfo packetInfo(metadataCreator.getPduType(), metadataCreator.getDirectiveCode(), storeId);
+    PacketInfo packetInfo(metadataCreator.getPduType(), metadataCreator.getDirectiveCode(),
+                          storeId);
     packetInfoList.push_back(packetInfo);
     destHandler.performStateMachine();
     REQUIRE(res.result == OK);
@@ -82,6 +83,13 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     // Assert that the packet was deleted after handling
     REQUIRE(not tcStore.hasDataAtId(storeId));
     destHandler.performStateMachine();
+    REQUIRE(userMock.metadataRecvd.size() == 1);
+    MetadataRecvdParams& params = userMock.metadataRecvd.back();
+    REQUIRE(params.id == destHandler.getTransactionId());
+    REQUIRE(params.sourceId.getValue() == 3);
+    REQUIRE(params.fileSize == 0);
+    REQUIRE(strcmp(params.destFileName, "hello-cpy.txt") == 0);
+    REQUIRE(strcmp(params.sourceFileName, "hello.txt") == 0);
     REQUIRE(fsMock.fileMap.find("hello-cpy.txt") != fsMock.fileMap.end());
     REQUIRE(res.result == OK);
     REQUIRE(res.callStatus == CallStatus::CALL_AFTER_DELAY);
