@@ -2,6 +2,7 @@
 
 #include "fsfw/cfdp.h"
 #include "fsfw/cfdp/pdu/MetadataPduCreator.h"
+#include "fsfw/cfdp/pdu/EofPduCreator.h"
 #include "mocks/AcceptsTmMock.h"
 #include "mocks/EventReportingProxyMock.h"
 #include "mocks/FilesystemMock.h"
@@ -63,21 +64,33 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     std::string destNameString = "hello-cpy.txt";
     StringLv srcName(srcNameString);
     StringLv destName(destNameString);
+    FileSize cfdpFileSize(0);
     MetadataInfo info(false, cfdp::ChecksumTypes::NULL_CHECKSUM, size, srcName, destName);
     auto seqNum = TransactionSeqNum(UnsignedByteField<uint16_t>(1));
     PduConfig conf(remoteId, localId, TransmissionModes::UNACKNOWLEDGED, seqNum);
-    MetadataPduCreator metadataPdu(conf, info);
+    MetadataPduCreator metadataCreator(conf, info);
     store_address_t storeId;
     uint8_t* ptr;
-    CHECK(tcStore.getFreeElement(&storeId, metadataPdu.getSerializedSize(), &ptr) == OK);
+    REQUIRE(tcStore.getFreeElement(&storeId, metadataCreator.getSerializedSize(), &ptr) == OK);
     size_t serLen = 0;
-    CHECK(metadataPdu.serialize(ptr, serLen, metadataPdu.getSerializedSize()) == OK);
-    PacketInfo packetInfo(metadataPdu.getPduType(), metadataPdu.getDirectiveCode(), storeId);
+    REQUIRE(metadataCreator.serialize(ptr, serLen, metadataCreator.getSerializedSize()) == OK);
+    PacketInfo packetInfo(metadataCreator.getPduType(), metadataCreator.getDirectiveCode(), storeId);
     packetInfoList.push_back(packetInfo);
     destHandler.performStateMachine();
-    CHECK(res.result == OK);
-    CHECK(res.callStatus == CallStatus::CALL_AGAIN);
+    REQUIRE(res.result == OK);
+    REQUIRE(res.callStatus == CallStatus::CALL_AGAIN);
+    // Assert that the packet was deleted after handling
+    REQUIRE(not tcStore.hasDataAtId(storeId));
     destHandler.performStateMachine();
+    REQUIRE(fsMock.fileMap.find("hello-cpy.txt") != fsMock.fileMap.end());
+    REQUIRE(res.result == OK);
+    REQUIRE(res.callStatus == CallStatus::CALL_AFTER_DELAY);
+    REQUIRE(res.state == CfdpStates::BUSY_CLASS_1_NACKED);
+    REQUIRE(res.step == DestHandler::TransactionStep::RECEIVING_FILE_DATA_PDUS);
+    EofInfo eofInfo(cfdp::ConditionCode::NO_ERROR, 0, cfdpFileSize);
+    EofPduCreator eofCreator(conf, eofInfo);
+    REQUIRE(tcStore.getFreeElement(&storeId, eofCreator.getSerializedSize(), &ptr) == OK);
+    REQUIRE(eofCreator.serialize(ptr, serLen, eofCreator.getSerializedSize()) == OK);
   }
 
   SECTION("Small File Transfer") {}

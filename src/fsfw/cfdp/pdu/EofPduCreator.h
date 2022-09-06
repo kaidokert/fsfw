@@ -14,6 +14,8 @@ class EofPduCreator : public FileDirectiveCreator {
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;
 
+  using FileDirectiveCreator::serialize;
+
  private:
   EofInfo& info;
 };

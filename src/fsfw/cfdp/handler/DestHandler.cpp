@@ -319,6 +319,13 @@ ReturnValue_t cfdp::DestHandler::startTransaction(MetadataPduReader& reader, Met
   params.sourceFileName = tp.sourceName.data();
   params.msgsToUserArray = dynamic_cast<MessageToUserTlv*>(userTlvVec.data());
   params.msgsToUserLen = info.getOptionsLen();
+  FilesystemParams fparams(tp.destName.data());
+  // TODO: Filesystem errors?
+  if (dp.user.vfs.fileExists(fparams)) {
+    dp.user.vfs.truncateFile(fparams);
+  } else {
+    dp.user.vfs.createFile(fparams);
+  }
   dp.user.metadataRecvdIndication(params);
   return OK;
 }
