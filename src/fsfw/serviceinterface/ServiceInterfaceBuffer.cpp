@@ -1,4 +1,4 @@
-#include "fsfw/serviceinterface/ServiceInterfaceBuffer.h"
+#include "ServiceInterfaceBuffer.h"
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 
@@ -71,8 +71,6 @@ void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
     }
   }
 }
-
-#endif
 
 int ServiceInterfaceBuffer::overflow(int c) {
   if (not buffered and this->isActive) {
@@ -165,4 +163,6 @@ bool ServiceInterfaceBuffer::crAdditionEnabled() const { return addCrToPreamble;
 void ServiceInterfaceBuffer::setAsciiColorPrefix(std::string colorPrefix) {
   this->colorPrefix = colorPrefix;
 }
+#endif
+
 #endif
