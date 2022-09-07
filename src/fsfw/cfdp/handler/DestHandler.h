@@ -62,12 +62,12 @@ struct DestHandlerParams {
 };
 
 struct FsfwParams {
-  FsfwParams(AcceptsTelemetryIF& packetDest, MessageQueueIF& msgQueue,
-             EventReportingProxyIF& eventReporter)
+  FsfwParams(AcceptsTelemetryIF& packetDest, MessageQueueIF* msgQueue,
+             EventReportingProxyIF* eventReporter)
       : packetDest(packetDest), msgQueue(msgQueue), eventReporter(eventReporter) {}
   AcceptsTelemetryIF& packetDest;
-  MessageQueueIF& msgQueue;
-  EventReportingProxyIF& eventReporter;
+  MessageQueueIF* msgQueue;
+  EventReportingProxyIF* eventReporter = nullptr;
   StorageManagerIF* tcStore = nullptr;
   StorageManagerIF* tmStore = nullptr;
 };
@@ -116,6 +116,8 @@ class DestHandler {
    *  - @c CALL_FSM_AGAIN   State machine should be called again.
    */
   const FsmResult& performStateMachine();
+  void setMsgQueue(MessageQueueIF& queue);
+  void setEventReporter(EventReportingProxyIF& reporter);
 
   ReturnValue_t passPacket(PacketInfo packet);
 

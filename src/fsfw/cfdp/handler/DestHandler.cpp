@@ -116,6 +116,10 @@ ReturnValue_t cfdp::DestHandler::initialize() {
       return FAILED;
     }
   }
+
+  if (fp.msgQueue == nullptr) {
+    return FAILED;
+  }
   return OK;
 }
 
@@ -421,7 +425,7 @@ ReturnValue_t cfdp::DestHandler::sendFinishedPdu() {
     return result;
   }
   TmTcMessage msg(storeId);
-  result = fp.msgQueue.sendMessage(fp.packetDest.getReportReceptionQueue(), &msg);
+  result = fp.msgQueue->sendMessage(fp.packetDest.getReportReceptionQueue(), &msg);
   if (result != OK) {
     // TODO: Error handling and event, this is a non CFDP specific error (most likely store is full)
     return result;
@@ -450,4 +454,10 @@ void cfdp::DestHandler::checkAndHandleError(ReturnValue_t result, uint8_t& error
     fsmRes.errorCodes[errorIdx] = result;
     errorIdx++;
   }
+}
+
+void cfdp::DestHandler::setMsgQueue(MessageQueueIF& queue) { fp.msgQueue = &queue; }
+
+void cfdp::DestHandler::setEventReporter(EventReportingProxyIF& reporter) {
+  fp.eventReporter = &reporter;
 }
