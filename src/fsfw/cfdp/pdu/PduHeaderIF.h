@@ -17,7 +17,7 @@ class PduHeaderIF {
 
   [[nodiscard]] virtual size_t getWholePduSize() const = 0;
   [[nodiscard]] virtual size_t getPduDataFieldLen() const = 0;
-  [[nodiscard]] virtual cfdp::PduType getPduType() const = 0;
+  [[nodiscard]] virtual cfdp::PduTypes getPduType() const = 0;
   [[nodiscard]] virtual cfdp::Direction getDirection() const = 0;
   [[nodiscard]] virtual cfdp::TransmissionModes getTransmissionMode() const = 0;
   [[nodiscard]] virtual bool getCrcFlag() const = 0;

@@ -29,7 +29,7 @@ const cfdp::DestHandler::FsmResult& cfdp::DestHandler::performStateMachine() {
   fsmRes.resetOfIteration();
   if (fsmRes.step == TransactionStep::IDLE) {
     for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
-      if (infoIter->pduType == PduType::FILE_DIRECTIVE and
+      if (infoIter->pduType == PduTypes::FILE_DIRECTIVE and
           infoIter->directiveType == FileDirectives::METADATA) {
         result = handleMetadataPdu(*infoIter);
         checkAndHandleError(result, errorIdx);
@@ -57,12 +57,12 @@ const cfdp::DestHandler::FsmResult& cfdp::DestHandler::performStateMachine() {
   if (fsmRes.state == CfdpStates::BUSY_CLASS_1_NACKED) {
     if (fsmRes.step == TransactionStep::RECEIVING_FILE_DATA_PDUS) {
       for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
-        if (infoIter->pduType == PduType::FILE_DATA) {
+        if (infoIter->pduType == PduTypes::FILE_DATA) {
           result = handleFileDataPdu(*infoIter);
           checkAndHandleError(result, errorIdx);
           // Store data was deleted in PDU handler because a store guard is used
           dp.packetListRef.erase(infoIter++);
-        } else if (infoIter->pduType == PduType::FILE_DIRECTIVE and
+        } else if (infoIter->pduType == PduTypes::FILE_DIRECTIVE and
                    infoIter->directiveType == FileDirectives::EOF_DIRECTIVE) {
           // TODO: Support for check timer missing
           result = handleEofPdu(*infoIter);
@@ -463,3 +463,6 @@ void cfdp::DestHandler::setEventReporter(EventReportingProxyIF& reporter) {
 }
 
 const cfdp::DestHandlerParams& cfdp::DestHandler::getDestHandlerParams() const { return dp; }
+
+StorageManagerIF* cfdp::DestHandler::getTmStore() const { return fp.tcStore; }
+StorageManagerIF* cfdp::DestHandler::getTcStore() const { return fp.tmStore; }

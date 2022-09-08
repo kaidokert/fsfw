@@ -21,7 +21,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
   uint8_t* serTarget = serBuf.data();
   const uint8_t* deserTarget = serTarget;
   size_t serSize = 0;
-  auto creator = HeaderCreator(pduConf, cfdp::PduType::FILE_DIRECTIVE, 0);
+  auto creator = HeaderCreator(pduConf, cfdp::PduTypes::FILE_DIRECTIVE, 0);
 
   SECTION("Header State") {
     REQUIRE(seqNum.getSerializedSize() == 1);
@@ -33,7 +33,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     REQUIRE(creator.getLargeFileFlag() == false);
     REQUIRE(creator.getLenEntityIds() == 1);
     REQUIRE(creator.getLenSeqNum() == 1);
-    REQUIRE(creator.getPduType() == cfdp::PduType::FILE_DIRECTIVE);
+    REQUIRE(creator.getPduType() == cfdp::PduTypes::FILE_DIRECTIVE);
     REQUIRE(creator.getSegmentMetadataFlag() == cfdp::SegmentMetadataFlag::NOT_PRESENT);
     REQUIRE(creator.getSegmentationControl() == false);
     REQUIRE(creator.getTransmissionMode() == cfdp::TransmissionModes::ACKNOWLEDGED);
@@ -87,7 +87,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     pduConf.direction = cfdp::Direction::TOWARDS_SENDER;
     pduConf.mode = cfdp::TransmissionModes::UNACKNOWLEDGED;
     creator.setSegmentationControl(cfdp::SegmentationControl::RECORD_BOUNDARIES_PRESERVATION);
-    creator.setPduType(cfdp::PduType::FILE_DATA);
+    creator.setPduType(cfdp::PduTypes::FILE_DATA);
     creator.setSegmentMetadataFlag(cfdp::SegmentMetadataFlag::PRESENT);
     serTarget = serBuf.data();
     serSize = 0;
@@ -103,7 +103,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
       REQUIRE(creator.getLargeFileFlag() == true);
       REQUIRE(creator.getLenEntityIds() == 1);
       REQUIRE(creator.getLenSeqNum() == 1);
-      REQUIRE(creator.getPduType() == cfdp::PduType::FILE_DATA);
+      REQUIRE(creator.getPduType() == cfdp::PduTypes::FILE_DATA);
       REQUIRE(creator.getSegmentMetadataFlag() == cfdp::SegmentMetadataFlag::PRESENT);
       REQUIRE(creator.getTransmissionMode() == cfdp::TransmissionModes::UNACKNOWLEDGED);
       REQUIRE(creator.getSegmentationControl() == true);
@@ -122,7 +122,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
       REQUIRE(creator.getLargeFileFlag() == true);
       REQUIRE(creator.getLenEntityIds() == 4);
       REQUIRE(creator.getLenSeqNum() == 2);
-      REQUIRE(creator.getPduType() == cfdp::PduType::FILE_DATA);
+      REQUIRE(creator.getPduType() == cfdp::PduTypes::FILE_DATA);
       REQUIRE(creator.getSegmentMetadataFlag() == cfdp::SegmentMetadataFlag::PRESENT);
       REQUIRE(creator.getTransmissionMode() == cfdp::TransmissionModes::UNACKNOWLEDGED);
       REQUIRE(creator.getSegmentationControl() == true);
@@ -235,7 +235,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     REQUIRE(reader.getLargeFileFlag() == false);
     REQUIRE(reader.getLenEntityIds() == 1);
     REQUIRE(reader.getLenSeqNum() == 1);
-    REQUIRE(reader.getPduType() == cfdp::PduType::FILE_DIRECTIVE);
+    REQUIRE(reader.getPduType() == cfdp::PduTypes::FILE_DIRECTIVE);
     REQUIRE(reader.getSegmentMetadataFlag() == cfdp::SegmentMetadataFlag::NOT_PRESENT);
     REQUIRE(reader.getSegmentationControl() == false);
     REQUIRE(reader.getTransmissionMode() == cfdp::TransmissionModes::ACKNOWLEDGED);
@@ -255,7 +255,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     pduConf.direction = cfdp::Direction::TOWARDS_SENDER;
     pduConf.mode = cfdp::TransmissionModes::UNACKNOWLEDGED;
     creator.setSegmentationControl(cfdp::SegmentationControl::RECORD_BOUNDARIES_PRESERVATION);
-    creator.setPduType(cfdp::PduType::FILE_DATA);
+    creator.setPduType(cfdp::PduTypes::FILE_DATA);
     creator.setSegmentMetadataFlag(cfdp::SegmentMetadataFlag::PRESENT);
     result = pduConf.seqNum.setValue(cfdp::WidthInBytes::TWO_BYTES, 0x0fff);
     REQUIRE(result == returnvalue::OK);
@@ -278,7 +278,7 @@ TEST_CASE("CFDP Header", "[cfdp]") {
     REQUIRE(reader.getLargeFileFlag() == true);
     REQUIRE(reader.getLenEntityIds() == 4);
     REQUIRE(reader.getLenSeqNum() == 2);
-    REQUIRE(reader.getPduType() == cfdp::PduType::FILE_DATA);
+    REQUIRE(reader.getPduType() == cfdp::PduTypes::FILE_DATA);
     REQUIRE(reader.getSegmentMetadataFlag() == cfdp::SegmentMetadataFlag::PRESENT);
     REQUIRE(reader.getSegmentationControl() == true);
     REQUIRE(reader.getTransmissionMode() == cfdp::TransmissionModes::UNACKNOWLEDGED);

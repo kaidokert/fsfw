@@ -21,11 +21,11 @@
 namespace cfdp {
 
 struct PacketInfo {
-  PacketInfo(PduType type, store_address_t storeId,
+  PacketInfo(PduTypes type, store_address_t storeId,
              std::optional<FileDirectives> directive = std::nullopt)
       : pduType(type), directiveType(directive), storeId(storeId) {}
 
-  PduType pduType = PduType::FILE_DATA;
+  PduTypes pduType = PduTypes::FILE_DATA;
   std::optional<FileDirectives> directiveType = FileDirectives::INVALID_DIRECTIVE;
   store_address_t storeId = store_address_t::invalid();
   PacketInfo() = default;
@@ -62,6 +62,14 @@ struct DestHandlerParams {
 };
 
 struct FsfwParams {
+
+  FsfwParams(AcceptsTelemetryIF& packetDest, MessageQueueIF* msgQueue,
+             EventReportingProxyIF* eventReporter, StorageManagerIF& tcStore, StorageManagerIF& tmStore)
+      : FsfwParams(packetDest, msgQueue, eventReporter) {
+    this->tcStore = &tcStore;
+    this->tmStore = &tmStore;
+  }
+
   FsfwParams(AcceptsTelemetryIF& packetDest, MessageQueueIF* msgQueue,
              EventReportingProxyIF* eventReporter)
       : packetDest(packetDest), msgQueue(msgQueue), eventReporter(eventReporter) {}
@@ -127,6 +135,8 @@ class DestHandler {
   [[nodiscard]] TransactionStep getTransactionStep() const;
   [[nodiscard]] const TransactionId& getTransactionId() const;
   [[nodiscard]] const DestHandlerParams& getDestHandlerParams() const;
+  [[nodiscard]] StorageManagerIF* getTcStore() const;
+  [[nodiscard]] StorageManagerIF* getTmStore() const;
 
  private:
   struct TransactionParams {

@@ -2,7 +2,7 @@
 
 FileDirectiveCreator::FileDirectiveCreator(PduConfig &pduConf, cfdp::FileDirectives directiveCode,
                                            size_t directiveParamFieldLen)
-    : HeaderCreator(pduConf, cfdp::PduType::FILE_DIRECTIVE, directiveParamFieldLen + 1),
+    : HeaderCreator(pduConf, cfdp::PduTypes::FILE_DIRECTIVE, directiveParamFieldLen + 1),
       directiveCode(directiveCode) {}
 
 size_t FileDirectiveCreator::getSerializedSize() const {

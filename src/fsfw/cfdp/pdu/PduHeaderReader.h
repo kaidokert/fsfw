@@ -56,7 +56,7 @@ class PduHeaderReader : public RedirectableDataPointerIF, public PduHeaderIF {
   [[nodiscard]] size_t getPduDataFieldLen() const override;
   [[nodiscard]] size_t getWholePduSize() const override;
 
-  [[nodiscard]] cfdp::PduType getPduType() const override;
+  [[nodiscard]] cfdp::PduTypes getPduType() const override;
   [[nodiscard]] cfdp::Direction getDirection() const override;
   [[nodiscard]] cfdp::TransmissionModes getTransmissionMode() const override;
   [[nodiscard]] bool getCrcFlag() const override;

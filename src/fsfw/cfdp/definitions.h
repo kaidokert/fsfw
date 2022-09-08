@@ -49,7 +49,7 @@ enum ChecksumTypes {
   NULL_CHECKSUM = 15
 };
 
-enum PduType : uint8_t { FILE_DIRECTIVE = 0, FILE_DATA = 1 };
+enum PduTypes : uint8_t { FILE_DIRECTIVE = 0, FILE_DATA = 1 };
 
 enum TransmissionModes : uint8_t { ACKNOWLEDGED = 0, UNACKNOWLEDGED = 1 };
 

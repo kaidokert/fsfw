@@ -57,8 +57,8 @@ size_t PduHeaderReader::getWholePduSize() const {
   return getPduDataFieldLen() + PduHeaderReader::getHeaderSize();
 }
 
-cfdp::PduType PduHeaderReader::getPduType() const {
-  return static_cast<cfdp::PduType>((pointers.fixedHeader->firstByte >> 4) & 0x01);
+cfdp::PduTypes PduHeaderReader::getPduType() const {
+  return static_cast<cfdp::PduTypes>((pointers.fixedHeader->firstByte >> 4) & 0x01);
 }
 
 cfdp::Direction PduHeaderReader::getDirection() const {

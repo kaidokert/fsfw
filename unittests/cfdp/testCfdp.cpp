@@ -68,7 +68,7 @@ TEST_CASE("CFDP Base", "[cfdp]") {
     REQUIRE(fdDeser.getFileDirective() == FileDirectives::ACK);
     REQUIRE(fdDeser.getPduDataFieldLen() == 5);
     REQUIRE(fdDeser.getHeaderSize() == 8);
-    REQUIRE(fdDeser.getPduType() == cfdp::PduType::FILE_DIRECTIVE);
+    REQUIRE(fdDeser.getPduType() == cfdp::PduTypes::FILE_DIRECTIVE);
 
     serBuf[7] = 0xff;
     // Invalid file directive
