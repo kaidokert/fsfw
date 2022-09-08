@@ -9,7 +9,7 @@ class TemplateAction : public Action {
 #ifdef FSFW_INTROSPECTION
   TemplateAction(owner *myOwner, ActionEnum id) : Action(), myOwner(myOwner) {
     Action::setEnum(&id);
-    if (myOwner->getActionHelper()->getQueue() == nullptr) {
+    if (myOwner->getActionHelper() == nullptr) {
       sif::error
           << "TemplateAction::TemplateAction: Action instances need to be created (ie located) after the actionHelper instance."
           << "Program will segfault now..." << std::endl;
