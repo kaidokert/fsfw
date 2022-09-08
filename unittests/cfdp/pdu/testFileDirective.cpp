@@ -80,6 +80,6 @@ TEST_CASE("CFDP File Directive", "[cfdp][pdu]") {
 
     serBuf[7] = 0xff;
     // Invalid file directive
-    REQUIRE(fdDeser.parseData() == cfdp::INVALID_DIRECTIVE_FIELDS);
+    REQUIRE(fdDeser.parseData() == cfdp::INVALID_DIRECTIVE_FIELD);
   }
 }

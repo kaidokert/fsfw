@@ -91,7 +91,7 @@ TEST_CASE("ACK PDU", "[cfdp][pdu]") {
     buf[sz - 2] = prevVal;
     buf[sz - 3] = cfdp::FileDirectives::INVALID_DIRECTIVE;
     result = reader2.parseData();
-    REQUIRE(result == cfdp::INVALID_DIRECTIVE_FIELDS);
+    REQUIRE(result == cfdp::INVALID_DIRECTIVE_FIELD);
     buf[sz - 3] = cfdp::FileDirectives::ACK;
     auto maxSizeTooSmall = AckPduDeserializer(buf.data(), sz - 2, ackInfo2);
     result = maxSizeTooSmall.parseData();

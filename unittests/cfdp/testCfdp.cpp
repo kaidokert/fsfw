@@ -72,7 +72,7 @@ TEST_CASE("CFDP Base", "[cfdp]") {
 
     serBuf[7] = 0xff;
     // Invalid file directive
-    REQUIRE(fdDeser.parseData() == cfdp::INVALID_DIRECTIVE_FIELDS);
+    REQUIRE(fdDeser.parseData() == cfdp::INVALID_DIRECTIVE_FIELD);
   }
 
   SECTION("File Size") {

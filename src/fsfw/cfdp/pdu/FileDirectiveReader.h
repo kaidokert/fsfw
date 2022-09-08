@@ -26,10 +26,9 @@ class FileDirectiveReader : public PduHeaderReader {
 
   void setEndianness(SerializeIF::Endianness endianness);
   [[nodiscard]] SerializeIF::Endianness getEndianness() const;
-
- protected:
   static bool checkFileDirective(uint8_t rawByte);
 
+ protected:
  private:
   void setFileDirective(cfdp::FileDirectives fileDirective);
   cfdp::FileDirectives fileDirective = cfdp::FileDirectives::INVALID_DIRECTIVE;

@@ -18,7 +18,7 @@ ReturnValue_t FileDirectiveReader::parseData() {
   }
   size_t currentIdx = PduHeaderReader::getHeaderSize();
   if (not checkFileDirective(pointers.rawPtr[currentIdx])) {
-    return cfdp::INVALID_DIRECTIVE_FIELDS;
+    return cfdp::INVALID_DIRECTIVE_FIELD;
   }
   setFileDirective(static_cast<cfdp::FileDirectives>(pointers.rawPtr[currentIdx]));
   return returnvalue::OK;
@@ -32,7 +32,7 @@ size_t FileDirectiveReader::getHeaderSize() const {
 bool FileDirectiveReader::checkFileDirective(uint8_t rawByte) {
   if (rawByte < cfdp::FileDirectives::EOF_DIRECTIVE or
       (rawByte > cfdp::FileDirectives::PROMPT and rawByte != cfdp::FileDirectives::KEEP_ALIVE)) {
-    // Invalid directive field. TODO: Custom returnvalue
+    // Invalid directive field
     return false;
   }
   return true;

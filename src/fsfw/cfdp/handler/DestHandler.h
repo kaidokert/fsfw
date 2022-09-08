@@ -62,9 +62,9 @@ struct DestHandlerParams {
 };
 
 struct FsfwParams {
-
   FsfwParams(AcceptsTelemetryIF& packetDest, MessageQueueIF* msgQueue,
-             EventReportingProxyIF* eventReporter, StorageManagerIF& tcStore, StorageManagerIF& tmStore)
+             EventReportingProxyIF* eventReporter, StorageManagerIF& tcStore,
+             StorageManagerIF& tmStore)
       : FsfwParams(packetDest, msgQueue, eventReporter) {
     this->tcStore = &tcStore;
     this->tmStore = &tmStore;

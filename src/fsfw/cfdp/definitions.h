@@ -20,7 +20,7 @@ static constexpr uint8_t VERSION_BITS = CFDP_VERSION_2 << 5;
 static constexpr uint8_t CFDP_CLASS_ID = CLASS_ID::CFDP;
 
 static constexpr ReturnValue_t INVALID_TLV_TYPE = returnvalue::makeCode(CFDP_CLASS_ID, 1);
-static constexpr ReturnValue_t INVALID_DIRECTIVE_FIELDS = returnvalue::makeCode(CFDP_CLASS_ID, 2);
+static constexpr ReturnValue_t INVALID_DIRECTIVE_FIELD = returnvalue::makeCode(CFDP_CLASS_ID, 2);
 static constexpr ReturnValue_t INVALID_PDU_DATAFIELD_LEN = returnvalue::makeCode(CFDP_CLASS_ID, 3);
 static constexpr ReturnValue_t INVALID_ACK_DIRECTIVE_FIELDS =
     returnvalue::makeCode(CFDP_CLASS_ID, 4);
@@ -30,13 +30,14 @@ static constexpr ReturnValue_t METADATA_CANT_PARSE_OPTIONS =
     returnvalue::makeCode(CFDP_CLASS_ID, 5);
 static constexpr ReturnValue_t NAK_CANT_PARSE_OPTIONS = returnvalue::makeCode(CFDP_CLASS_ID, 6);
 static constexpr ReturnValue_t FINISHED_CANT_PARSE_FS_RESPONSES =
-    returnvalue::makeCode(CFDP_CLASS_ID, 6);
+    returnvalue::makeCode(CFDP_CLASS_ID, 7);
 static constexpr ReturnValue_t FILESTORE_REQUIRES_SECOND_FILE =
     returnvalue::makeCode(CFDP_CLASS_ID, 8);
 //! Can not parse filestore response because user did not pass a valid instance
 //! or remaining size is invalid
 static constexpr ReturnValue_t FILESTORE_RESPONSE_CANT_PARSE_FS_MESSAGE =
     returnvalue::makeCode(CFDP_CLASS_ID, 9);
+static constexpr ReturnValue_t INVALID_PDU_FORMAT = returnvalue::makeCode(CFDP_CLASS_ID, 10);
 
 //! Checksum types according to the SANA Checksum Types registry
 //! https://sanaregistry.org/r/checksum_identifiers/
@@ -71,6 +72,7 @@ enum WidthInBytes : uint8_t {
 
 enum FileDirectives : uint8_t {
   INVALID_DIRECTIVE = 0x0f,
+  // The _DIRECTIVE suffix is mandatory here because of some nameclash!
   EOF_DIRECTIVE = 0x04,
   FINISH = 0x05,
   ACK = 0x06,
