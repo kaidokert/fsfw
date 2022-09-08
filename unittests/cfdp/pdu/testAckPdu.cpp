@@ -1,8 +1,8 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw/cfdp/pdu/AckPduDeserializer.h"
-#include "fsfw/cfdp/pdu/AckPduSerializer.h"
+#include "fsfw/cfdp/pdu/AckPduCreator.h"
+#include "fsfw/cfdp/pdu/AckPduReader.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
 TEST_CASE("ACK PDU", "[cfdp][pdu]") {
@@ -18,7 +18,7 @@ TEST_CASE("ACK PDU", "[cfdp][pdu]") {
   auto pduConf = PduConfig(sourceId, destId, TransmissionModes::ACKNOWLEDGED, seqNum);
   AckInfo ackInfo(FileDirectives::EOF_DIRECTIVE, ConditionCode::NO_ERROR,
                   AckTransactionStatus::ACTIVE);
-  auto ackSerializer = AckPduSerializer(ackInfo, pduConf);
+  auto ackSerializer = AckPduCreator(ackInfo, pduConf);
   result = ackSerializer.serialize(&bufptr, &sz, maxsz, SerializeIF::Endianness::NETWORK);
   REQUIRE(result == returnvalue::OK);
 
@@ -30,7 +30,7 @@ TEST_CASE("ACK PDU", "[cfdp][pdu]") {
     ackInfo.setAckedDirective(FileDirectives::FINISH);
     ackInfo.setAckedConditionCode(ConditionCode::FILESTORE_REJECTION);
     ackInfo.setTransactionStatus(AckTransactionStatus::TERMINATED);
-    auto ackSerializer2 = AckPduSerializer(ackInfo, pduConf);
+    auto ackSerializer2 = AckPduCreator(ackInfo, pduConf);
     bufptr = buf.data();
     sz = 0;
     result = ackSerializer2.serialize(&bufptr, &sz, maxsz, SerializeIF::Endianness::NETWORK);
@@ -44,7 +44,7 @@ TEST_CASE("ACK PDU", "[cfdp][pdu]") {
     bufptr = buf.data();
     sz = 0;
     ackInfo.setAckedDirective(FileDirectives::KEEP_ALIVE);
-    auto ackSerializer3 = AckPduSerializer(ackInfo, pduConf);
+    auto ackSerializer3 = AckPduCreator(ackInfo, pduConf);
     result = ackSerializer3.serialize(&bufptr, &sz, maxsz, SerializeIF::Endianness::NETWORK);
     // Invalid file directive
     REQUIRE(result != returnvalue::OK);
@@ -57,7 +57,7 @@ TEST_CASE("ACK PDU", "[cfdp][pdu]") {
 
   SECTION("Deserialize") {
     AckInfo ackInfo2;
-    auto reader = AckPduDeserializer(buf.data(), sz, ackInfo2);
+    auto reader = AckPduReader(buf.data(), sz, ackInfo2);
     result = reader.parseData();
     REQUIRE(result == returnvalue::OK);
     REQUIRE(ackInfo2.getAckedDirective() == FileDirectives::EOF_DIRECTIVE);
@@ -67,13 +67,13 @@ TEST_CASE("ACK PDU", "[cfdp][pdu]") {
 
     AckInfo newInfo = AckInfo(FileDirectives::FINISH, ConditionCode::FILESTORE_REJECTION,
                               AckTransactionStatus::TERMINATED);
-    auto ackSerializer2 = AckPduSerializer(newInfo, pduConf);
+    auto ackSerializer2 = AckPduCreator(newInfo, pduConf);
     bufptr = buf.data();
     sz = 0;
     result = ackSerializer2.serialize(&bufptr, &sz, maxsz, SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
 
-    auto reader2 = AckPduDeserializer(buf.data(), sz, ackInfo2);
+    auto reader2 = AckPduReader(buf.data(), sz, ackInfo2);
     result = reader2.parseData();
     REQUIRE(result == returnvalue::OK);
     REQUIRE(ackInfo2.getAckedDirective() == FileDirectives::FINISH);
@@ -93,7 +93,7 @@ TEST_CASE("ACK PDU", "[cfdp][pdu]") {
     result = reader2.parseData();
     REQUIRE(result == cfdp::INVALID_DIRECTIVE_FIELD);
     buf[sz - 3] = cfdp::FileDirectives::ACK;
-    auto maxSizeTooSmall = AckPduDeserializer(buf.data(), sz - 2, ackInfo2);
+    auto maxSizeTooSmall = AckPduReader(buf.data(), sz - 2, ackInfo2);
     result = maxSizeTooSmall.parseData();
     REQUIRE(result == SerializeIF::STREAM_TOO_SHORT);
   }

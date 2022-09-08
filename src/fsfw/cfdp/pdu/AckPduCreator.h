@@ -1,11 +1,11 @@
-#ifndef FSFW_SRC_FSFW_CFDP_PDU_ACKPDUSERIALIZER_H_
-#define FSFW_SRC_FSFW_CFDP_PDU_ACKPDUSERIALIZER_H_
+#ifndef FSFW_CFDP_PDU_ACKPDUSERIALIZER_H_
+#define FSFW_CFDP_PDU_ACKPDUSERIALIZER_H_
 
 #include "AckInfo.h"
 #include "FileDirectiveCreator.h"
 #include "FileDirectiveReader.h"
 
-class AckPduSerializer : public FileDirectiveCreator {
+class AckPduCreator : public FileDirectiveCreator {
  public:
   /**
    * @brief   Serializer to pack ACK PDUs
@@ -16,9 +16,9 @@ class AckPduSerializer : public FileDirectiveCreator {
    * @param transactionStatus
    * @param pduConf
    */
-  AckPduSerializer(AckInfo& ackInfo, PduConfig& pduConf);
+  AckPduCreator(AckInfo& ackInfo, PduConfig& pduConf);
 
-  size_t getSerializedSize() const override;
+  [[nodiscard]] size_t getSerializedSize() const override;
 
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;
@@ -27,4 +27,4 @@ class AckPduSerializer : public FileDirectiveCreator {
   AckInfo& ackInfo;
 };
 
-#endif /* FSFW_SRC_FSFW_CFDP_PDU_ACKPDUSERIALIZER_H_ */
+#endif /* FSFW_CFDP_PDU_ACKPDUSERIALIZER_H_ */

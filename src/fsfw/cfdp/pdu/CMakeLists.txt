@@ -6,8 +6,8 @@ target_sources(
           FileDirectiveReader.cpp
           FileDirectiveCreator.cpp
           AckInfo.cpp
-          AckPduSerializer.cpp
-          AckPduDeserializer.cpp
+          AckPduCreator.cpp
+          AckPduReader.cpp
           EofInfo.cpp
           EofPduCreator.cpp
           EofPduReader.cpp

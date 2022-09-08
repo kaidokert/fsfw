@@ -4,16 +4,19 @@
 #include "AckInfo.h"
 #include "fsfw/cfdp/pdu/FileDirectiveReader.h"
 
-class AckPduDeserializer : public FileDirectiveReader {
+class AckPduReader : public FileDirectiveReader {
  public:
-  AckPduDeserializer(const uint8_t* pduBuf, size_t maxSize, AckInfo& info);
+  AckPduReader(const uint8_t* pduBuf, size_t maxSize, AckInfo& info);
 
   /**
    *
    * @return
    *  - cfdp::INVALID_DIRECTIVE_FIELDS: Invalid fields
    */
-  ReturnValue_t parseData();
+  ReturnValue_t parseData() override;
+
+  static bool checkAckedDirectiveField(uint8_t firstPduDataByte,
+                                       cfdp::FileDirectives& ackedDirective);
 
  private:
   bool checkAndSetCodes(uint8_t rawAckedByte, uint8_t rawAckedConditionCode);
