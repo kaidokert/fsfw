@@ -27,6 +27,7 @@ class VarLenField : public SerializeIF {
   VarLenField(cfdp::WidthInBytes width, size_t value);
 
   bool operator==(const VarLenField &other) const;
+  bool operator!=(const VarLenField &other) const;
   bool operator<(const VarLenField &other) const;
 
   ReturnValue_t setValue(cfdp::WidthInBytes, size_t value);

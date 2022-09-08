@@ -131,3 +131,7 @@ bool cfdp::VarLenField::operator<(const cfdp::VarLenField &other) const {
 bool cfdp::VarLenField::operator==(const cfdp::VarLenField &other) const {
   return getWidth() == other.getWidth() and getValue() == other.getValue();
 }
+
+bool cfdp::VarLenField::operator!=(const cfdp::VarLenField &other) const {
+  return not(*this == other);
+}
