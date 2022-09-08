@@ -1,16 +1,16 @@
 #include "FileDataReader.h"
 
 FileDataReader::FileDataReader(const uint8_t* pduBuf, size_t maxSize, FileDataInfo& info)
-    : HeaderReader(pduBuf, maxSize), info(info) {}
+    : PduHeaderReader(pduBuf, maxSize), info(info) {}
 
 ReturnValue_t FileDataReader::parseData() {
-  ReturnValue_t result = HeaderReader::parseData();
+  ReturnValue_t result = PduHeaderReader::parseData();
   if (result != returnvalue::OK) {
     return result;
   }
-  size_t currentIdx = HeaderReader::getHeaderSize();
+  size_t currentIdx = PduHeaderReader::getHeaderSize();
   const uint8_t* buf = pointers.rawPtr + currentIdx;
-  size_t remSize = HeaderReader::getWholePduSize() - currentIdx;
+  size_t remSize = PduHeaderReader::getWholePduSize() - currentIdx;
   if (remSize < 1) {
     return SerializeIF::STREAM_TOO_SHORT;
   }

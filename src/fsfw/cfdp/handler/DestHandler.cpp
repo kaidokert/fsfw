@@ -8,7 +8,7 @@
 #include "fsfw/cfdp/pdu/EofPduReader.h"
 #include "fsfw/cfdp/pdu/FileDataReader.h"
 #include "fsfw/cfdp/pdu/FinishedPduCreator.h"
-#include "fsfw/cfdp/pdu/HeaderReader.h"
+#include "fsfw/cfdp/pdu/PduHeaderReader.h"
 #include "fsfw/objectmanager.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
 
@@ -236,7 +236,7 @@ ReturnValue_t cfdp::DestHandler::handleMetadataParseError(ReturnValue_t result,
   sif::warning << "Parsing Metadata PDU failed with code " << result << std::endl;
 #else
 #endif
-  HeaderReader headerReader(rawData, maxSize);
+  PduHeaderReader headerReader(rawData, maxSize);
   result = headerReader.parseData();
   if (result != OK) {
     // TODO: Now this really should not happen. Warning or error,
@@ -461,3 +461,5 @@ void cfdp::DestHandler::setMsgQueue(MessageQueueIF& queue) { fp.msgQueue = &queu
 void cfdp::DestHandler::setEventReporter(EventReportingProxyIF& reporter) {
   fp.eventReporter = &reporter;
 }
+
+const cfdp::DestHandlerParams& cfdp::DestHandler::getDestHandlerParams() const { return dp; }

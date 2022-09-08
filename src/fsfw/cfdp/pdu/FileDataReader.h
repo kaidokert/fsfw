@@ -3,9 +3,9 @@
 
 #include "../definitions.h"
 #include "FileDataInfo.h"
-#include "HeaderReader.h"
+#include "PduHeaderReader.h"
 
-class FileDataReader : public HeaderReader {
+class FileDataReader : public PduHeaderReader {
  public:
   FileDataReader(const uint8_t* pduBuf, size_t maxSize, FileDataInfo& info);
 

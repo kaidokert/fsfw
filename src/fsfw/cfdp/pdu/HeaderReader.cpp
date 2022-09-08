@@ -1,12 +1,14 @@
-#include "HeaderReader.h"
-
 #include <fsfw/serialize/SerializeAdapter.h>
 
 #include <cstring>
 
-HeaderReader::HeaderReader(const uint8_t *pduBuf, size_t maxSize) { setData(pduBuf, maxSize); }
+#include "PduHeaderReader.h"
 
-ReturnValue_t HeaderReader::parseData() {
+PduHeaderReader::PduHeaderReader(const uint8_t *pduBuf, size_t maxSize) {
+  setReadOnlyData(pduBuf, maxSize);
+}
+
+ReturnValue_t PduHeaderReader::parseData() {
   if (pointers.rawPtr == nullptr) {
     return returnvalue::FAILED;
   }
@@ -20,10 +22,15 @@ ReturnValue_t HeaderReader::parseData() {
   cfdp::WidthInBytes widthSeqNum = getLenSeqNum();
   seqNumRaw = static_cast<uint8_t *>(sourceIdRaw) + static_cast<uint8_t>(widthEntityIds);
   destIdRaw = static_cast<uint8_t *>(seqNumRaw) + static_cast<uint8_t>(widthSeqNum);
+  if (getWholePduSize() > PduHeaderReader::getHeaderSize()) {
+    pointers.dataFieldStart = reinterpret_cast<const uint8_t *>(destIdRaw) + widthEntityIds;
+  } else {
+    pointers.dataFieldStart = nullptr;
+  }
   return returnvalue::OK;
 }
 
-ReturnValue_t HeaderReader::setData(uint8_t *dataPtr, size_t maxSize_, void *args) {
+ReturnValue_t PduHeaderReader::setData(uint8_t *dataPtr, size_t maxSize_, void *args) {
   if (dataPtr == nullptr) {
     return returnvalue::FAILED;
   }
@@ -35,68 +42,68 @@ ReturnValue_t HeaderReader::setData(uint8_t *dataPtr, size_t maxSize_, void *arg
   return returnvalue::OK;
 }
 
-size_t HeaderReader::getHeaderSize() const {
+size_t PduHeaderReader::getHeaderSize() const {
   if (pointers.fixedHeader != nullptr) {
     return getLenEntityIds() * 2 + getLenSeqNum() + 4;
   }
   return 0;
 }
 
-size_t HeaderReader::getPduDataFieldLen() const {
+size_t PduHeaderReader::getPduDataFieldLen() const {
   return (pointers.fixedHeader->pduDataFieldLenH << 8) | pointers.fixedHeader->pduDataFieldLenL;
 }
 
-size_t HeaderReader::getWholePduSize() const {
-  return getPduDataFieldLen() + HeaderReader::getHeaderSize();
+size_t PduHeaderReader::getWholePduSize() const {
+  return getPduDataFieldLen() + PduHeaderReader::getHeaderSize();
 }
 
-cfdp::PduType HeaderReader::getPduType() const {
+cfdp::PduType PduHeaderReader::getPduType() const {
   return static_cast<cfdp::PduType>((pointers.fixedHeader->firstByte >> 4) & 0x01);
 }
 
-cfdp::Direction HeaderReader::getDirection() const {
+cfdp::Direction PduHeaderReader::getDirection() const {
   return static_cast<cfdp::Direction>((pointers.fixedHeader->firstByte >> 3) & 0x01);
 }
 
-cfdp::TransmissionModes HeaderReader::getTransmissionMode() const {
+cfdp::TransmissionModes PduHeaderReader::getTransmissionMode() const {
   return static_cast<cfdp::TransmissionModes>((pointers.fixedHeader->firstByte >> 2) & 0x01);
 }
 
-bool HeaderReader::getCrcFlag() const { return (pointers.fixedHeader->firstByte >> 1) & 0x01; }
+bool PduHeaderReader::getCrcFlag() const { return (pointers.fixedHeader->firstByte >> 1) & 0x01; }
 
-bool HeaderReader::getLargeFileFlag() const { return pointers.fixedHeader->firstByte & 0x01; }
+bool PduHeaderReader::getLargeFileFlag() const { return pointers.fixedHeader->firstByte & 0x01; }
 
-cfdp::SegmentationControl HeaderReader::getSegmentationControl() const {
+cfdp::SegmentationControl PduHeaderReader::getSegmentationControl() const {
   return static_cast<cfdp::SegmentationControl>((pointers.fixedHeader->fourthByte >> 7) & 0x01);
 }
 
-cfdp::WidthInBytes HeaderReader::getLenEntityIds() const {
+cfdp::WidthInBytes PduHeaderReader::getLenEntityIds() const {
   return static_cast<cfdp::WidthInBytes>((pointers.fixedHeader->fourthByte >> 4) & 0x07);
 }
 
-cfdp::WidthInBytes HeaderReader::getLenSeqNum() const {
+cfdp::WidthInBytes PduHeaderReader::getLenSeqNum() const {
   return static_cast<cfdp::WidthInBytes>(pointers.fixedHeader->fourthByte & 0x07);
 }
 
-cfdp::SegmentMetadataFlag HeaderReader::getSegmentMetadataFlag() const {
+cfdp::SegmentMetadataFlag PduHeaderReader::getSegmentMetadataFlag() const {
   return static_cast<cfdp::SegmentMetadataFlag>((pointers.fixedHeader->fourthByte >> 3) & 0x01);
 }
 
-void HeaderReader::getSourceId(cfdp::EntityId &sourceId) const {
+void PduHeaderReader::getSourceId(cfdp::EntityId &sourceId) const {
   assignVarLenField(dynamic_cast<cfdp::VarLenField *>(&sourceId), getLenEntityIds(),
                     this->sourceIdRaw);
 }
 
-void HeaderReader::getDestId(cfdp::EntityId &destId) const {
+void PduHeaderReader::getDestId(cfdp::EntityId &destId) const {
   assignVarLenField(dynamic_cast<cfdp::VarLenField *>(&destId), getLenEntityIds(), this->destIdRaw);
 }
 
-void HeaderReader::getTransactionSeqNum(cfdp::TransactionSeqNum &seqNum) const {
+void PduHeaderReader::getTransactionSeqNum(cfdp::TransactionSeqNum &seqNum) const {
   assignVarLenField(dynamic_cast<cfdp::VarLenField *>(&seqNum), getLenSeqNum(), this->seqNumRaw);
 }
 
-void HeaderReader::assignVarLenField(cfdp::VarLenField *field, cfdp::WidthInBytes width,
-                                     void *sourcePtr) const {
+void PduHeaderReader::assignVarLenField(cfdp::VarLenField *field, cfdp::WidthInBytes width,
+                                        void *sourcePtr) const {
   switch (width) {
     case (cfdp::WidthInBytes::ONE_BYTE): {
       auto *fieldTyped = static_cast<uint8_t *>(sourcePtr);
@@ -122,25 +129,25 @@ void HeaderReader::assignVarLenField(cfdp::VarLenField *field, cfdp::WidthInByte
   }
 }
 
-size_t HeaderReader::getMaxSize() const { return maxSize; }
+size_t PduHeaderReader::getMaxSize() const { return maxSize; }
 
-bool HeaderReader::hasSegmentMetadataFlag() const {
+bool PduHeaderReader::hasSegmentMetadataFlag() const {
   if (this->getSegmentMetadataFlag() == cfdp::SegmentMetadataFlag::PRESENT) {
     return true;
   }
   return false;
 }
 
-ReturnValue_t HeaderReader::setData(const uint8_t *dataPtr, size_t maxSize_) {
+ReturnValue_t PduHeaderReader::setReadOnlyData(const uint8_t *dataPtr, size_t maxSize_) {
   return setData(const_cast<uint8_t *>(dataPtr), maxSize_, nullptr);
 }
-bool HeaderReader::isNull() const {
+bool PduHeaderReader::isNull() const {
   return pointers.rawPtr == nullptr or pointers.fixedHeader == nullptr;
 }
 
-HeaderReader::operator bool() const { return not isNull(); }
+PduHeaderReader::operator bool() const { return not isNull(); }
 
-void HeaderReader::fillConfig(PduConfig &cfg) const {
+void PduHeaderReader::fillConfig(PduConfig &cfg) const {
   cfg.largeFile = getLargeFileFlag();
   cfg.crcFlag = getCrcFlag();
   cfg.mode = getTransmissionMode();
@@ -149,3 +156,5 @@ void HeaderReader::fillConfig(PduConfig &cfg) const {
   getSourceId(cfg.sourceId);
   getDestId(cfg.destId);
 }
+
+const uint8_t *PduHeaderReader::getPduDataField() const { return pointers.dataFieldStart; }

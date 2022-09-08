@@ -61,19 +61,19 @@ TEST_CASE("Keep Alive PDU", "[cfdp][pdu]") {
 
     // Set another file size
     progress.setFileSize(200, false);
-    KeepAlivePduDeserializer deserializer(kaBuffer.data(), kaBuffer.size(), progress);
-    result = deserializer.parseData();
+    KeepAlivePduDeserializer reader(kaBuffer.data(), kaBuffer.size(), progress);
+    result = reader.parseData();
     REQUIRE(result == returnvalue::OK);
-    auto& progRef = deserializer.getProgress();
+    auto& progRef = reader.getProgress();
     // Should have been overwritten
     REQUIRE(progRef.getSize() == 0x50);
-    sz = deserializer.getWholePduSize();
+    sz = reader.getWholePduSize();
 
     // invalid max size
     for (size_t invalidMaxSz = 0; invalidMaxSz < sz; invalidMaxSz++) {
-      ReturnValue_t setResult = deserializer.setData(kaBuffer.data(), invalidMaxSz);
+      ReturnValue_t setResult = reader.setReadOnlyData(kaBuffer.data(), invalidMaxSz);
       if (setResult == returnvalue::OK) {
-        result = deserializer.parseData();
+        result = reader.parseData();
         REQUIRE(result != returnvalue::OK);
       }
     }

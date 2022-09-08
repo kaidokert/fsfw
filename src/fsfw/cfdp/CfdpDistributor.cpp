@@ -21,7 +21,8 @@ ReturnValue_t CfdpDistributor::selectDestination(MessageQueueId_t& destId) {
   if (accessorPair.first != returnvalue::OK) {
     return accessorPair.first;
   }
-  ReturnValue_t result = pduReader.setData(accessorPair.second.data(), accessorPair.second.size());
+  ReturnValue_t result =
+      pduReader.setReadOnlyData(accessorPair.second.data(), accessorPair.second.size());
   if (result != returnvalue::OK) {
     return result;
   }

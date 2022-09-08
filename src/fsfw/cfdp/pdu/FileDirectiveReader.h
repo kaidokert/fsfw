@@ -2,7 +2,7 @@
 #define FSFW_SRC_FSFW_CFDP_PDU_FILEDIRECTIVEDESERIALIZER_H_
 
 #include "../definitions.h"
-#include "fsfw/cfdp/pdu/HeaderReader.h"
+#include "fsfw/cfdp/pdu/PduHeaderReader.h"
 
 /**
  * @brief   This class is used to deserialize a PDU file directive header from raw memory.
@@ -11,7 +11,7 @@
  * This is a zero-copy implementation and #parseData needs to be called to ensure the data is
  * valid.
  */
-class FileDirectiveReader : public HeaderReader {
+class FileDirectiveReader : public PduHeaderReader {
  public:
   FileDirectiveReader(const uint8_t* pduBuf, size_t maxSize);
 

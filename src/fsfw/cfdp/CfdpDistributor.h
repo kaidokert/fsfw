@@ -4,7 +4,7 @@
 #include <utility>
 #include <vector>
 
-#include "fsfw/cfdp/pdu/HeaderReader.h"
+#include "fsfw/cfdp/pdu/PduHeaderReader.h"
 #include "fsfw/returnvalues/returnvalue.h"
 #include "fsfw/tcdistribution/CfdpPacketChecker.h"
 #include "fsfw/tcdistribution/TcDistributorBase.h"
@@ -60,7 +60,7 @@ class CfdpDistributor : public TcDistributorBase, public AcceptsTelecommandsIF {
     const char* name;
     MessageQueueId_t queueId;
   };
-  HeaderReader pduReader;
+  PduHeaderReader pduReader;
   ReturnValue_t lastTcError = returnvalue::OK;
   ReturnValue_t lastTmError = returnvalue::OK;
   // I don't think a regular OBSW will have more than 1 or 2 of these destinations, so I think

@@ -23,16 +23,16 @@ struct PduHeaderFixedStruct {
  * This is a zero-copy implementation and #parseData needs to be called to ensure the data is
  * valid.
  */
-class HeaderReader : public RedirectableDataPointerIF, public PduHeaderIF {
+class PduHeaderReader : public RedirectableDataPointerIF, public PduHeaderIF {
  public:
-  HeaderReader() = default;
+  PduHeaderReader() = default;
   /**
    * Initialize a PDU header from raw data. This is a zero-copy implementation and #parseData
    * needs to be called to ensure the data is valid
    * @param pduBuf
    * @param maxSize
    */
-  HeaderReader(const uint8_t* pduBuf, size_t maxSize);
+  PduHeaderReader(const uint8_t* pduBuf, size_t maxSize);
 
   /**
    * This needs to be called before accessing the PDU fields to avoid segmentation faults.
@@ -74,6 +74,7 @@ class HeaderReader : public RedirectableDataPointerIF, public PduHeaderIF {
   ReturnValue_t deserResult = returnvalue::OK;
 
   [[nodiscard]] size_t getMaxSize() const;
+  [[nodiscard]] const uint8_t* getPduDataField() const;
 
   /**
    * Can also be used to reset the pointer to a nullptr, but the getter functions will not
@@ -83,11 +84,12 @@ class HeaderReader : public RedirectableDataPointerIF, public PduHeaderIF {
    * @param args
    * @return
    */
-  ReturnValue_t setData(const uint8_t* dataPtr, size_t maxSize);
+  ReturnValue_t setReadOnlyData(const uint8_t* dataPtr, size_t maxSize);
 
  protected:
   struct Pointers {
     PduHeaderFixedStruct* fixedHeader = nullptr;
+    const uint8_t* dataFieldStart = nullptr;
     const uint8_t* rawPtr = nullptr;
   };
 
@@ -96,8 +98,7 @@ class HeaderReader : public RedirectableDataPointerIF, public PduHeaderIF {
 
  private:
   /**
-   * Can also be used to reset the pointer to a nullptr, but the getter functions will not
-   * perform nullptr checks!
+   * This is a reader class and setting mutable data is forbidden. Use @setReadOnlyData instead.
    * @param dataPtr
    * @param maxSize
    * @param args

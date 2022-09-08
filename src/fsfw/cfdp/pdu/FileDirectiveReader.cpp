@@ -1,12 +1,12 @@
 #include "FileDirectiveReader.h"
 
 FileDirectiveReader::FileDirectiveReader(const uint8_t *pduBuf, size_t maxSize)
-    : HeaderReader(pduBuf, maxSize) {}
+    : PduHeaderReader(pduBuf, maxSize) {}
 
 cfdp::FileDirectives FileDirectiveReader::getFileDirective() const { return fileDirective; }
 
 ReturnValue_t FileDirectiveReader::parseData() {
-  ReturnValue_t result = HeaderReader::parseData();
+  ReturnValue_t result = PduHeaderReader::parseData();
   if (result != returnvalue::OK) {
     return result;
   }
@@ -16,7 +16,7 @@ ReturnValue_t FileDirectiveReader::parseData() {
   if (FileDirectiveReader::getWholePduSize() > maxSize) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
-  size_t currentIdx = HeaderReader::getHeaderSize();
+  size_t currentIdx = PduHeaderReader::getHeaderSize();
   if (not checkFileDirective(pointers.rawPtr[currentIdx])) {
     return cfdp::INVALID_DIRECTIVE_FIELDS;
   }
@@ -26,7 +26,7 @@ ReturnValue_t FileDirectiveReader::parseData() {
 
 size_t FileDirectiveReader::getHeaderSize() const {
   // return size of header plus the directive byte
-  return HeaderReader::getHeaderSize() + 1;
+  return PduHeaderReader::getHeaderSize() + 1;
 }
 
 bool FileDirectiveReader::checkFileDirective(uint8_t rawByte) {
