@@ -64,7 +64,8 @@ TEST_CASE("Serial Buffer Adapter", "[single-file]") {
   SECTION("Test set buffer function") {
     SerialBufferAdapter<uint8_t> tv_serial_buffer_adapter_loc =
         SerialBufferAdapter<uint8_t>((uint8_t*)nullptr, 0, true);
-    tv_serial_buffer_adapter_loc.setBuffer(test_serial_buffer.data(), test_serial_buffer.size());
+    tv_serial_buffer_adapter_loc.setConstBuffer(test_serial_buffer.data(),
+                                                test_serial_buffer.size());
     serialized_size = 0;
     arrayPtr = testArray.data();
     SerializeAdapter::serialize(&test_value_bool, &arrayPtr, &serialized_size, testArray.size(),

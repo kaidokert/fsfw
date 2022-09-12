@@ -21,7 +21,7 @@ SerialBufferAdapter<count_t>::SerialBufferAdapter(uint8_t* buffer, count_t buffe
       bufferLength(bufferLength) {}
 
 template <typename count_t>
-SerialBufferAdapter<count_t>::~SerialBufferAdapter() {}
+SerialBufferAdapter<count_t>::~SerialBufferAdapter() = default;
 
 template <typename count_t>
 ReturnValue_t SerialBufferAdapter<count_t>::serialize(uint8_t** buffer, size_t* size,
@@ -119,10 +119,10 @@ const uint8_t* SerialBufferAdapter<count_t>::getConstBuffer() const {
 }
 
 template <typename count_t>
-void SerialBufferAdapter<count_t>::setBuffer(uint8_t* buffer, count_t bufferLength) {
-  this->buffer = buffer;
-  this->constBuffer = buffer;
-  this->bufferLength = bufferLength;
+void SerialBufferAdapter<count_t>::setConstBuffer(const uint8_t* buf, count_t bufLen) {
+  this->buffer = nullptr;
+  this->bufferLength = bufLen;
+  this->constBuffer = buf;
 }
 
 // forward Template declaration for linker

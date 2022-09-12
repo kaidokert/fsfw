@@ -75,7 +75,7 @@ ReturnValue_t cfdp::Tlv::deSerialize(const uint8_t **buffer, size_t *size,
   }
   zeroLen = false;
   // Zero-copy implementation
-  value.setBuffer(const_cast<uint8_t *>(*buffer + 1), lengthField);
+  value.setConstBuffer(*buffer + 1, lengthField);
   *buffer += 1 + lengthField;
   *size -= 1 + lengthField;
   return returnvalue::OK;
@@ -96,7 +96,7 @@ void cfdp::Tlv::setValue(uint8_t *value, size_t len) {
   if (len > 0) {
     zeroLen = false;
   }
-  this->value.setBuffer(value, len);
+  this->value.setConstBuffer(value, len);
 }
 
 uint8_t cfdp::Tlv::getLengthField() const { return this->value.getSerializedSize() - 1; }
