@@ -22,7 +22,7 @@ copyright = "2021, Institute of Space Systems (IRS)"
 author = "Institute of Space Systems (IRS)"
 
 # The full version, including alpha/beta/rc tags
-release = "2.0.1"
+release = "5.0.0"
 
 
 # -- General configuration ---------------------------------------------------
