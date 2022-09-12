@@ -80,7 +80,7 @@ set(FSFW_CATCH2_LIB_MAJOR_VERSION
     3
     CACHE STRING "Catch2 library major version requirement")
 set(FSFW_CATCH2_LIB_VERSION
-    v${FSFW_CATCH2_LIB_MAJOR_VERSION}.0.0-preview5
+    v${FSFW_CATCH2_LIB_MAJOR_VERSION}.1.0
     CACHE STRING "Catch2 library exact version requirement")
 
 # Keep this off by default for now. See PR:
