@@ -8,7 +8,7 @@
 #include "../serialize/SerialLinkedListAdapter.h"
 #include "../serialize/SerializeElement.h"
 #include "../serviceinterface/ServiceInterface.h"
-#include "../timemanager/TimeStamperIF.h"
+#include "../timemanager/TimeWriterIF.h"
 #include "HasMonitorsIF.h"
 #include "MonitoringIF.h"
 #include "monitoringConf.h"
@@ -34,9 +34,9 @@ class MonitoringReportContent : public SerialLinkedListAdapter<SerializeIF> {
   SerializeElement<T> limitValue;
   SerializeElement<ReturnValue_t> oldState;
   SerializeElement<ReturnValue_t> newState;
-  uint8_t rawTimestamp[TimeStamperIF::MISSION_TIMESTAMP_SIZE] = {};
+  uint8_t rawTimestamp[TimeWriterIF::MAXIMUM_TIMESTAMP_LEN] = {};
   SerializeElement<SerialBufferAdapter<uint8_t>> timestampSerializer;
-  TimeStamperIF* timeStamper;
+  TimeWriterIF* timeStamper;
   MonitoringReportContent()
       : SerialLinkedListAdapter<SerializeIF>(&parameterObjectId),
         monitorId(0),
@@ -47,7 +47,7 @@ class MonitoringReportContent : public SerialLinkedListAdapter<SerializeIF> {
         oldState(0),
         newState(0),
         timestampSerializer(rawTimestamp, sizeof(rawTimestamp)),
-        timeStamper(NULL) {
+        timeStamper(nullptr) {
     setAllNext();
   }
   MonitoringReportContent(gp_id_t globalPoolId, T value, T limitValue, ReturnValue_t oldState,
@@ -61,7 +61,7 @@ class MonitoringReportContent : public SerialLinkedListAdapter<SerializeIF> {
         oldState(oldState),
         newState(newState),
         timestampSerializer(rawTimestamp, sizeof(rawTimestamp)),
-        timeStamper(NULL) {
+        timeStamper(nullptr) {
     setAllNext();
     if (checkAndSetStamper()) {
       timeStamper->addTimeStamp(rawTimestamp, sizeof(rawTimestamp));
@@ -79,7 +79,7 @@ class MonitoringReportContent : public SerialLinkedListAdapter<SerializeIF> {
   }
   bool checkAndSetStamper() {
     if (timeStamper == nullptr) {
-      timeStamper = ObjectManager::instance()->get<TimeStamperIF>(timeStamperId);
+      timeStamper = ObjectManager::instance()->get<TimeWriterIF>(timeStamperId);
       if (timeStamper == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
         sif::error << "MonitoringReportContent::checkAndSetStamper: "

@@ -4,113 +4,201 @@
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/tcdistribution/PUSDistributorIF.h"
+#include "fsfw/timemanager/CdsShortTimeStamper.h"
 #include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
+#include "fsfw/tmtcservices/tcHelpers.h"
 
-object_id_t PusServiceBase::packetSource = 0;
-object_id_t PusServiceBase::packetDestination = 0;
+object_id_t PusServiceBase::PACKET_DESTINATION = 0;
+object_id_t PusServiceBase::PUS_DISTRIBUTOR = 0;
 
-PusServiceBase::PusServiceBase(object_id_t setObjectId, uint16_t setApid, uint8_t setServiceId)
-    : SystemObject(setObjectId), apid(setApid), serviceId(setServiceId) {
-  requestQueue = QueueFactory::instance()->createMessageQueue(PUS_SERVICE_MAX_RECEPTION);
+PusServiceBase::PusServiceBase(PsbParams params)
+    : SystemObject(params.objectId), psbParams(params) {}
+
+PusServiceBase::~PusServiceBase() {
+  if (ownedQueue) {
+    QueueFactory::instance()->deleteMessageQueue(psbParams.reqQueue);
+  }
 }
-
-PusServiceBase::~PusServiceBase() { QueueFactory::instance()->deleteMessageQueue(requestQueue); }
 
 ReturnValue_t PusServiceBase::performOperation(uint8_t opCode) {
   handleRequestQueue();
-  ReturnValue_t result = this->performService();
+  ReturnValue_t result = performService();
   if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PusService " << (uint16_t)this->serviceId << ": performService returned with "
-               << (int16_t)result << std::endl;
+    sif::error << "PusService " << psbParams.serviceId << ": performService returned with "
+               << static_cast<uint16_t>(result) << std::endl;
 #endif
     return returnvalue::FAILED;
   }
   return returnvalue::OK;
 }
 
-void PusServiceBase::setTaskIF(PeriodicTaskIF* taskHandle) { this->taskHandle = taskHandle; }
+void PusServiceBase::setTaskIF(PeriodicTaskIF* taskHandle_) { this->taskHandle = taskHandle_; }
 
 void PusServiceBase::handleRequestQueue() {
   TmTcMessage message;
-  ReturnValue_t result = returnvalue::FAILED;
+  ReturnValue_t result;
   for (uint8_t count = 0; count < PUS_SERVICE_MAX_RECEPTION; count++) {
-    ReturnValue_t status = this->requestQueue->receiveMessage(&message);
-    //		if(status != MessageQueueIF::EMPTY) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    //			sif::debug << "PusServiceBase::performOperation: Receiving from "
-    //					<< "MQ ID: " << std::hex << "0x" << std::setw(8)
-    //					<< std::setfill('0') << this->requestQueue->getId()
-    //					<< std::dec << " returned: " << status << std::setfill(' ')
-    //					<<  std::endl;
-#endif
-    //		}
-
-    if (status == returnvalue::OK) {
-      this->currentPacket.setStoreAddress(message.getStorageId(), &currentPacket);
-      // info << "Service " << (uint16_t) this->serviceId <<
-      //      ": new packet!" << std::endl;
-
-      result = this->handleRequest(currentPacket.getSubService());
-
-      // debug << "Service " << (uint16_t)this->serviceId <<
-      //    ": handleRequest returned: " << (int)return_code << std::endl;
-      if (result == returnvalue::OK) {
-        this->verifyReporter.sendSuccessReport(tc_verification::COMPLETION_SUCCESS,
-                                               &this->currentPacket);
-      } else {
-        this->verifyReporter.sendFailureReport(tc_verification::COMPLETION_FAILURE,
-                                               &this->currentPacket, result, 0, errorParameter1,
-                                               errorParameter2);
-      }
-      this->currentPacket.deletePacket();
-      errorParameter1 = 0;
-      errorParameter2 = 0;
-    } else if (status == MessageQueueIF::EMPTY) {
-      status = returnvalue::OK;
-      // debug << "PusService " << (uint16_t)this->serviceId <<
-      //      ": no new packet." << std::endl;
+    ReturnValue_t status = psbParams.reqQueue->receiveMessage(&message);
+    if (status == MessageQueueIF::EMPTY) {
       break;
-    } else {
+    } else if (status != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-      sif::error << "PusServiceBase::performOperation: Service " << this->serviceId
+      sif::error << "PusServiceBase::performOperation: Service " << psbParams.serviceId
                  << ": Error receiving packet. Code: " << std::hex << status << std::dec
                  << std::endl;
+#else
+      sif::printError(
+          "PusServiceBase::performOperation: Service %d. Error receiving packet. Code: %04x\n",
+          psbParams.serviceId, status);
 #endif
+      break;
     }
+    result = tc::prepareTcReader(*psbParams.tcPool, message.getStorageId(), currentPacket);
+    if (result != returnvalue::OK) {
+      // We were not even able to retrieve the TC, so we can not retrieve any TC properties either
+      // without segfaulting
+      auto verifParams = VerifFailureParams(tcverif::START_FAILURE, 0, 0, result);
+      verifParams.errorParam1 = errorParameter1;
+      verifParams.errorParam2 = errorParameter2;
+      psbParams.verifReporter->sendFailureReport(verifParams);
+      continue;
+    }
+    result = handleRequest(currentPacket.getSubService());
+    if (result == returnvalue::OK) {
+      psbParams.verifReporter->sendSuccessReport(
+          VerifSuccessParams(tcverif::COMPLETION_SUCCESS, currentPacket));
+    } else {
+      auto failParams = VerifFailureParams(tcverif::COMPLETION_FAILURE, currentPacket, result);
+      failParams.errorParam1 = errorParameter1;
+      failParams.errorParam2 = errorParameter2;
+      psbParams.verifReporter->sendFailureReport(failParams);
+    }
+    psbParams.tcPool->deleteData(message.getStorageId());
+    errorParameter1 = 0;
+    errorParameter2 = 0;
   }
 }
 
-uint16_t PusServiceBase::getIdentifier() { return this->serviceId; }
+uint16_t PusServiceBase::getIdentifier() { return psbParams.serviceId; }
 
-MessageQueueId_t PusServiceBase::getRequestQueue() { return this->requestQueue->getId(); }
+MessageQueueId_t PusServiceBase::getRequestQueue() {
+  if (psbParams.reqQueue == nullptr) {
+    return MessageQueueIF::NO_QUEUE;
+  }
+  return psbParams.reqQueue->getId();
+}
 
 ReturnValue_t PusServiceBase::initialize() {
   ReturnValue_t result = SystemObject::initialize();
   if (result != returnvalue::OK) {
     return result;
   }
-  AcceptsTelemetryIF* destService =
-      ObjectManager::instance()->get<AcceptsTelemetryIF>(packetDestination);
-  PUSDistributorIF* distributor = ObjectManager::instance()->get<PUSDistributorIF>(packetSource);
-  if (destService == nullptr or distributor == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "PusServiceBase::PusServiceBase: Service " << this->serviceId
-               << ": Configuration error. Make sure "
-               << "packetSource and packetDestination are defined correctly" << std::endl;
-#endif
-    return ObjectManagerIF::CHILD_INIT_FAILED;
+  if (psbParams.reqQueue == nullptr) {
+    ownedQueue = true;
+    psbParams.reqQueue = QueueFactory::instance()->createMessageQueue(PSB_DEFAULT_QUEUE_DEPTH);
+  } else {
+    ownedQueue = false;
   }
-  this->requestQueue->setDefaultDestination(destService->getReportReceptionQueue());
-  distributor->registerService(this);
+
+  if (psbParams.tmReceiver == nullptr) {
+    psbParams.tmReceiver = ObjectManager::instance()->get<AcceptsTelemetryIF>(PACKET_DESTINATION);
+    if (psbParams.tmReceiver != nullptr) {
+      psbParams.reqQueue->setDefaultDestination(psbParams.tmReceiver->getReportReceptionQueue());
+    }
+  }
+
+  if (psbParams.pusDistributor == nullptr) {
+    psbParams.pusDistributor = ObjectManager::instance()->get<PUSDistributorIF>(PUS_DISTRIBUTOR);
+    if (psbParams.pusDistributor != nullptr) {
+      registerService(*psbParams.pusDistributor);
+    }
+  }
+
+  if (psbParams.tcPool == nullptr) {
+    psbParams.tcPool = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
+    if (psbParams.tcPool == nullptr) {
+      return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
+  }
+
+  if (psbParams.verifReporter == nullptr) {
+    psbParams.verifReporter =
+        ObjectManager::instance()->get<VerificationReporterIF>(objects::VERIFICATION_REPORTER);
+    if (psbParams.verifReporter == nullptr) {
+      return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
+  }
   return returnvalue::OK;
 }
 
-ReturnValue_t PusServiceBase::initializeAfterTaskCreation() {
-  // If task parameters, for example task frequency are required, this
-  // function should be overriden and the system object task IF can
-  // be used to get those parameters.
+void PusServiceBase::setTcPool(StorageManagerIF& tcPool) { psbParams.tcPool = &tcPool; }
+
+void PusServiceBase::setErrorReporter(InternalErrorReporterIF& errReporter_) {
+  psbParams.errReporter = &errReporter_;
+}
+
+ReturnValue_t PusServiceBase::initializeTmHelpers(TmSendHelper& tmSendHelper,
+                                                  TmStoreHelper& tmStoreHelper) {
+  ReturnValue_t result = initializeTmSendHelper(tmSendHelper);
+  if (result != returnvalue::OK) {
+    return result;
+  }
+  return initializeTmStoreHelper(tmStoreHelper);
+}
+
+ReturnValue_t PusServiceBase::initializeTmSendHelper(TmSendHelper& tmSendHelper) {
+  if (psbParams.reqQueue != nullptr) {
+    tmSendHelper.setMsgQueue(*psbParams.reqQueue);
+    tmSendHelper.setDefaultDestination(psbParams.reqQueue->getDefaultDestination());
+  }
+
+  if (psbParams.errReporter == nullptr) {
+    psbParams.errReporter =
+        ObjectManager::instance()->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
+    if (psbParams.errReporter != nullptr) {
+      tmSendHelper.setInternalErrorReporter(*psbParams.errReporter);
+    }
+  } else {
+    tmSendHelper.setInternalErrorReporter(*psbParams.errReporter);
+  }
   return returnvalue::OK;
 }
+
+ReturnValue_t PusServiceBase::initializeTmStoreHelper(TmStoreHelper& tmStoreHelper) const {
+  tmStoreHelper.setApid(psbParams.apid);
+  if (tmStoreHelper.getTmStore() == nullptr) {
+    auto* tmStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TM_STORE);
+    if (tmStore == nullptr) {
+      return ObjectManagerIF::CHILD_INIT_FAILED;
+    }
+    tmStoreHelper.setTmStore(*tmStore);
+  }
+
+  if (psbParams.timeStamper == nullptr) {
+    auto timerStamper = ObjectManager::instance()->get<TimeWriterIF>(objects::TIME_STAMPER);
+    if (timerStamper != nullptr) {
+      tmStoreHelper.setTimeStamper(*timerStamper);
+    }
+  }
+  // Generally, all TM packets will pass through a layer where the sequence count is set.
+  // This avoids duplicate calculation of the CRC16
+  tmStoreHelper.disableCrcCalculation();
+  return returnvalue::OK;
+}
+
+void PusServiceBase::setVerificationReporter(VerificationReporterIF& reporter) {
+  psbParams.verifReporter = &reporter;
+}
+
+ReturnValue_t PusServiceBase::registerService(PUSDistributorIF& distributor) {
+  return distributor.registerService(this);
+}
+
+void PusServiceBase::setTmReceiver(AcceptsTelemetryIF& tmReceiver_) {
+  psbParams.tmReceiver = &tmReceiver_;
+}
+
+void PusServiceBase::setRequestQueue(MessageQueueIF& reqQueue) { psbParams.reqQueue = &reqQueue; }

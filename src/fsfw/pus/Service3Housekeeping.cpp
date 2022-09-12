@@ -284,14 +284,13 @@ ReturnValue_t Service3Housekeeping::generateHkReply(const CommandMessage* hkMess
   store_address_t storeId;
 
   sid_t sid = HousekeepingMessage::getHkDataReply(hkMessage, &storeId);
-  auto resultPair = IPCStore->getData(storeId);
+  auto resultPair = ipcStore->getData(storeId);
   if (resultPair.first != returnvalue::OK) {
     return resultPair.first;
   }
 
   HkPacket hkPacket(sid, resultPair.second.data(), resultPair.second.size());
-  return sendTmPacket(static_cast<uint8_t>(subserviceId), hkPacket.hkData, hkPacket.hkSize, nullptr,
-                      0);
+  return sendTmPacket(static_cast<uint8_t>(subserviceId), hkPacket.hkData, hkPacket.hkSize);
 }
 
 sid_t Service3Housekeeping::buildSid(object_id_t objectId, const uint8_t** tcData,

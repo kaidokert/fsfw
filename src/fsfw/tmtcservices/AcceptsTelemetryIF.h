@@ -1,7 +1,7 @@
 #ifndef FSFW_TMTCSERVICES_ACCEPTSTELEMETRYIF_H_
 #define FSFW_TMTCSERVICES_ACCEPTSTELEMETRYIF_H_
 
-#include "../ipc/MessageQueueSenderIF.h"
+#include "fsfw/ipc/MessageQueueSenderIF.h"
 /**
  * @brief 	This interface is implemented by classes that are sinks for
  * 			Telemetry.
@@ -13,13 +13,15 @@ class AcceptsTelemetryIF {
   /**
    * @brief The virtual destructor as it is mandatory for C++ interfaces.
    */
-  virtual ~AcceptsTelemetryIF() {}
+  virtual ~AcceptsTelemetryIF() = default;
   /**
    * @brief	This method returns the message queue id of the telemetry
    * 			receiving message queue.
    * @return	The telemetry reception message queue id.
    */
-  virtual MessageQueueId_t getReportReceptionQueue(uint8_t virtualChannel = 0) = 0;
+  virtual MessageQueueId_t getReportReceptionQueue(uint8_t virtualChannel) = 0;
+
+  virtual MessageQueueId_t getReportReceptionQueue() { return getReportReceptionQueue(0); }
 };
 
 #endif /* FSFW_TMTCSERVICES_ACCEPTSTELEMETRYIF_H_ */

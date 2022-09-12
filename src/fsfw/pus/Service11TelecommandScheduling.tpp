@@ -11,9 +11,9 @@ static constexpr auto DEF_END = SerializeIF::Endianness::BIG;
 
 template <size_t MAX_NUM_TCS>
 inline Service11TelecommandScheduling<MAX_NUM_TCS>::Service11TelecommandScheduling(
-    object_id_t objectId, uint16_t apid, uint8_t serviceId, AcceptsTelecommandsIF *tcRecipient,
-    uint16_t releaseTimeMarginSeconds, bool debugMode)
-    : PusServiceBase(objectId, apid, serviceId),
+    PsbParams params, AcceptsTelecommandsIF *tcRecipient, uint16_t releaseTimeMarginSeconds,
+    bool debugMode)
+    : PusServiceBase(params),
       RELEASE_TIME_MARGIN_SECONDS(releaseTimeMarginSeconds),
       debugMode(debugMode),
       tcRecipient(tcRecipient) {}
@@ -32,11 +32,8 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::handleRequest(
 #endif
   }
   // Get de-serialized Timestamp
-  const uint8_t *data = currentPacket.getApplicationData();
-  size_t size = currentPacket.getApplicationDataSize();
-  if (data == nullptr) {
-    return handleInvalidData("handleRequest");
-  }
+  const uint8_t *data = currentPacket.getUserData();
+  size_t size = currentPacket.getUserDataLen();
   switch (subservice) {
     case Subservice::ENABLE_SCHEDULING: {
       schedulingEnabled = true;
@@ -82,7 +79,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::performService
       if (schedulingEnabled) {
         // release tc
         TmTcMessage releaseMsg(it->second.storeAddr);
-        auto sendRet = this->requestQueue->sendMessage(recipientMsgQueueId, &releaseMsg, false);
+        auto sendRet = psbParams.reqQueue->sendMessage(recipientMsgQueueId, &releaseMsg, false);
 
         if (sendRet != returnvalue::OK) {
           return sendRet;
@@ -175,7 +172,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivi
   // store currentPacket and receive the store address
   store_address_t addr{};
   if (tcStore->addData(&addr, data, size) != returnvalue::OK ||
-      addr.raw == storeId::INVALID_STORE_ADDRESS) {
+      addr.raw == store_address_t::INVALID_RAW) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service11TelecommandScheduling::doInsertActivity: Adding data to TC Store failed"
                << std::endl;
@@ -190,8 +187,7 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doInsertActivi
   TelecommandStruct tc;
   tc.seconds = timestamp;
   tc.storeAddr = addr;
-  tc.requestId =
-      getRequestIdFromDataTC(data);  // TODO: Missing sanity check of the returned request id
+  tc.requestId = getRequestIdFromTc();  // TODO: Missing sanity check of the returned request id
 
   auto it = telecommandMap.insert(std::pair<uint32_t, TelecommandStruct>(timestamp, tc));
   if (it == telecommandMap.end()) {
@@ -455,13 +451,10 @@ inline ReturnValue_t Service11TelecommandScheduling<MAX_NUM_TCS>::doFilterTimesh
 }
 
 template <size_t MAX_NUM_TCS>
-inline uint64_t Service11TelecommandScheduling<MAX_NUM_TCS>::getRequestIdFromDataTC(
-    const uint8_t *data) const {
-  TcPacketPus mask(data);
-
-  uint32_t sourceId = mask.getSourceId();
-  uint16_t apid = mask.getAPID();
-  uint16_t sequenceCount = mask.getPacketSequenceCount();
+inline uint64_t Service11TelecommandScheduling<MAX_NUM_TCS>::getRequestIdFromTc() const {
+  uint32_t sourceId = currentPacket.getSourceId();
+  uint16_t apid = currentPacket.getApid();
+  uint16_t sequenceCount = currentPacket.getSequenceCount();
 
   return buildRequestId(sourceId, apid, sequenceCount);
 }

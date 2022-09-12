@@ -2,7 +2,11 @@
 #define FSFW_TMTCSERVICES_VERIFICATIONREPORTER_H_
 
 #include "PusVerificationReport.h"
+#include "VerificationReporterIF.h"
 #include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/objectmanager/SystemObject.h"
+#include "fsfw/tmtcpacket/pus/tc/PusTcCreator.h"
+#include "fsfw/tmtcservices/AcceptsVerifyMessageIF.h"
 
 namespace Factory {
 void setStaticFrameworkObjectIds();
@@ -19,30 +23,25 @@ void setStaticFrameworkObjectIds();
  * to the PUS standard.
  *
  */
-class VerificationReporter {
-  friend void(Factory::setStaticFrameworkObjectIds)();
+class VerificationReporter : public SystemObject, public VerificationReporterIF {
+  friend void Factory::setStaticFrameworkObjectIds();
 
  public:
-  VerificationReporter();
-  virtual ~VerificationReporter();
+  explicit VerificationReporter(object_id_t objectId = DEFAULT_REPORTER,
+                                AcceptsVerifyMessageIF* receiver = nullptr);
+  ~VerificationReporter() override;
 
-  void sendSuccessReport(uint8_t set_report_id, TcPacketPusBase* current_packet,
-                         uint8_t set_step = 0);
-  void sendSuccessReport(uint8_t set_report_id, uint8_t ackFlags, uint16_t tcPacketId,
-                         uint16_t tcSequenceControl, uint8_t set_step = 0);
+  void setReceiver(AcceptsVerifyMessageIF& receiver);
 
-  void sendFailureReport(uint8_t report_id, TcPacketPusBase* current_packet,
-                         ReturnValue_t error_code = 0, uint8_t step = 0, uint32_t parameter1 = 0,
-                         uint32_t parameter2 = 0);
-  void sendFailureReport(uint8_t report_id, uint8_t ackFlags, uint16_t tcPacketId,
-                         uint16_t tcSequenceControl, ReturnValue_t error_code = 0, uint8_t step = 0,
-                         uint32_t parameter1 = 0, uint32_t parameter2 = 0);
+  ReturnValue_t sendSuccessReport(VerifSuccessParams params) override;
+  ReturnValue_t sendFailureReport(VerifFailureParams params) override;
 
-  void initialize();
+  static object_id_t DEFAULT_REPORTER;
+  static object_id_t DEFAULT_RECEIVER;
+  ReturnValue_t initialize() override;
 
  private:
-  static object_id_t messageReceiver;
-  MessageQueueId_t acknowledgeQueue;
+  MessageQueueId_t acknowledgeQueue = MessageQueueIF::NO_QUEUE;
 };
 
 #endif /* FSFW_TMTCSERVICES_VERIFICATIONREPORTER_H_ */

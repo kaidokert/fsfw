@@ -68,7 +68,7 @@ class MessageQueue : public MessageQueueBase {
    * @details	This is accomplished by using the delete call provided
    * 			by the operating system.
    */
-  virtual ~MessageQueue();
+  ~MessageQueue() override;
 
   // Implement non-generic MessageQueueIF functions not handled by MessageQueueBase
   virtual ReturnValue_t sendMessageFrom(MessageQueueId_t sendTo, MessageQueueMessageIF* message,
@@ -111,8 +111,6 @@ class MessageQueue : public MessageQueueBase {
   size_t messageDepth = 0;
 
   MutexIF* queueLock;
-
-  MessageQueueId_t defaultDestination = MessageQueueIF::NO_QUEUE;
 };
 
 #endif /* FRAMEWORK_OSAL_HOST_MESSAGEQUEUE_H_ */

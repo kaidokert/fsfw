@@ -1,6 +1,5 @@
 #include "fsfw/datapoollocal/LocalDataPoolManager.h"
 
-#include <array>
 #include <cmath>
 
 #include "fsfw/datapoollocal.h"
@@ -57,7 +56,7 @@ ReturnValue_t LocalDataPoolManager::initialize(MessageQueueIF* queueToUse) {
   }
 
   if (defaultHkDestination != objects::NO_OBJECT) {
-    AcceptsHkPacketsIF* hkPacketReceiver =
+    auto* hkPacketReceiver =
         ObjectManager::instance()->get<AcceptsHkPacketsIF>(defaultHkDestination);
     if (hkPacketReceiver != nullptr) {
       hkDestinationId = hkPacketReceiver->getHkQueue();
@@ -209,9 +208,9 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
     }
 
     /* Prepare and send update snapshot */
-    timeval now;
+    timeval now{};
     Clock::getClock_timeval(&now);
-    CCSDSTime::CDS_short cds;
+    CCSDSTime::CDS_short cds{};
     CCSDSTime::convertToCcsds(&cds, &now);
     HousekeepingSnapshot updatePacket(
         reinterpret_cast<uint8_t*>(&cds), sizeof(cds),
@@ -245,9 +244,9 @@ ReturnValue_t LocalDataPoolManager::handleNotificationSnapshot(HkReceiver& recei
     }
 
     /* Prepare and send update snapshot */
-    timeval now;
+    timeval now{};
     Clock::getClock_timeval(&now);
-    CCSDSTime::CDS_short cds;
+    CCSDSTime::CDS_short cds{};
     CCSDSTime::convertToCcsds(&cds, &now);
     HousekeepingSnapshot updatePacket(
         reinterpret_cast<uint8_t*>(&cds), sizeof(cds),
@@ -291,12 +290,7 @@ ReturnValue_t LocalDataPoolManager::addUpdateToStore(HousekeepingSnapshot& updat
 
 void LocalDataPoolManager::handleChangeResetLogic(DataType type, DataId dataId,
                                                   MarkChangedIF* toReset) {
-  if (hkUpdateResetList == nullptr) {
-    /* Config error */
-    return;
-  }
-  HkUpdateResetList& listRef = *hkUpdateResetList;
-  for (auto& changeInfo : listRef) {
+  for (auto& changeInfo : hkUpdateResetList) {
     if (changeInfo.dataType != type) {
       continue;
     }
@@ -326,11 +320,7 @@ void LocalDataPoolManager::handleChangeResetLogic(DataType type, DataId dataId,
 }
 
 void LocalDataPoolManager::resetHkUpdateResetHelper() {
-  if (hkUpdateResetList == nullptr) {
-    return;
-  }
-
-  for (auto& changeInfo : *hkUpdateResetList) {
+  for (auto& changeInfo : hkUpdateResetList) {
     changeInfo.currentUpdateCounter = changeInfo.updateCounter;
   }
 }
@@ -339,19 +329,18 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid, bool e
                                                                float collectionInterval,
                                                                bool isDiagnostics,
                                                                object_id_t packetDestination) {
-  AcceptsHkPacketsIF* hkReceiverObject =
-      ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
-  if (hkReceiverObject == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "subscribeForPeriodicPacket",
-                        QUEUE_OR_DESTINATION_INVALID);
-    return QUEUE_OR_DESTINATION_INVALID;
-  }
-
   struct HkReceiver hkReceiver;
   hkReceiver.dataId.sid = sid;
   hkReceiver.reportingType = ReportingType::PERIODIC;
   hkReceiver.dataType = DataType::DATA_SET;
-  hkReceiver.destinationQueue = hkReceiverObject->getHkQueue();
+  if (packetDestination != objects::NO_OBJECT) {
+    auto* receivedHkIF = ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
+    if (receivedHkIF->getHkQueue() == MessageQueueIF::NO_QUEUE) {
+      hkReceiver.destinationQueue = hkDestinationId;
+    } else {
+      hkReceiver.destinationQueue = receivedHkIF->getHkQueue();
+    }
+  }
 
   LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
   if (dataSet != nullptr) {
@@ -365,22 +354,21 @@ ReturnValue_t LocalDataPoolManager::subscribeForPeriodicPacket(sid_t sid, bool e
   return returnvalue::OK;
 }
 
-ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(sid_t sid, bool isDiagnostics,
-                                                             bool reportingEnabled,
+ReturnValue_t LocalDataPoolManager::subscribeForUpdatePacket(sid_t sid, bool reportingEnabled,
+                                                             bool isDiagnostics,
                                                              object_id_t packetDestination) {
-  AcceptsHkPacketsIF* hkReceiverObject =
-      ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
-  if (hkReceiverObject == nullptr) {
-    printWarningOrError(sif::OutputTypes::OUT_WARNING, "subscribeForPeriodicPacket",
-                        QUEUE_OR_DESTINATION_INVALID);
-    return QUEUE_OR_DESTINATION_INVALID;
-  }
-
   struct HkReceiver hkReceiver;
   hkReceiver.dataId.sid = sid;
   hkReceiver.reportingType = ReportingType::UPDATE_HK;
   hkReceiver.dataType = DataType::DATA_SET;
-  hkReceiver.destinationQueue = hkReceiverObject->getHkQueue();
+  if (packetDestination != objects::NO_OBJECT) {
+    auto* receivedHkIF = ObjectManager::instance()->get<AcceptsHkPacketsIF>(packetDestination);
+    if (receivedHkIF->getHkQueue() == MessageQueueIF::NO_QUEUE) {
+      hkReceiver.destinationQueue = hkDestinationId;
+    } else {
+      hkReceiver.destinationQueue = receivedHkIF->getHkQueue();
+    }
+  }
 
   LocalPoolDataSetBase* dataSet = HasLocalDpIFManagerAttorney::getDataSetHandle(owner, sid);
   if (dataSet != nullptr) {
@@ -436,11 +424,7 @@ ReturnValue_t LocalDataPoolManager::subscribeForVariableUpdateMessage(
 }
 
 void LocalDataPoolManager::handleHkUpdateResetListInsertion(DataType dataType, DataId dataId) {
-  if (hkUpdateResetList == nullptr) {
-    hkUpdateResetList = new std::vector<struct HkUpdateResetHelper>();
-  }
-
-  for (auto& updateResetStruct : *hkUpdateResetList) {
+  for (auto& updateResetStruct : hkUpdateResetList) {
     if (dataType == DataType::DATA_SET) {
       if (updateResetStruct.dataId.sid == dataId.sid) {
         updateResetStruct.updateCounter++;
@@ -464,7 +448,7 @@ void LocalDataPoolManager::handleHkUpdateResetListInsertion(DataType dataType, D
   } else {
     hkUpdateResetHelper.dataId.localPoolId = dataId.localPoolId;
   }
-  hkUpdateResetList->push_back(hkUpdateResetHelper);
+  hkUpdateResetList.push_back(hkUpdateResetHelper);
 }
 
 ReturnValue_t LocalDataPoolManager::handleHousekeepingMessage(CommandMessage* message) {
@@ -639,6 +623,7 @@ ReturnValue_t LocalDataPoolManager::generateHousekeepingPacket(sid_t sid,
       /* Error, all destinations invalid */
       printWarningOrError(sif::OutputTypes::OUT_WARNING, "generateHousekeepingPacket",
                           QUEUE_OR_DESTINATION_INVALID);
+      return QUEUE_OR_DESTINATION_INVALID;
     }
     destination = hkDestinationId;
   }
@@ -815,9 +800,7 @@ void LocalDataPoolManager::clearReceiversList() {
   /* Clear the vector completely and releases allocated memory. */
   HkReceivers().swap(hkReceivers);
   /* Also clear the reset helper if it exists */
-  if (hkUpdateResetList != nullptr) {
-    HkUpdateResetList().swap(*hkUpdateResetList);
-  }
+  HkUpdateResetList().swap(hkUpdateResetList);
 }
 
 MutexIF* LocalDataPoolManager::getLocalPoolMutex() { return this->mutex; }
@@ -877,3 +860,7 @@ void LocalDataPoolManager::printWarningOrError(sif::OutputTypes outputType,
 }
 
 LocalDataPoolManager* LocalDataPoolManager::getPoolManagerHandle() { return this; }
+
+void LocalDataPoolManager::setHkDestinationId(MessageQueueId_t hkDestId) {
+  hkDestinationId = hkDestId;
+}

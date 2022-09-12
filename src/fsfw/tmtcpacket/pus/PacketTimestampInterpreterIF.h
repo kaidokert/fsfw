@@ -3,13 +3,13 @@
 
 #include "fsfw/returnvalues/returnvalue.h"
 
-class TmPacketMinimal;
+class PusTmMinimal;
 
 class PacketTimestampInterpreterIF {
  public:
   virtual ~PacketTimestampInterpreterIF() {}
-  virtual ReturnValue_t getPacketTime(TmPacketMinimal* packet, timeval* timestamp) const = 0;
-  virtual ReturnValue_t getPacketTimeRaw(TmPacketMinimal* packet, const uint8_t** timePtr,
+  virtual ReturnValue_t getPacketTime(PusTmMinimal* packet, timeval* timestamp) const = 0;
+  virtual ReturnValue_t getPacketTimeRaw(PusTmMinimal* packet, const uint8_t** timePtr,
                                          uint32_t* size) const = 0;
 };
 

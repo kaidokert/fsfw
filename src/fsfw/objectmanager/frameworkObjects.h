@@ -33,6 +33,7 @@ enum framework_objects : object_id_t {
   TC_STORE = 0x534f0100,
   TM_STORE = 0x534f0200,
   TIME_STAMPER = 0x53500010,
+  VERIFICATION_REPORTER = 0x53500020,
 
   FSFW_OBJECTS_END = 0x53ffffff,
   NO_OBJECT = 0xFFFFFFFF

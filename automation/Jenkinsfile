@@ -1,6 +1,6 @@
 pipeline {
     environment {
-        BUILDDIR = 'build-tests'
+        BUILDDIR = 'cmake-build-tests'
     }
     agent {
         docker { image 'fsfw-ci:d3'}

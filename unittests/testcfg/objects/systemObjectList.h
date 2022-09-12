@@ -31,4 +31,4 @@ enum sourceObjects : uint32_t {
 };
 }
 
-#endif /* BSP_CONFIG_OBJECTS_SYSTEMOBJECTLIST_H_ */
+#endif /* HOSTED_CONFIG_OBJECTS_SYSTEMOBJECTLIST_H_ */

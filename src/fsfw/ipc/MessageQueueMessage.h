@@ -26,6 +26,30 @@
 class MessageQueueMessage : public MessageQueueMessageIF {
  public:
   /**
+   * @brief	This constant defines the maximum size of the data content,
+   * 			excluding the header.
+   * @details
+   * It may be changed if necessary, but in general should be kept
+   * as small as possible.
+   */
+  static const size_t MAX_DATA_SIZE = 24;
+  /**
+   * @brief	This constant defines the maximum total size in bytes
+   * 			of a sent message.
+   * @details
+   * It is the sum of the maximum data and the header size. Be aware that
+   * this constant is used to define the buffer sizes for every message
+   * queue in the system. So, a change here may have significant impact on
+   * the required resources.
+   */
+  static constexpr size_t MAX_MESSAGE_SIZE = MAX_DATA_SIZE + HEADER_SIZE;
+  /**
+   * @brief Defines the minimum size of a message where only the
+   * 		  header is included
+   */
+  static constexpr size_t MIN_MESSAGE_SIZE = HEADER_SIZE;
+
+  /**
    * @brief	The class is initialized empty with this constructor.
    * @details
    * The messageSize attribute is set to the header's size and the whole
@@ -50,59 +74,12 @@ class MessageQueueMessage : public MessageQueueMessageIF {
    * @brief	As no memory is allocated in this class,
    * 		    the destructor is empty.
    */
-  virtual ~MessageQueueMessage();
+  ~MessageQueueMessage() override;
 
-  /**
-   * @brief	The size information of each message is stored in
-   *  			this attribute.
-   * @details
-   * It is public to simplify usage and to allow for passing the size
-   * address as a pointer. Care must be taken when inheriting from this class,
-   * as every child class is responsible for managing the size information by
-   * itself. When using the class to receive a message, the size information
-   * is updated automatically.
-   *
-   * Please note that the minimum size is limited by the size of the header
-   * while the maximum size is limited by the maximum allowed message size.
-   */
-  size_t messageSize;
-  /**
-   * @brief	This constant defines the maximum size of the data content,
-   * 			excluding the header.
-   * @details
-   * It may be changed if necessary, but in general should be kept
-   * as small as possible.
-   */
-  static const size_t MAX_DATA_SIZE = 24;
-
-  /**
-   * @brief	This constant defines the maximum total size in bytes
-   * 			of a sent message.
-   * @details
-   * It is the sum of the maximum data and the header size. Be aware that
-   * this constant is used to define the buffer sizes for every message
-   * queue in the system. So, a change here may have significant impact on
-   * the required resources.
-   */
-  static constexpr size_t MAX_MESSAGE_SIZE = MAX_DATA_SIZE + HEADER_SIZE;
-  /**
-   * @brief Defines the minimum size of a message where only the
-   * 		  header is included
-   */
-  static constexpr size_t MIN_MESSAGE_SIZE = HEADER_SIZE;
-
- private:
-  /**
-   * @brief	This is the internal buffer that contains the
-   * 			actual message data.
-   */
-  uint8_t internalBuffer[MAX_MESSAGE_SIZE];
-
- public:
   /**
    * @brief	This method is used to get the complete data of the message.
    */
-  const uint8_t* getBuffer() const override;
+  [[nodiscard]] const uint8_t* getBuffer() const override;
   /**
    * @brief	This method is used to get the complete data of the message.
    */
@@ -112,7 +89,7 @@ class MessageQueueMessage : public MessageQueueMessageIF {
    * @details
    * It shall be used by child classes to add data at the right position.
    */
-  const uint8_t* getData() const override;
+  [[nodiscard]] const uint8_t* getData() const override;
   /**
    * @brief	This method is used to fetch the data content of the message.
    * @details
@@ -123,7 +100,7 @@ class MessageQueueMessage : public MessageQueueMessageIF {
    * @brief	This method is used to extract the sender's message
    * 			queue id information from a received message.
    */
-  MessageQueueId_t getSender() const override;
+  [[nodiscard]] MessageQueueId_t getSender() const override;
   /**
    * @brief	With this method, the whole content
    * 			and the message size is set to zero.
@@ -138,16 +115,40 @@ class MessageQueueMessage : public MessageQueueMessageIF {
    */
   void setSender(MessageQueueId_t setId) override;
 
-  virtual size_t getMessageSize() const override;
-  virtual void setMessageSize(size_t messageSize) override;
-  virtual size_t getMinimumMessageSize() const override;
-  virtual size_t getMaximumMessageSize() const override;
-  virtual size_t getMaximumDataSize() const override;
+  [[nodiscard]] size_t getMessageSize() const override;
+  void setMessageSize(size_t messageSize) override;
+  [[nodiscard]] size_t getMinimumMessageSize() const override;
+  [[nodiscard]] size_t getMaximumMessageSize() const override;
+  [[nodiscard]] size_t getMaximumDataSize() const override;
 
   /**
    * @brief	This is a debug method that prints the content.
    */
   void print(bool printWholeMessage);
+
+  /**
+   * TODO: This really should not be public. If it should be possible to pass size address as a
+   *       pointer, add a getter function returning a const reference to the size
+   * @brief	The size information of each message is stored in
+   *  			this attribute.
+   * @details
+   * It is public to simplify usage and to allow for passing the size
+   * address as a pointer. Care must be taken when inheriting from this class,
+   * as every child class is responsible for managing the size information by
+   * itself. When using the class to receive a message, the size information
+   * is updated automatically.
+   *
+   * Please note that the minimum size is limited by the size of the header
+   * while the maximum size is limited by the maximum allowed message size.
+   */
+  size_t messageSize;
+
+ private:
+  /**
+   * @brief	This is the internal buffer that contains the
+   * 			actual message data.
+   */
+  uint8_t internalBuffer[MAX_MESSAGE_SIZE] = {};
 };
 
 #endif /* FSFW_IPC_MESSAGEQUEUEMESSAGE_H_ */

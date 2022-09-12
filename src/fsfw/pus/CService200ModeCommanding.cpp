@@ -41,7 +41,7 @@ ReturnValue_t CService200ModeCommanding::getMessageQueueAndObject(uint8_t subser
 
 ReturnValue_t CService200ModeCommanding::checkInterfaceAndAcquireMessageQueue(
     MessageQueueId_t *messageQueueToSet, object_id_t *objectId) {
-  HasModesIF *destination = ObjectManager::instance()->get<HasModesIF>(*objectId);
+  auto *destination = ObjectManager::instance()->get<HasModesIF>(*objectId);
   if (destination == nullptr) {
     return CommandingServiceBase::INVALID_OBJECT;
   }
@@ -96,13 +96,13 @@ ReturnValue_t CService200ModeCommanding::handleReply(const CommandMessage *reply
 ReturnValue_t CService200ModeCommanding::prepareModeReply(const CommandMessage *reply,
                                                           object_id_t objectId) {
   ModePacket modeReplyPacket(objectId, ModeMessage::getMode(reply), ModeMessage::getSubmode(reply));
-  return sendTmPacket(Subservice::REPLY_MODE_REPLY, &modeReplyPacket);
+  return sendTmPacket(Subservice::REPLY_MODE_REPLY, modeReplyPacket);
 }
 
 ReturnValue_t CService200ModeCommanding::prepareWrongModeReply(const CommandMessage *reply,
                                                                object_id_t objectId) {
   ModePacket wrongModeReply(objectId, ModeMessage::getMode(reply), ModeMessage::getSubmode(reply));
-  ReturnValue_t result = sendTmPacket(Subservice::REPLY_WRONG_MODE_REPLY, &wrongModeReply);
+  ReturnValue_t result = sendTmPacket(Subservice::REPLY_WRONG_MODE_REPLY, wrongModeReply);
   if (result == returnvalue::OK) {
     // We want to produce an error here in any case because the mode was not correct
     return returnvalue::FAILED;
@@ -113,7 +113,7 @@ ReturnValue_t CService200ModeCommanding::prepareWrongModeReply(const CommandMess
 ReturnValue_t CService200ModeCommanding::prepareCantReachModeReply(const CommandMessage *reply,
                                                                    object_id_t objectId) {
   CantReachModePacket cantReachModePacket(objectId, ModeMessage::getCantReachModeReason(reply));
-  ReturnValue_t result = sendTmPacket(Subservice::REPLY_CANT_REACH_MODE, &cantReachModePacket);
+  ReturnValue_t result = sendTmPacket(Subservice::REPLY_CANT_REACH_MODE, cantReachModePacket);
   if (result == returnvalue::OK) {
     // We want to produce an error here in any case because the mode was not reached
     return returnvalue::FAILED;

@@ -194,8 +194,6 @@ void LocalPool::clearStore() {
     for (auto& size : sizeList) {
       size = STORAGE_FREE;
     }
-    //        std::memset(sizeList[index], 0xff,
-    //                numberOfElements[index] * sizeof(size_type));
   }
 }
 
@@ -338,3 +336,16 @@ void LocalPool::clearSubPool(max_subpools_t subpoolIndex) {
 }
 
 LocalPool::max_subpools_t LocalPool::getNumberOfSubPools() const { return NUMBER_OF_SUBPOOLS; }
+
+bool LocalPool::hasDataAtId(store_address_t storeId) const {
+  if (storeId.poolIndex >= NUMBER_OF_SUBPOOLS) {
+    return false;
+  }
+  if ((storeId.packetIndex >= numberOfElements[storeId.poolIndex])) {
+    return false;
+  }
+  if (sizeLists[storeId.poolIndex][storeId.packetIndex] != STORAGE_FREE) {
+    return true;
+  }
+  return false;
+}

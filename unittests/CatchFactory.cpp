@@ -7,11 +7,9 @@
 #include <fsfw/internalerror/InternalErrorReporter.h>
 #include <fsfw/objectmanager/frameworkObjects.h>
 #include <fsfw/storagemanager/PoolManager.h>
-#include <fsfw/tmtcpacket/pus/tm/TmPacketStored.h>
 #include <fsfw/tmtcservices/CommandingServiceBase.h>
 #include <fsfw/tmtcservices/PusServiceBase.h>
 
-#include "datapoollocal/LocalPoolOwnerBase.h"
 #include "mocks/HkReceiverMock.h"
 #include "tests/TestsConfig.h"
 
@@ -36,14 +34,6 @@ void Factory::produceFrameworkObjects(void* args) {
   new HealthTable(objects::HEALTH_TABLE);
   new InternalErrorReporter(objects::INTERNAL_ERROR_REPORTER);
 
-  new LocalPoolOwnerBase(objects::TEST_LOCAL_POOL_OWNER_BASE);
-  new HkReceiverMock(objects::HK_RECEIVER_MOCK);
-
-  {
-    PoolManager::LocalPoolConfig poolCfg = {{100, 16}, {50, 32}, {25, 64}, {15, 128}, {5, 1024}};
-    new PoolManager(objects::TC_STORE, poolCfg);
-  }
-
   {
     PoolManager::LocalPoolConfig poolCfg = {{100, 16}, {50, 32}, {25, 64}, {15, 128}, {5, 1024}};
     new PoolManager(objects::TM_STORE, poolCfg);
@@ -55,23 +45,20 @@ void Factory::produceFrameworkObjects(void* args) {
   }
 }
 
+// TODO: Our tests, and the code base in general should really not depend on some arbitrary function
+//       like this. Instead, this should be more like a general struct containing all important
+//       object IDs which are then explicitely passed in the object constructor
 void Factory::setStaticFrameworkObjectIds() {
-  PusServiceBase::packetSource = objects::NO_OBJECT;
-  PusServiceBase::packetDestination = objects::NO_OBJECT;
+  PusServiceBase::PACKET_DESTINATION = objects::NO_OBJECT;
 
   CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
   CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT;
 
-  VerificationReporter::messageReceiver = objects::PUS_SERVICE_1_VERIFICATION;
-
   DeviceHandlerBase::powerSwitcherId = objects::NO_OBJECT;
   DeviceHandlerBase::rawDataReceiverId = objects::NO_OBJECT;
 
-  LocalDataPoolManager::defaultHkDestination = objects::HK_RECEIVER_MOCK;
-
+  LocalDataPoolManager::defaultHkDestination = objects::NO_OBJECT;
   DeviceHandlerFailureIsolation::powerConfirmationId = objects::NO_OBJECT;
-
-  TmPacketBase::timeStamperId = objects::NO_OBJECT;
 }
 
 #endif

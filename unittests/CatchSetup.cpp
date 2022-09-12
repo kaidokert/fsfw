@@ -29,3 +29,5 @@ int customSetup() {
   objMan->initialize();
   return 0;
 }
+
+int customTeardown() { return 0; }

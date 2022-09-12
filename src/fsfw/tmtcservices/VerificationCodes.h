@@ -1,9 +1,11 @@
 #ifndef VERIFICATIONCODES_H_
 #define VERIFICATIONCODES_H_
 
-namespace tc_verification {
+#include <cstdint>
 
-enum verification_flags {
+namespace tcverif {
+
+enum VerificationFlags : uint8_t {
   NONE = 0b0000,
   ACCEPTANCE = 0b0001,
   START = 0b0010,
@@ -11,7 +13,7 @@ enum verification_flags {
   COMPLETION = 0b1000
 };
 
-enum subservice_ids {
+enum Subservices : uint8_t {
   NOTHING_TO_REPORT = 0,
   ACCEPTANCE_SUCCESS = 1,
   ACCEPTANCE_FAILURE = 2,
@@ -23,6 +25,6 @@ enum subservice_ids {
   COMPLETION_FAILURE = 8,
 };
 
-}  // namespace tc_verification
+}  // namespace tcverif
 
 #endif /* VERIFICATIONCODES_H_ */

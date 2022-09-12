@@ -78,7 +78,7 @@ ReturnValue_t Service8FunctionManagement::prepareDirectCommand(CommandMessage* m
   // store additional parameters into the IPC Store
   store_address_t parameterAddress;
   ReturnValue_t result =
-      IPCStore->addData(&parameterAddress, command.getParameters(), command.getParametersSize());
+      ipcStore->addData(&parameterAddress, command.getParameters(), command.getParametersSize());
 
   // setCommand expects a Command Message, an Action ID and a store adress
   // pointing to additional parameters
@@ -130,7 +130,7 @@ ReturnValue_t Service8FunctionManagement::handleDataReply(const CommandMessage* 
   store_address_t storeId = ActionMessage::getStoreId(reply);
   size_t size = 0;
   const uint8_t* buffer = nullptr;
-  ReturnValue_t result = IPCStore->getData(storeId, &buffer, &size);
+  ReturnValue_t result = ipcStore->getData(storeId, &buffer, &size);
   if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service 8: Could not retrieve data for data reply" << std::endl;
@@ -138,9 +138,9 @@ ReturnValue_t Service8FunctionManagement::handleDataReply(const CommandMessage* 
     return result;
   }
   DataReply dataReply(objectId, actionId, buffer, size);
-  result = sendTmPacket(static_cast<uint8_t>(Subservice::REPLY_DIRECT_COMMANDING_DATA), &dataReply);
+  result = sendTmPacket(static_cast<uint8_t>(Subservice::REPLY_DIRECT_COMMANDING_DATA), dataReply);
 
-  auto deletionResult = IPCStore->deleteData(storeId);
+  auto deletionResult = ipcStore->deleteData(storeId);
   if (deletionResult != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "Service8FunctionManagement::handleReply: Deletion"

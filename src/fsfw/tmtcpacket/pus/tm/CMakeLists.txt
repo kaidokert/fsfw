@@ -1,9 +1,2 @@
-target_sources(
-  ${LIB_FSFW_NAME}
-  PRIVATE TmPacketStoredPusA.cpp
-          TmPacketStoredPusC.cpp
-          TmPacketPusA.cpp
-          TmPacketPusC.cpp
-          TmPacketStoredBase.cpp
-          TmPacketBase.cpp
-          TmPacketMinimal.cpp)
+target_sources(${LIB_FSFW_NAME} PRIVATE PusTmCreator.cpp PusTmReader.cpp
+                                        PusTmMinimal.cpp PusTmZcWriter.cpp)

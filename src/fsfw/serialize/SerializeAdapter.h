@@ -74,7 +74,7 @@ class SerializeAdapter {
       return returnvalue::FAILED;
     }
     InternalSerializeAdapter<T, std::is_base_of<SerializeIF, T>::value> adapter;
-    uint8_t **tempPtr = const_cast<uint8_t **>(&buffer);
+    auto **tempPtr = const_cast<uint8_t **>(&buffer);
     size_t tmpSize = 0;
     ReturnValue_t result = adapter.serialize(object, tempPtr, &tmpSize, maxSize, streamEndianness);
     if (serSize != nullptr) {
@@ -232,7 +232,7 @@ class SerializeAdapter {
       }
     }
 
-    uint32_t getSerializedSize(const T *object) { return sizeof(T); }
+    uint32_t getSerializedSize(const T *) { return sizeof(T); }
   };
 
   /**

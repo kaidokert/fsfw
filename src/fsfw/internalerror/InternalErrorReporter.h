@@ -72,6 +72,9 @@ class InternalErrorReporter : public SystemObject,
   uint32_t queueHits = 0;
   uint32_t tmHits = 0;
   uint32_t storeHits = 0;
+  PoolEntry<uint32_t> tmHitsEntry = PoolEntry<uint32_t>();
+  PoolEntry<uint32_t> storeHitsEntry = PoolEntry<uint32_t>();
+  PoolEntry<uint32_t> queueHitsEntry = PoolEntry<uint32_t>();
 
   uint32_t getAndResetQueueHits();
   void incrementQueueHits();

@@ -7,6 +7,9 @@
 #include "fsfw/tasks/ExecutableObjectIF.h"
 #include "fsfw/tmtcservices/AcceptsVerifyMessageIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
+#include "fsfw/tmtcservices/TmSendHelper.h"
+#include "fsfw/tmtcservices/TmStoreAndSendHelper.h"
+#include "fsfw/tmtcservices/TmStoreHelper.h"
 
 /**
  * @brief Verify TC acceptance, start, progress and execution.
@@ -43,14 +46,15 @@ class Service1TelecommandVerification : public AcceptsVerifyMessageIF,
   static const uint8_t SUBSYSTEM_ID = SUBSYSTEM_ID::PUS_SERVICE_1;
 
   Service1TelecommandVerification(object_id_t objectId, uint16_t apid, uint8_t serviceId,
-                                  object_id_t targetDestination, uint16_t messageQueueDepth);
-  virtual ~Service1TelecommandVerification();
+                                  object_id_t targetDestination, uint16_t messageQueueDepth,
+                                  TimeWriterIF* timeStamper = nullptr);
+  ~Service1TelecommandVerification() override;
 
   /**
    *
    * @return ID of Verification Queue
    */
-  virtual MessageQueueId_t getVerificationQueue() override;
+  MessageQueueId_t getVerificationQueue() override;
 
   /**
    * Performs the service periodically as specified in init_mission().
@@ -58,7 +62,7 @@ class Service1TelecommandVerification : public AcceptsVerifyMessageIF,
    * @param operationCode
    * @return
    */
-  ReturnValue_t performOperation(uint8_t operationCode = 0) override;
+  ReturnValue_t performOperation(uint8_t operationCode) override;
 
   /**
    * Initializes the destination for TC verification messages and initializes
@@ -79,6 +83,12 @@ class Service1TelecommandVerification : public AcceptsVerifyMessageIF,
 
   uint16_t packetSubCounter = 0;
 
+  TmSendHelper sendHelper;
+  TmStoreHelper storeHelper;
+  TmStoreAndSendWrapper tmHelper;
+  InternalErrorReporterIF* errReporter = nullptr;
+  TimeWriterIF* timeStamper = nullptr;
+  StorageManagerIF* tmStore = nullptr;
   MessageQueueIF* tmQueue = nullptr;
 
   enum class Subservice : uint8_t {

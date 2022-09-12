@@ -165,7 +165,7 @@ ReturnValue_t TmTcBridge::handleTmQueue() {
 }
 
 ReturnValue_t TmTcBridge::storeDownlinkData(TmTcMessage* message) {
-  store_address_t storeId = 0;
+  store_address_t storeId;
   if (tmFifo == nullptr) {
     return returnvalue::FAILED;
   }

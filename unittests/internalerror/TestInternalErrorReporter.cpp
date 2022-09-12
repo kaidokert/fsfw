@@ -33,7 +33,7 @@ TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
   MessageQueueIF* hkQueue = QueueFactory::instance()->createMessageQueue(1);
   internalErrorReporter->getSubscriptionInterface()->subscribeForSetUpdateMessage(
       InternalErrorDataset::ERROR_SET_ID, objects::NO_OBJECT, hkQueue->getId(), true);
-  StorageManagerIF* ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
+  auto* ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
   SECTION("MessageQueueFull") {
     CommandMessage message;
     ActionMessage::setCompletionReply(&message, 10, true);
@@ -57,7 +57,7 @@ TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
       REQUIRE(gpid.objectId == objects::INTERNAL_ERROR_REPORTER);
       // We need the object ID of the reporter here (NO_OBJECT)
       InternalErrorDataset dataset(objects::INTERNAL_ERROR_REPORTER);
-      CCSDSTime::CDS_short time;
+      CCSDSTime::CDS_short time{};
       ConstAccessorPair data = ipcStore->getData(storeAddress);
       REQUIRE(data.first == returnvalue::OK);
       HousekeepingSnapshot hkSnapshot(&time, &dataset);
@@ -107,10 +107,10 @@ TEST_CASE("Internal Error Reporter", "[TestInternalError]") {
       // Message Queue Id
       MessageQueueId_t id = internalErrorReporter->getCommandQueue();
       REQUIRE(id != MessageQueueIF::NO_QUEUE);
-      CommandMessage message;
+      CommandMessage message2;
       sid_t sid(objects::INTERNAL_ERROR_REPORTER, InternalErrorDataset::ERROR_SET_ID);
-      HousekeepingMessage::setToggleReportingCommand(&message, sid, true, false);
-      result = hkQueue->sendMessage(id, &message);
+      HousekeepingMessage::setToggleReportingCommand(&message2, sid, true, false);
+      result = hkQueue->sendMessage(id, &message2);
       REQUIRE(result == returnvalue::OK);
       internalErrorReporter->performOperation(0);
     }

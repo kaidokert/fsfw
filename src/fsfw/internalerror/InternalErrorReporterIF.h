@@ -12,7 +12,7 @@
  */
 class InternalErrorReporterIF {
  public:
-  virtual ~InternalErrorReporterIF() {}
+  virtual ~InternalErrorReporterIF() = default;
   /**
    * @brief Function to be called if a message queue could not be sent.
    * @details OSAL Implementations should call this function to indicate that

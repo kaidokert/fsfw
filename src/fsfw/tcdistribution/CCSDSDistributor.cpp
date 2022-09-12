@@ -2,12 +2,13 @@
 
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/tmtcpacket/SpacePacketBase.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
 
 #define CCSDS_DISTRIBUTOR_DEBUGGING 0
 
-CCSDSDistributor::CCSDSDistributor(uint16_t setDefaultApid, object_id_t setObjectId)
-    : TcDistributor(setObjectId), defaultApid(setDefaultApid) {}
+CCSDSDistributor::CCSDSDistributor(uint16_t setDefaultApid, object_id_t setObjectId,
+                                   CcsdsPacketCheckIF* packetChecker)
+    : TcDistributor(setObjectId), defaultApid(setDefaultApid), packetChecker(packetChecker) {}
 
 CCSDSDistributor::~CCSDSDistributor() = default;
 
@@ -25,7 +26,7 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
 #endif
   const uint8_t* packet = nullptr;
   size_t size = 0;
-  ReturnValue_t result = this->tcStore->getData(currentMessage.getStorageId(), &packet, &size);
+  ReturnValue_t result = tcStore->getData(currentMessage.getStorageId(), &packet, &size);
   if (result != returnvalue::OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -40,19 +41,21 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
 #endif
     return queueMap.end();
   }
-  SpacePacketBase currentPacket(packet);
-
+  SpacePacketReader currentPacket(packet, size);
+  result = packetChecker->checkPacket(currentPacket, size);
+  if (result != returnvalue::OK) {
+  }
 #if FSFW_CPP_OSTREAM_ENABLED == 1 && CCSDS_DISTRIBUTOR_DEBUGGING == 1
-  sif::info << "CCSDSDistributor::selectDestination has packet with APID " << std::hex
-            << currentPacket.getAPID() << std::dec << std::endl;
+  sif::info << "CCSDSDistributor::selectDestination has packet with APID 0x" << std::hex
+            << currentPacket.getApid() << std::dec << std::endl;
 #endif
-  auto position = this->queueMap.find(currentPacket.getAPID());
+  auto position = this->queueMap.find(currentPacket.getApid());
   if (position != this->queueMap.end()) {
     return position;
   } else {
     // The APID was not found. Forward packet to main SW-APID anyway to
     //  create acceptance failure report.
-    return this->queueMap.find(this->defaultApid);
+    return queueMap.find(this->defaultApid);
   }
 }
 
@@ -80,6 +83,9 @@ ReturnValue_t CCSDSDistributor::registerApplication(uint16_t apid, MessageQueueI
 uint16_t CCSDSDistributor::getIdentifier() { return 0; }
 
 ReturnValue_t CCSDSDistributor::initialize() {
+  if (packetChecker == nullptr) {
+    packetChecker = new CcsdsPacketChecker(ccsds::PacketType::TC);
+  }
   ReturnValue_t status = this->TcDistributor::initialize();
   this->tcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::TC_STORE);
   if (this->tcStore == nullptr) {

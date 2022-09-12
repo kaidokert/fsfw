@@ -6,7 +6,7 @@
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/storagemanager/StorageManagerIF.h"
-#include "fsfw/tmtcpacket/SpacePacketBase.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
 #include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
 

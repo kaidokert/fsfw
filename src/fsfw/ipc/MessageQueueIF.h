@@ -30,7 +30,7 @@ class MessageQueueIF {
   //! [EXPORT] : [COMMENT] Returned if the target destination is invalid.
   static constexpr ReturnValue_t DESTINATION_INVALID = MAKE_RETURN_CODE(4);
 
-  virtual ~MessageQueueIF() {}
+  virtual ~MessageQueueIF() = default;
   /**
    * @brief	This operation sends a message to the last communication partner.
    * @details
@@ -82,11 +82,11 @@ class MessageQueueIF {
   /**
    * @brief	This method returns the message queue ID of the last communication partner.
    */
-  virtual MessageQueueId_t getLastPartner() const = 0;
+  [[nodiscard]] virtual MessageQueueId_t getLastPartner() const = 0;
   /**
    * @brief	This method returns the message queue ID  of this class's message queue.
    */
-  virtual MessageQueueId_t getId() const = 0;
+  [[nodiscard]] virtual MessageQueueId_t getId() const = 0;
 
   /**
    * @brief	With the sendMessage call, a queue message is sent to a receiving queue.
@@ -159,9 +159,9 @@ class MessageQueueIF {
   /**
    * @brief	This method is a simple getter for the default destination.
    */
-  virtual MessageQueueId_t getDefaultDestination() const = 0;
+  [[nodiscard]] virtual MessageQueueId_t getDefaultDestination() const = 0;
 
-  virtual bool isDefaultDestinationSet() const = 0;
+  [[nodiscard]] virtual bool isDefaultDestinationSet() const = 0;
 
   virtual MqArgs& getMqArgs() = 0;
 };

@@ -1,10 +1,10 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "ComIFMock.h"
-#include "DeviceFdirMock.h"
 #include "DeviceHandlerCommander.h"
-#include "DeviceHandlerMock.h"
-#include "devicehandler/CookieIFMock.h"
+#include "mocks/ComIFMock.h"
+#include "mocks/CookieIFMock.h"
+#include "mocks/DeviceFdirMock.h"
+#include "mocks/DeviceHandlerMock.h"
 #include "objects/systemObjectList.h"
 
 TEST_CASE("Device Handler Base", "[DeviceHandlerBase]") {

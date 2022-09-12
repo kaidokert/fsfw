@@ -34,9 +34,10 @@ enum : uint8_t {
   FIFO_CLASS,                     // FF
   MESSAGE_PROXY,                  // MQP
   TRIPLE_REDUNDACY_CHECK,         // TRC
-  TC_PACKET_CHECK,                // TCC
+  PACKET_CHECK,                   // TCC
   PACKET_DISTRIBUTION,            // TCD
-  ACCEPTS_TELECOMMANDS_IF,        // PUS
+  ACCEPTS_TELECOMMANDS_IF,        // ATC
+  PUS_IF,                         // PUS
   DEVICE_SERVICE_BASE,            // DSB
   COMMAND_SERVICE_BASE,           // CSB
   TM_STORE_BACKEND_IF,            // TMB

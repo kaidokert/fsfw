@@ -72,8 +72,7 @@ class Service11TelecommandScheduling final : public PusServiceBase {
     TO_TIMETAG = 3
   };
 
-  Service11TelecommandScheduling(object_id_t objectId, uint16_t apid, uint8_t serviceId,
-                                 AcceptsTelecommandsIF* tcRecipient,
+  Service11TelecommandScheduling(PsbParams params, AcceptsTelecommandsIF* tcRecipient,
                                  uint16_t releaseTimeMarginSeconds = DEFAULT_RELEASE_TIME_MARGIN,
                                  bool debugMode = false);
 
@@ -157,7 +156,7 @@ class Service11TelecommandScheduling final : public PusServiceBase {
    * @param data The Application data of the TC (get via getApplicationData()).
    * @return requestId
    */
-  uint64_t getRequestIdFromDataTC(const uint8_t* data) const;
+  [[nodiscard]] uint64_t getRequestIdFromTc() const;
 
   /**
    * @brief Extracts the Request ID from the Application Data directly, assuming it is packed

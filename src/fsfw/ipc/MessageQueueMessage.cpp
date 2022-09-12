@@ -10,10 +10,10 @@ MessageQueueMessage::MessageQueueMessage() : messageSize(getMinimumMessageSize()
 }
 
 MessageQueueMessage::MessageQueueMessage(uint8_t* data, size_t size)
-    : messageSize(this->HEADER_SIZE + size) {
-  if (size <= this->MAX_DATA_SIZE) {
-    memcpy(this->getData(), data, size);
-    this->messageSize = this->HEADER_SIZE + size;
+    : messageSize(MessageQueueMessage::HEADER_SIZE + size) {
+  if (size <= MessageQueueMessage::MAX_DATA_SIZE) {
+    std::memcpy(MessageQueueMessage::getData(), data, size);
+    this->messageSize = MessageQueueMessage::HEADER_SIZE + size;
   } else {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "MessageQueueMessage: Passed size larger than maximum"
@@ -21,21 +21,23 @@ MessageQueueMessage::MessageQueueMessage(uint8_t* data, size_t size)
                  << std::endl;
 #endif
     memset(this->internalBuffer, 0, sizeof(this->internalBuffer));
-    this->messageSize = this->HEADER_SIZE;
+    this->messageSize = MessageQueueMessage::HEADER_SIZE;
   }
 }
 
-MessageQueueMessage::~MessageQueueMessage() {}
+MessageQueueMessage::~MessageQueueMessage() = default;
 
 const uint8_t* MessageQueueMessage::getBuffer() const { return this->internalBuffer; }
 
 uint8_t* MessageQueueMessage::getBuffer() { return this->internalBuffer; }
 
 const uint8_t* MessageQueueMessage::getData() const {
-  return this->internalBuffer + this->HEADER_SIZE;
+  return this->internalBuffer + MessageQueueMessage::HEADER_SIZE;
 }
 
-uint8_t* MessageQueueMessage::getData() { return this->internalBuffer + this->HEADER_SIZE; }
+uint8_t* MessageQueueMessage::getData() {
+  return this->internalBuffer + MessageQueueMessage::HEADER_SIZE;
+}
 
 MessageQueueId_t MessageQueueMessage::getSender() const {
   MessageQueueId_t temp_id;
@@ -58,14 +60,22 @@ void MessageQueueMessage::print(bool printWholeMessage) {
   }
 }
 
-void MessageQueueMessage::clear() { memset(this->getBuffer(), 0, this->MAX_MESSAGE_SIZE); }
+void MessageQueueMessage::clear() {
+  memset(this->getBuffer(), 0, MessageQueueMessage::MAX_MESSAGE_SIZE);
+}
 
 size_t MessageQueueMessage::getMessageSize() const { return this->messageSize; }
 
-void MessageQueueMessage::setMessageSize(size_t messageSize) { this->messageSize = messageSize; }
+void MessageQueueMessage::setMessageSize(size_t messageSize_) { this->messageSize = messageSize_; }
 
-size_t MessageQueueMessage::getMinimumMessageSize() const { return this->MIN_MESSAGE_SIZE; }
+size_t MessageQueueMessage::getMinimumMessageSize() const {
+  return MessageQueueMessage::MIN_MESSAGE_SIZE;
+}
 
-size_t MessageQueueMessage::getMaximumMessageSize() const { return this->MAX_MESSAGE_SIZE; }
+size_t MessageQueueMessage::getMaximumMessageSize() const {
+  return MessageQueueMessage::MAX_MESSAGE_SIZE;
+}
 
-size_t MessageQueueMessage::getMaximumDataSize() const { return this->MAX_DATA_SIZE; }
+size_t MessageQueueMessage::getMaximumDataSize() const {
+  return MessageQueueMessage::MAX_DATA_SIZE;
+}

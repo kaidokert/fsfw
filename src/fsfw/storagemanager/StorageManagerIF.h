@@ -55,7 +55,7 @@ class StorageManagerIF {
   /**
    * @brief This is the empty virtual destructor as required for C++ interfaces.
    */
-  virtual ~StorageManagerIF(){};
+  ~StorageManagerIF() = default;
   /**
    * @brief	With addData, a free storage position is allocated and data
    * 			stored there.
@@ -63,9 +63,8 @@ class StorageManagerIF {
    * @param storageId A pointer to the storageId to retrieve.
    * @param data	The data to be stored in the StorageManager.
    * @param size	The amount of data to be stored.
-   * @return	Returns @li returnvalue::OK if data was added.
-   * 					@li	returnvalue::FAILED if data could not be added.
-   * 						storageId is unchanged then.
+   * @return	Returns @returnvalue::OK if data was added.
+   * 		@returnvalue::FAILED if data could not be added, storageId is unchanged then.
    */
   virtual ReturnValue_t addData(store_address_t* storageId, const uint8_t* data, size_t size,
                                 bool ignoreFault = false) = 0;
@@ -116,8 +115,8 @@ class StorageManagerIF {
    * @param packet_ptr	The passed pointer address is set to the the memory
    * 						position
    * @param size			The exact size of the stored data is returned here.
-   * @return	@li returnvalue::OK on success.
-   * 			@li	returnvalue::FAILED if fetching data did not work
+   * @return	@returnvalue::OK on success.
+   * 		@returnvalue::FAILED if fetching data did not work
    * 				(e.g. an illegal packet_id was passed).
    */
   virtual ReturnValue_t getData(store_address_t packet_id, const uint8_t** packet_ptr,
@@ -157,11 +156,12 @@ class StorageManagerIF {
    * @param size		The size of the space to be reserved.
    * @param p_data	A pointer to the element data is returned here.
    * @return	Returns @li returnvalue::OK if data was added.
-   * 					@li	returnvalue::FAILED if data could not be added.
-   * 						storageId is unchanged then.
+   * 		@returnvalue::FAILED if data could not be added, storageId is unchanged then.
    */
-  virtual ReturnValue_t getFreeElement(store_address_t* storageId, const size_t size,
-                                       uint8_t** p_data, bool ignoreFault = false) = 0;
+  virtual ReturnValue_t getFreeElement(store_address_t* storageId, size_t size, uint8_t** p_data,
+                                       bool ignoreFault = false) = 0;
+
+  [[nodiscard]] virtual bool hasDataAtId(store_address_t storeId) const = 0;
 
   /**
    * Clears the whole store.
@@ -192,7 +192,7 @@ class StorageManagerIF {
    * Get number of pools.
    * @return
    */
-  virtual max_subpools_t getNumberOfSubPools() const = 0;
+  [[nodiscard]] virtual max_subpools_t getNumberOfSubPools() const = 0;
 };
 
 #endif /* FSFW_STORAGEMANAGER_STORAGEMANAGERIF_H_ */

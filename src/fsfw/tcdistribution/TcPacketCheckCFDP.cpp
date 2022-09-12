@@ -1,11 +1,11 @@
-#include "fsfw/tcdistribution/TcPacketCheckCFDP.h"
+#include "fsfw/tcdistribution/CfdpPacketChecker.h"
+#include "fsfw/tmtcpacket/cfdp/CfdpPacketStored.h"
 
-#include "fsfw/tmtcpacket/cfdp/CFDPPacketStored.h"
+CfdpPacketChecker::CfdpPacketChecker(uint16_t setApid) : apid(setApid) {}
 
-TcPacketCheckCFDP::TcPacketCheckCFDP(uint16_t setApid) : apid(setApid) {}
-
-ReturnValue_t TcPacketCheckCFDP::checkPacket(SpacePacketBase* currentPacket) {
+ReturnValue_t CfdpPacketChecker::checkPacket(const SpacePacketReader& currentPacket,
+                                             size_t packetLen) {
   return returnvalue::OK;
 }
 
-uint16_t TcPacketCheckCFDP::getApid() const { return apid; }
+uint16_t CfdpPacketChecker::getApid() const { return apid; }

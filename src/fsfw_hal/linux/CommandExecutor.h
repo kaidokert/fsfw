@@ -49,7 +49,7 @@ class CommandExecutor {
    * executed process.
    * @param maxSize
    */
-  CommandExecutor(const size_t maxSize);
+  explicit CommandExecutor(size_t maxSize);
 
   /**
    * Load a new command which should be executed

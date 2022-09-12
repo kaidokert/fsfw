@@ -13,7 +13,7 @@ from shutil import which
 from typing import List
 
 
-UNITTEST_FOLDER_NAME = "build-tests"
+UNITTEST_FOLDER_NAME = "cmake-build-tests"
 DOCS_FOLDER_NAME = "build-docs"
 
 

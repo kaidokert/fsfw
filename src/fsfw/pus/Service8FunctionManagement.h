@@ -32,7 +32,7 @@ class Service8FunctionManagement : public CommandingServiceBase {
  public:
   Service8FunctionManagement(object_id_t objectId, uint16_t apid, uint8_t serviceId,
                              uint8_t numParallelCommands = 4, uint16_t commandTimeoutSeconds = 60);
-  virtual ~Service8FunctionManagement();
+  ~Service8FunctionManagement() override;
 
  protected:
   /* CSB abstract functions implementation . See CSB documentation. */

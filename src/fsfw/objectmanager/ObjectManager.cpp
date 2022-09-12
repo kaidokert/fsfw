@@ -21,7 +21,7 @@ void ObjectManager::setObjectFactoryFunction(produce_function_t objFactoryFunc, 
   this->factoryArgs = factoryArgs;
 }
 
-ObjectManager::ObjectManager() {}
+ObjectManager::ObjectManager() = default;
 
 ObjectManager::~ObjectManager() {
   for (auto const& iter : objectList) {
@@ -53,7 +53,7 @@ ReturnValue_t ObjectManager::insert(object_id_t id, SystemObjectIF* object) {
 }
 
 ReturnValue_t ObjectManager::remove(object_id_t id) {
-  if (this->getSystemObject(id) != NULL) {
+  if (this->getSystemObject(id) != nullptr) {
     this->objectList.erase(id);
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     // sif::debug << "ObjectManager::removeObject: Object " << std::hex

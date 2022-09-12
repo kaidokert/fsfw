@@ -1,5 +1,6 @@
 #include "fsfw/tmtcpacket/packetmatcher/PacketMatchTree.h"
 
+#include "fsfw/storagemanager/LocalPool.h"
 #include "fsfw/tmtcpacket/packetmatcher/ApidMatcher.h"
 #include "fsfw/tmtcpacket/packetmatcher/ServiceMatcher.h"
 #include "fsfw/tmtcpacket/packetmatcher/SubserviceMatcher.h"
@@ -12,33 +13,34 @@ const LocalPool::LocalPoolConfig PacketMatchTree::poolConfig = {
     {40, sizeof(PacketMatchTree::Node)}};
 
 PacketMatchTree::PacketMatchTree(Node* root)
-    : MatchTree<TmPacketMinimal*>(root, 2),
+    : MatchTree<PusTmIF*>(root, 2),
       factoryBackend(0, poolConfig, false, true),
       factory(&factoryBackend) {}
 
 PacketMatchTree::PacketMatchTree(iterator root)
-    : MatchTree<TmPacketMinimal*>(root.element, 2),
+    : MatchTree<PusTmIF*>(root.element, 2),
       factoryBackend(0, poolConfig, false, true),
       factory(&factoryBackend) {}
 
 PacketMatchTree::PacketMatchTree()
-    : MatchTree<TmPacketMinimal*>((Node*)NULL, 2),
+    : MatchTree<PusTmIF*>(nullptr, 2),
       factoryBackend(0, poolConfig, false, true),
       factory(&factoryBackend) {}
 
-PacketMatchTree::~PacketMatchTree() {}
+PacketMatchTree::~PacketMatchTree() = default;
 
 ReturnValue_t PacketMatchTree::addMatch(uint16_t apid, uint8_t type, uint8_t subtype) {
   // We assume adding APID is always requested.
-  TmPacketMinimal::TmPacketMinimalPointer data;
-  data.data_field.service_type = type;
-  data.data_field.service_subtype = subtype;
-  TmPacketMinimal testPacket((uint8_t*)&data);
-  testPacket.setAPID(apid);
+  mintm::MinimalPusTm data{};
+  data.secHeader.service = type;
+  data.secHeader.subservice = subtype;
+  PusTmMinimal testPacket((uint8_t*)&data);
+  testPacket.setApid(apid);
+
   iterator lastTest;
   iterator rollback;
   ReturnValue_t result =
-      findOrInsertMatch<TmPacketMinimal*, ApidMatcher>(this->begin(), &testPacket, &lastTest);
+      findOrInsertMatch<PusTmIF*, ApidMatcher>(this->begin(), &testPacket, &lastTest);
   if (result == NEW_NODE_CREATED) {
     rollback = lastTest;
   } else if (result != returnvalue::OK) {
@@ -47,38 +49,36 @@ ReturnValue_t PacketMatchTree::addMatch(uint16_t apid, uint8_t type, uint8_t sub
   if (type == 0) {
     // Check if lastTest has no children, otherwise, delete them,
     // as a more general check is requested.
-    if (lastTest.left() != this->end()) {
+    if (lastTest.left() != PacketMatchTree::end()) {
       removeElementAndAllChildren(lastTest.left());
     }
     return returnvalue::OK;
   }
   // Type insertion required.
-  result =
-      findOrInsertMatch<TmPacketMinimal*, ServiceMatcher>(lastTest.left(), &testPacket, &lastTest);
+  result = findOrInsertMatch<PusTmIF*, ServiceMatcher>(lastTest.left(), &testPacket, &lastTest);
   if (result == NEW_NODE_CREATED) {
-    if (rollback == this->end()) {
+    if (rollback == PacketMatchTree::end()) {
       rollback = lastTest;
     }
   } else if (result != returnvalue::OK) {
-    if (rollback != this->end()) {
+    if (rollback != PacketMatchTree::end()) {
       removeElementAndAllChildren(rollback);
     }
     return result;
   }
   if (subtype == 0) {
-    if (lastTest.left() != this->end()) {
+    if (lastTest.left() != PacketMatchTree::end()) {
       // See above
       removeElementAndAllChildren(lastTest.left());
     }
     return returnvalue::OK;
   }
   // Subtype insertion required.
-  result = findOrInsertMatch<TmPacketMinimal*, SubServiceMatcher>(lastTest.left(), &testPacket,
-                                                                  &lastTest);
+  result = findOrInsertMatch<PusTmIF*, SubServiceMatcher>(lastTest.left(), &testPacket, &lastTest);
   if (result == NEW_NODE_CREATED) {
     return returnvalue::OK;
   } else if (result != returnvalue::OK) {
-    if (rollback != this->end()) {
+    if (rollback != PacketMatchTree::end()) {
       removeElementAndAllChildren(rollback);
     }
     return result;
@@ -91,7 +91,7 @@ ReturnValue_t PacketMatchTree::findOrInsertMatch(iterator startAt, VALUE_T test,
                                                  iterator* lastTest) {
   bool attachToBranch = AND;
   iterator iter = startAt;
-  while (iter != this->end()) {
+  while (iter != PacketMatchTree::end()) {
     bool isMatch = iter->match(test);
     attachToBranch = OR;
     *lastTest = iter;
@@ -104,11 +104,11 @@ ReturnValue_t PacketMatchTree::findOrInsertMatch(iterator startAt, VALUE_T test,
   }
   // Only reached if nothing was found.
   SerializeableMatcherIF<VALUE_T>* newContent = factory.generate<INSERTION_T>(test);
-  if (newContent == NULL) {
+  if (newContent == nullptr) {
     return FULL;
   }
   Node* newNode = factory.generate<Node>(newContent);
-  if (newNode == NULL) {
+  if (newNode == nullptr) {
     // Need to make sure partially generated content is deleted, otherwise, that's a leak.
     factory.destroy<INSERTION_T>(static_cast<INSERTION_T*>(newContent));
     return FULL;
@@ -122,13 +122,13 @@ ReturnValue_t PacketMatchTree::findOrInsertMatch(iterator startAt, VALUE_T test,
 }
 
 ReturnValue_t PacketMatchTree::removeMatch(uint16_t apid, uint8_t type, uint8_t subtype) {
-  TmPacketMinimal::TmPacketMinimalPointer data;
-  data.data_field.service_type = type;
-  data.data_field.service_subtype = subtype;
-  TmPacketMinimal testPacket((uint8_t*)&data);
-  testPacket.setAPID(apid);
+  mintm::MinimalPusTm data{};
+  data.secHeader.service = type;
+  data.secHeader.subservice = subtype;
+  PusTmMinimal testPacket((uint8_t*)&data);
+  testPacket.setApid(apid);
   iterator foundElement = findMatch(begin(), &testPacket);
-  if (foundElement == this->end()) {
+  if (foundElement == PacketMatchTree::end()) {
     return NO_MATCH;
   }
   if (type == 0) {
@@ -158,7 +158,7 @@ ReturnValue_t PacketMatchTree::removeMatch(uint16_t apid, uint8_t type, uint8_t 
   return removeElementAndReconnectChildren(foundElement);
 }
 
-PacketMatchTree::iterator PacketMatchTree::findMatch(iterator startAt, TmPacketMinimal* test) {
+PacketMatchTree::iterator PacketMatchTree::findMatch(iterator startAt, PusTmIF* test) {
   iterator iter = startAt;
   while (iter != end()) {
     bool isMatch = iter->match(test);

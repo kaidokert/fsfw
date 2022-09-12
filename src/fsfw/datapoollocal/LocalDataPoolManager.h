@@ -8,6 +8,7 @@
 #include "ProvidesDataPoolSubscriptionIF.h"
 #include "fsfw/datapool/DataSetIF.h"
 #include "fsfw/datapool/PoolEntry.h"
+#include "fsfw/housekeeping/AcceptsHkPacketsIF.h"
 #include "fsfw/housekeeping/HousekeepingMessage.h"
 #include "fsfw/housekeeping/HousekeepingPacketDownlink.h"
 #include "fsfw/housekeeping/PeriodicHousekeepingHelper.h"
@@ -80,7 +81,9 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
    */
   LocalDataPoolManager(HasLocalDataPoolIF* owner, MessageQueueIF* queueToUse,
                        bool appendValidityBuffer = true);
-  virtual ~LocalDataPoolManager();
+  ~LocalDataPoolManager() override;
+
+  void setHkDestinationId(MessageQueueId_t hkDestId);
 
   /**
    * Assigns the queue to use. Make sure to call this in the #initialize
@@ -113,31 +116,6 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
   virtual ReturnValue_t performHkOperation();
 
   /**
-   * @brief   Subscribe for the generation of periodic packets.
-   * @details
-   * This subscription mechanism will generally be used by the data creator
-   * to generate housekeeping packets which are downlinked directly.
-   * @return
-   */
-  ReturnValue_t subscribeForPeriodicPacket(
-      sid_t sid, bool enableReporting, float collectionInterval, bool isDiagnostics,
-      object_id_t packetDestination = defaultHkDestination) override;
-
-  /**
-   * @brief   Subscribe for the  generation of packets if the dataset
-   *          is marked as changed.
-   * @details
-   * This subscription mechanism will generally be used by the data creator.
-   * @param sid
-   * @param isDiagnostics
-   * @param packetDestination
-   * @return
-   */
-  ReturnValue_t subscribeForUpdatePacket(
-      sid_t sid, bool reportingEnabled, bool isDiagnostics,
-      object_id_t packetDestination = defaultHkDestination) override;
-
-  /**
    * @brief   Subscribe for a notification message which will be sent
    *          if a dataset has changed.
    * @details
@@ -151,7 +129,7 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
    * Otherwise, only an notification message is sent.
    * @return
    */
-  ReturnValue_t subscribeForSetUpdateMessage(const uint32_t setId, object_id_t destinationObject,
+  ReturnValue_t subscribeForSetUpdateMessage(uint32_t setId, object_id_t destinationObject,
                                              MessageQueueId_t targetQueueId,
                                              bool generateSnapshot) override;
 
@@ -169,7 +147,7 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
    * Otherwise, only an notification message is sent.
    * @return
    */
-  ReturnValue_t subscribeForVariableUpdateMessage(const lp_id_t localPoolId,
+  ReturnValue_t subscribeForVariableUpdateMessage(lp_id_t localPoolId,
                                                   object_id_t destinationObject,
                                                   MessageQueueId_t targetQueueId,
                                                   bool generateSnapshot) override;
@@ -252,7 +230,7 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
    */
   void clearReceiversList();
 
-  object_id_t getCreatorObjectId() const;
+  [[nodiscard]] object_id_t getCreatorObjectId() const;
 
   /**
    * Get the pointer to the mutex. Can be used to lock the data pool
@@ -262,7 +240,14 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
    */
   MutexIF* getMutexHandle();
 
-  virtual LocalDataPoolManager* getPoolManagerHandle() override;
+  LocalDataPoolManager* getPoolManagerHandle() override;
+  ReturnValue_t subscribeForPeriodicPacket(
+      sid_t sid, bool enableReporting, float collectionInterval, bool isDiagnostics,
+      object_id_t packetDestination = objects::NO_OBJECT) override;
+
+  ReturnValue_t subscribeForUpdatePacket(
+      sid_t sid, bool reportingEnabled, bool isDiagnostics,
+      object_id_t packetDestination = objects::NO_OBJECT) override;
 
  protected:
   /** Core data structure for the actual pool data */
@@ -312,8 +297,8 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
 
   using HkUpdateResetList = std::vector<struct HkUpdateResetHelper>;
   /** This list is used to manage creating multiple update packets and only resetting
-  the update flag if all of them were created. Will only be created when needed. */
-  HkUpdateResetList* hkUpdateResetList = nullptr;
+  the update flag if all of them were created. */
+  HkUpdateResetList hkUpdateResetList = HkUpdateResetList();
 
   /** This is the map holding the actual data. Should only be initialized
    * once ! */

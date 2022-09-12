@@ -105,7 +105,7 @@ class TcDistributor : public SystemObject, public ExecutableObjectIF {
    * @param queueStatus	The status of the message queue after an attempt
    *                      to send the TC.
    * @return	- @c returnvalue::OK on success
-   * 			- @c returnvalue::FAILED on failure
+   * 		- @c returnvalue::FAILED on failure
    */
   virtual ReturnValue_t callbackAfterSending(ReturnValue_t queueStatus);
 

@@ -13,7 +13,6 @@ ReturnValue_t MessageQueueSenderIF::sendMessage(MessageQueueId_t sendTo,
                                                 MessageQueueMessageIF* message,
                                                 MessageQueueId_t sentFrom, bool ignoreFault) {
   return MessageQueue::sendMessageFromMessageQueue(sendTo, message, sentFrom, ignoreFault);
-  return returnvalue::OK;
 }
 
 QueueFactory* QueueFactory::instance() {
@@ -23,9 +22,9 @@ QueueFactory* QueueFactory::instance() {
   return factoryInstance;
 }
 
-QueueFactory::QueueFactory() {}
+QueueFactory::QueueFactory() = default;
 
-QueueFactory::~QueueFactory() {}
+QueueFactory::~QueueFactory() = default;
 
 MessageQueueIF* QueueFactory::createMessageQueue(uint32_t messageDepth, size_t maxMessageSize,
                                                  MqArgs* args) {

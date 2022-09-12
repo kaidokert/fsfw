@@ -81,7 +81,7 @@ class LocalPool : public SystemObject, public StorageManagerIF {
   /**
    * @brief	In the LocalPool's destructor all allocated memory is freed.
    */
-  virtual ~LocalPool(void);
+  ~LocalPool() override;
 
   /**
    * Documentation: See StorageManagerIF.h
@@ -132,6 +132,7 @@ class LocalPool : public SystemObject, public StorageManagerIF {
    * @return
    */
   max_subpools_t getNumberOfSubPools() const override;
+  bool hasDataAtId(store_address_t storeId) const override;
 
  protected:
   /**

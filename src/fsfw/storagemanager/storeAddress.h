@@ -3,26 +3,26 @@
 
 #include <cstdint>
 
-namespace storeId {
-static constexpr uint32_t INVALID_STORE_ADDRESS = 0xffffffff;
-}
-
 /**
  * This union defines the type that identifies where a data packet is
  * stored in the store. It comprises of a raw part to read it as raw value and
  * a structured part to use it in pool-like stores.
  */
 union store_address_t {
+ public:
+  static constexpr uint32_t INVALID_RAW = 0xffffffff;
   /**
    * Default Constructor, initializing to INVALID_ADDRESS
    */
-  store_address_t() : raw(storeId::INVALID_STORE_ADDRESS) {}
+  store_address_t() : raw(INVALID_RAW) {}
   /**
    * Constructor to create an address object using the raw address
    *
    * @param rawAddress
    */
-  store_address_t(uint32_t rawAddress) : raw(rawAddress) {}
+  explicit store_address_t(uint32_t rawAddress) : raw(rawAddress) {}
+
+  static store_address_t invalid() { return {}; };
 
   /**
    * Constructor to create an address object using pool
@@ -52,6 +52,12 @@ union store_address_t {
   uint32_t raw;
 
   bool operator==(const store_address_t& other) const { return raw == other.raw; }
+  bool operator!=(const store_address_t& other) const { return raw != other.raw; }
+
+  store_address_t& operator=(const uint32_t rawAddr) {
+    raw = rawAddr;
+    return *this;
+  }
 };
 
 #endif /* FSFW_STORAGEMANAGER_STOREADDRESS_H_ */

@@ -3,6 +3,8 @@
 
 #include "fsfw/objectmanager/SystemObject.h"
 #include "fsfw/tmtcservices/PusServiceBase.h"
+#include "fsfw/tmtcservices/TmStoreAndSendHelper.h"
+#include "fsfw/tmtcservices/TmStoreHelper.h"
 
 /**
  * @brief Test Service
@@ -32,13 +34,19 @@ class Service17Test : public PusServiceBase {
     EVENT_TRIGGER_TEST = 128,
   };
 
-  Service17Test(object_id_t objectId, uint16_t apid, uint8_t serviceId);
-  virtual ~Service17Test();
-  virtual ReturnValue_t handleRequest(uint8_t subservice) override;
-  virtual ReturnValue_t performService() override;
+  explicit Service17Test(PsbParams params);
+
+  void setCustomTmStore(StorageManagerIF& tmStore);
+
+  ~Service17Test() override;
+  ReturnValue_t handleRequest(uint8_t subservice) override;
+  ReturnValue_t performService() override;
+  ReturnValue_t initialize() override;
 
  protected:
-  uint16_t packetSubCounter = 0;
+  TmStoreHelper storeHelper;
+  TmSendHelper sendHelper;
+  TmStoreAndSendWrapper tmHelper;
 };
 
 #endif /* FSFW_PUS_SERVICE17TEST_H_ */

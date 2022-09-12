@@ -5,11 +5,9 @@
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/timemanager/CCSDSTime.h"
 
-Service9TimeManagement::Service9TimeManagement(object_id_t objectId, uint16_t apid,
-                                               uint8_t serviceId)
-    : PusServiceBase(objectId, apid, serviceId) {}
+Service9TimeManagement::Service9TimeManagement(PsbParams params) : PusServiceBase(params) {}
 
-Service9TimeManagement::~Service9TimeManagement() {}
+Service9TimeManagement::~Service9TimeManagement() = default;
 
 ReturnValue_t Service9TimeManagement::performService() { return returnvalue::OK; }
 
@@ -25,7 +23,7 @@ ReturnValue_t Service9TimeManagement::handleRequest(uint8_t subservice) {
 
 ReturnValue_t Service9TimeManagement::setTime() {
   Clock::TimeOfDay_t timeToSet;
-  TimePacket timePacket(currentPacket.getApplicationData(), currentPacket.getApplicationDataSize());
+  TimePacket timePacket(currentPacket.getUserData(), currentPacket.getUserDataLen());
   ReturnValue_t result =
       CCSDSTime::convertFromCcsds(&timeToSet, timePacket.getTime(), timePacket.getTimeSize());
   if (result != returnvalue::OK) {

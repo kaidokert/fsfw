@@ -38,7 +38,7 @@ class ObjectManager : public ObjectManagerIF {
   /**
    *  @brief  In the class's destructor, all objects in the list are deleted.
    */
-  virtual ~ObjectManager();
+  ~ObjectManager() override;
   ReturnValue_t insert(object_id_t id, SystemObjectIF* object) override;
   ReturnValue_t remove(object_id_t id) override;
   void initialize() override;

@@ -13,12 +13,12 @@ class CFDPDistributorIF {
   /**
    * The empty virtual destructor.
    */
-  virtual ~CFDPDistributorIF() {}
+  virtual ~CFDPDistributorIF() = default;
   /**
    * With this method, Handlers can register themselves at the CFDP Distributor.
    * @param handler A pointer to the registering Handler.
    * @return	- @c returnvalue::OK on success,
-   * 			- @c returnvalue::FAILED on failure.
+   * 		- @c returnvalue::FAILED on failure.
    */
   virtual ReturnValue_t registerHandler(AcceptsTelecommandsIF* handler) = 0;
 };

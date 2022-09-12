@@ -46,7 +46,7 @@ class SystemObjectIF : public EventReportingProxyIF {
    * Therefore, a two-step initialization resolves this problem and prevents
    * circular dependencies of not-fully initialized objects on start up.
    * @return	- @c returnvalue::OK in case the initialization was successful
-   * 			- @c returnvalue::FAILED otherwise
+   * 		- @c returnvalue::FAILED otherwise
    */
   virtual ReturnValue_t initialize() = 0;
   /**

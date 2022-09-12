@@ -65,11 +65,11 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
     // But I will still return a failure here.
     return returnvalue::FAILED;
   }
-  MessageQueue* targetQueue =
+  auto* targetQueue =
       dynamic_cast<MessageQueue*>(QueueMapManager::instance()->getMessageQueue(sendTo));
   if (targetQueue == nullptr) {
     if (not ignoreFault) {
-      InternalErrorReporterIF* internalErrorReporter =
+      auto* internalErrorReporter =
           ObjectManager::instance()->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
       if (internalErrorReporter != nullptr) {
         internalErrorReporter->queueMessageNotSent();
@@ -84,7 +84,7 @@ ReturnValue_t MessageQueue::sendMessageFromMessageQueue(MessageQueueId_t sendTo,
            message->getMaximumMessageSize());
   } else {
     if (not ignoreFault) {
-      InternalErrorReporterIF* internalErrorReporter =
+      auto* internalErrorReporter =
           ObjectManager::instance()->get<InternalErrorReporterIF>(objects::INTERNAL_ERROR_REPORTER);
       if (internalErrorReporter != nullptr) {
         internalErrorReporter->queueMessageNotSent();

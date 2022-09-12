@@ -18,7 +18,7 @@ class PUSDistributorIF {
    * With this method, Services can register themselves at the PUS Distributor.
    * @param service A pointer to the registering Service.
    * @return	- @c returnvalue::OK on success,
-   * 			- @c returnvalue::FAILED on failure.
+   * 		- @c returnvalue::FAILED on failure.
    */
   virtual ReturnValue_t registerService(AcceptsTelecommandsIF* service) = 0;
 };

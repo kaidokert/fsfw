@@ -75,7 +75,7 @@ ReturnValue_t Service2DeviceAccess::prepareRawCommand(CommandMessage* messageToS
   // store command into the Inter Process Communication Store
   store_address_t storeAddress;
   ReturnValue_t result =
-      IPCStore->addData(&storeAddress, RawCommand.getCommand(), RawCommand.getCommandSize());
+      ipcStore->addData(&storeAddress, RawCommand.getCommand(), RawCommand.getCommandSize());
   DeviceHandlerMessage::setDeviceHandlerRawCommandMessage(messageToSet, storeAddress);
   return result;
 }
@@ -135,7 +135,7 @@ void Service2DeviceAccess::sendWiretappingTm(CommandMessage* reply, uint8_t subs
   store_address_t storeAddress = DeviceHandlerMessage::getStoreAddress(reply);
   const uint8_t* data = nullptr;
   size_t size = 0;
-  ReturnValue_t result = IPCStore->getData(storeAddress, &data, &size);
+  ReturnValue_t result = ipcStore->getData(storeAddress, &data, &size);
   if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service2DeviceAccess::sendWiretappingTm: Data Lost in "
@@ -147,10 +147,12 @@ void Service2DeviceAccess::sendWiretappingTm(CommandMessage* reply, uint8_t subs
 
   // Init our dummy packet and correct endianness of object ID before
   // sending it back.
-  WiretappingPacket TmPacket(DeviceHandlerMessage::getDeviceObjectId(reply), data);
-  TmPacket.objectId = EndianConverter::convertBigEndian(TmPacket.objectId);
-  sendTmPacket(subservice, TmPacket.data, size, reinterpret_cast<uint8_t*>(&TmPacket.objectId),
-               sizeof(TmPacket.objectId));
+  WiretappingPacket tmPacket(DeviceHandlerMessage::getDeviceObjectId(reply), data);
+  result = sendTmPacket(subservice, tmPacket.objectId, tmPacket.data, size);
+  if (result != returnvalue::OK) {
+    // TODO: Warning
+    return;
+  }
 }
 
 MessageQueueId_t Service2DeviceAccess::getDeviceQueue() { return commandQueue->getId(); }

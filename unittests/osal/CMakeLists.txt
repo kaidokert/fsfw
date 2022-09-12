@@ -1,5 +1,5 @@
 target_sources(${FSFW_TEST_TGT} PRIVATE
-	TestMessageQueue.cpp
+  testMq.cpp
 	TestSemaphore.cpp
 	TestClock.cpp
 )

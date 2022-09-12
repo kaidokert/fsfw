@@ -31,7 +31,7 @@ class TmTcBridge : public AcceptsTelemetryIF,
    * value must be smaller than MAX_STORED_DATA_SENT_PER_CYCLE
    * @param sentPacketsPerCycle
    * @return -@c returnvalue::OK if value was set successfully
-   * 		   -@c returnvalue::FAILED otherwise, stored value stays the same
+   *         -@c returnvalue::FAILED otherwise, stored value stays the same
    */
   ReturnValue_t setNumberOfSentPacketsPerCycle(uint8_t sentPacketsPerCycle);
 

@@ -14,7 +14,7 @@ Service20ParameterManagement::Service20ParameterManagement(object_id_t objectId,
     : CommandingServiceBase(objectId, apid, serviceId, numberOfParallelCommands,
                             commandTimeoutSeconds) {}
 
-Service20ParameterManagement::~Service20ParameterManagement() {}
+Service20ParameterManagement::~Service20ParameterManagement() = default;
 
 ReturnValue_t Service20ParameterManagement::isValidSubservice(uint8_t subservice) {
   switch (static_cast<Subservice>(subservice)) {
@@ -64,8 +64,7 @@ ReturnValue_t Service20ParameterManagement::checkAndAcquireTargetID(object_id_t*
 ReturnValue_t Service20ParameterManagement::checkInterfaceAndAcquireMessageQueue(
     MessageQueueId_t* messageQueueToSet, object_id_t* objectId) {
   // check ReceivesParameterMessagesIF property of target
-  ReceivesParameterMessagesIF* possibleTarget =
-      ObjectManager::instance()->get<ReceivesParameterMessagesIF>(*objectId);
+  auto* possibleTarget = ObjectManager::instance()->get<ReceivesParameterMessagesIF>(*objectId);
   if (possibleTarget == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "Service20ParameterManagement::checkInterfaceAndAcquire"
@@ -137,7 +136,7 @@ ReturnValue_t Service20ParameterManagement::prepareLoadCommand(CommandMessage* m
   if (parameterDataLen == 0) {
     return CommandingServiceBase::INVALID_TC;
   }
-  ReturnValue_t result = IPCStore->getFreeElement(&storeAddress, parameterDataLen, &storePointer);
+  ReturnValue_t result = ipcStore->getFreeElement(&storeAddress, parameterDataLen, &storePointer);
   if (result != returnvalue::OK) {
     return result;
   }
@@ -169,7 +168,7 @@ ReturnValue_t Service20ParameterManagement::handleReply(const CommandMessage* re
 
   switch (replyId) {
     case ParameterMessage::REPLY_PARAMETER_DUMP: {
-      ConstAccessorPair parameterData = IPCStore->getData(ParameterMessage::getStoreId(reply));
+      ConstAccessorPair parameterData = ipcStore->getData(ParameterMessage::getStoreId(reply));
       if (parameterData.first != returnvalue::OK) {
         return returnvalue::FAILED;
       }
@@ -177,8 +176,7 @@ ReturnValue_t Service20ParameterManagement::handleReply(const CommandMessage* re
       ParameterId_t parameterId = ParameterMessage::getParameterId(reply);
       ParameterDumpReply parameterReply(objectId, parameterId, parameterData.second.data(),
                                         parameterData.second.size());
-      sendTmPacket(static_cast<uint8_t>(Subservice::PARAMETER_DUMP_REPLY), &parameterReply);
-      return returnvalue::OK;
+      return sendTmPacket(static_cast<uint8_t>(Subservice::PARAMETER_DUMP_REPLY), parameterReply);
     }
     default:
       return CommandingServiceBase::INVALID_REPLY;

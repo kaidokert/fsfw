@@ -11,7 +11,7 @@
 #ifdef WIN32
 #include <winsock2.h>
 #else
-#include <sys/time.h>
+#include <ctime>
 #endif
 
 class Clock {
@@ -33,7 +33,7 @@ class Clock {
    *
    * @deprecated, we should not worry about ticks, but only time
    */
-  static uint32_t getTicksPerSecond(void);
+  static uint32_t getTicksPerSecond();
   /**
    * This system call sets the system time.
    * To set the time, it uses a TimeOfDay_t struct.
@@ -148,7 +148,7 @@ class Clock {
    * @return
    *  - @c returnvalue::OK on success.
    */
-  static ReturnValue_t setLeapSeconds(const uint16_t leapSeconds_);
+  static ReturnValue_t setLeapSeconds(uint16_t leapSeconds_);
 
   /**
    * Get the Leap Seconds since 1972

@@ -2,7 +2,7 @@
 
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/tcdistribution/CCSDSDistributorIF.h"
-#include "fsfw/tmtcpacket/cfdp/CFDPPacketStored.h"
+#include "fsfw/tmtcpacket/cfdp/CfdpPacketStored.h"
 
 #ifndef FSFW_CFDP_DISTRIBUTOR_DEBUGGING
 #define FSFW_CFDP_DISTRIBUTOR_DEBUGGING 1
@@ -16,7 +16,7 @@ CFDPDistributor::CFDPDistributor(uint16_t setApid, object_id_t setObjectId,
       tcStatus(returnvalue::FAILED),
       packetSource(setPacketSource) {}
 
-CFDPDistributor::~CFDPDistributor() {}
+CFDPDistributor::~CFDPDistributor() = default;
 
 CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
 #if FSFW_CFDP_DISTRIBUTOR_DEBUGGING == 1
@@ -29,13 +29,13 @@ CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
                   storeId.packetIndex);
 #endif
 #endif
-  TcMqMapIter queueMapIt = this->queueMap.end();
+  auto queueMapIt = this->queueMap.end();
   if (this->currentPacket == nullptr) {
     return queueMapIt;
   }
   this->currentPacket->setStoreAddress(this->currentMessage.getStorageId());
-  if (currentPacket->getWholeData() != nullptr) {
-    tcStatus = checker.checkPacket(currentPacket);
+  if (currentPacket->getFullData() != nullptr) {
+    tcStatus = checker.checkPacket(*currentPacket, currentPacket->getFullPacketLen());
     if (tcStatus != returnvalue::OK) {
 #if FSFW_VERBOSE_LEVEL >= 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -72,7 +72,7 @@ CFDPDistributor::TcMqMapIter CFDPDistributor::selectDestination() {
 
 ReturnValue_t CFDPDistributor::registerHandler(AcceptsTelecommandsIF* handler) {
   uint16_t handlerId =
-      handler->getIdentifier();  // should be 0, because CFDPHandler does not set a set a service-ID
+      handler->getIdentifier();  // should be 0, because CfdpHandler does not set a set a service-ID
 #if FSFW_CFDP_DISTRIBUTOR_DEBUGGING == 1
 #if FSFW_CPP_OSTREAM_ENABLED == 1
   sif::info << "CFDPDistributor::registerHandler: Handler ID: " << static_cast<int>(handlerId)
@@ -121,14 +121,13 @@ MessageQueueId_t CFDPDistributor::getRequestQueue() { return tcQueue->getId(); }
 uint16_t CFDPDistributor::getIdentifier() { return this->apid; }
 
 ReturnValue_t CFDPDistributor::initialize() {
-  currentPacket = new CFDPPacketStored();
+  currentPacket = new CfdpPacketStored();
   if (currentPacket == nullptr) {
     // Should not happen, memory allocation failed!
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
-  CCSDSDistributorIF* ccsdsDistributor =
-      ObjectManager::instance()->get<CCSDSDistributorIF>(packetSource);
+  auto* ccsdsDistributor = ObjectManager::instance()->get<CCSDSDistributorIF>(packetSource);
   if (ccsdsDistributor == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "CFDPDistributor::initialize: Packet source invalid" << std::endl;

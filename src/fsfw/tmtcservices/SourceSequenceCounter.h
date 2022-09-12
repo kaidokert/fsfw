@@ -1,7 +1,7 @@
 #ifndef FSFW_TMTCSERVICES_SOURCESEQUENCECOUNTER_H_
 #define FSFW_TMTCSERVICES_SOURCESEQUENCECOUNTER_H_
 
-#include "../tmtcpacket/SpacePacketBase.h"
+#include "fsfw/tmtcpacket/ccsds/SpacePacketReader.h"
 
 class SourceSequenceCounter {
  private:

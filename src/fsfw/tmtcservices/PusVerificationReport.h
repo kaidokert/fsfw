@@ -4,7 +4,7 @@
 #include "VerificationCodes.h"
 #include "fsfw/ipc/MessageQueueMessage.h"
 #include "fsfw/returnvalues/returnvalue.h"
-#include "fsfw/tmtcpacket/pus/tc/TcPacketPusBase.h"
+#include "fsfw/tmtcpacket/pus/tc/PusTcReader.h"
 
 class PusVerificationMessage : public MessageQueueMessage {
  private:

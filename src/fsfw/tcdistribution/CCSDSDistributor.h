@@ -1,11 +1,12 @@
 #ifndef FRAMEWORK_TCDISTRIBUTION_CCSDSDISTRIBUTOR_H_
 #define FRAMEWORK_TCDISTRIBUTION_CCSDSDISTRIBUTOR_H_
 
-#include "../objectmanager/ObjectManagerIF.h"
-#include "../storagemanager/StorageManagerIF.h"
-#include "../tcdistribution/CCSDSDistributorIF.h"
-#include "../tcdistribution/TcDistributor.h"
-#include "../tmtcservices/AcceptsTelecommandsIF.h"
+#include "fsfw/objectmanager/ObjectManagerIF.h"
+#include "fsfw/storagemanager/StorageManagerIF.h"
+#include "fsfw/tcdistribution/CCSDSDistributorIF.h"
+#include "fsfw/tcdistribution/CcsdsPacketChecker.h"
+#include "fsfw/tcdistribution/TcDistributor.h"
+#include "fsfw/tmtcservices/AcceptsTelecommandsIF.h"
 
 /**
  * @brief 	An instantiation of the CCSDSDistributorIF.
@@ -24,14 +25,15 @@ class CCSDSDistributor : public TcDistributor,
    * 			TcDistributor ctor with a certain object id.
    * @details
    * @c tcStore is set in the @c initialize method.
-   * @param setDefaultApid The default APID, where packets with unknown
+   * @param unknownApid The default APID, where packets with unknown
    * destination are sent to.
    */
-  CCSDSDistributor(uint16_t setDefaultApid, object_id_t setObjectId);
+  CCSDSDistributor(uint16_t unknownApid, object_id_t setObjectId,
+                   CcsdsPacketCheckIF* packetChecker = nullptr);
   /**
    * The destructor is empty.
    */
-  virtual ~CCSDSDistributor();
+  ~CCSDSDistributor() override;
 
   MessageQueueId_t getRequestQueue() override;
   ReturnValue_t registerApplication(uint16_t apid, MessageQueueId_t id) override;
@@ -63,6 +65,8 @@ class CCSDSDistributor : public TcDistributor,
    * pure Space Packets and there exists no SpacePacketStored class.
    */
   StorageManagerIF* tcStore = nullptr;
+
+  CcsdsPacketCheckIF* packetChecker = nullptr;
 };
 
 #endif /* FRAMEWORK_TCDISTRIBUTION_CCSDSDISTRIBUTOR_H_ */

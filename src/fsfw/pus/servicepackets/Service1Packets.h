@@ -50,7 +50,7 @@ class FailureReport : public SerializeIF {  //!< [EXPORT] : [SUBSERVICE] 2, 4, 6
     if (result != returnvalue::OK) {
       return result;
     }
-    if (failureSubtype == tc_verification::PROGRESS_FAILURE) {
+    if (failureSubtype == tcverif::PROGRESS_FAILURE) {
       result = SerializeAdapter::serialize(&stepNumber, buffer, size, maxSize, streamEndianness);
       if (result != returnvalue::OK) {
         return result;
@@ -73,7 +73,7 @@ class FailureReport : public SerializeIF {  //!< [EXPORT] : [SUBSERVICE] 2, 4, 6
     size_t size = 0;
     size += SerializeAdapter::getSerializedSize(&packetId);
     size += sizeof(packetSequenceControl);
-    if (failureSubtype == tc_verification::PROGRESS_FAILURE) {
+    if (failureSubtype == tcverif::PROGRESS_FAILURE) {
       size += SerializeAdapter::getSerializedSize(&stepNumber);
     }
     size += SerializeAdapter::getSerializedSize(&errorCode);
@@ -130,7 +130,7 @@ class SuccessReport : public SerializeIF {  //!< [EXPORT] : [SUBSERVICE] 1, 3, 5
     if (result != returnvalue::OK) {
       return result;
     }
-    if (subtype == tc_verification::PROGRESS_SUCCESS) {
+    if (subtype == tcverif::PROGRESS_SUCCESS) {
       result = SerializeAdapter::serialize(&stepNumber, buffer, size, maxSize, streamEndianness);
       if (result != returnvalue::OK) {
         return result;
@@ -143,7 +143,7 @@ class SuccessReport : public SerializeIF {  //!< [EXPORT] : [SUBSERVICE] 1, 3, 5
     size_t size = 0;
     size += SerializeAdapter::getSerializedSize(&packetId);
     size += sizeof(packetSequenceControl);
-    if (subtype == tc_verification::PROGRESS_SUCCESS) {
+    if (subtype == tcverif::PROGRESS_SUCCESS) {
       size += SerializeAdapter::getSerializedSize(&stepNumber);
     }
     return size;

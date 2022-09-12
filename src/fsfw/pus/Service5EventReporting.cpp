@@ -5,12 +5,13 @@
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/pus/servicepackets/Service5Packets.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/tmtcpacket/pus/tm/TmPacketStored.h"
+#include "fsfw/tmtcservices/tmHelpers.h"
 
-Service5EventReporting::Service5EventReporting(object_id_t objectId, uint16_t apid,
-                                               uint8_t serviceId, size_t maxNumberReportsPerCycle,
+Service5EventReporting::Service5EventReporting(PsbParams params, size_t maxNumberReportsPerCycle,
                                                uint32_t messageQueueDepth)
-    : PusServiceBase(objectId, apid, serviceId),
+    : PusServiceBase(params),
+      storeHelper(params.apid),
+      tmHelper(params.serviceId, storeHelper, sendHelper),
       maxNumberReportsPerCycle(maxNumberReportsPerCycle) {
   eventQueue = QueueFactory::instance()->createMessageQueue(messageQueueDepth);
 }
@@ -45,15 +46,9 @@ ReturnValue_t Service5EventReporting::performService() {
 ReturnValue_t Service5EventReporting::generateEventReport(EventMessage message) {
   EventReport report(message.getEventId(), message.getReporter(), message.getParameter1(),
                      message.getParameter2());
-#if FSFW_USE_PUS_C_TELEMETRY == 0
-  TmPacketStoredPusA tmPacket(PusServiceBase::apid, PusServiceBase::serviceId,
-                              message.getSeverity(), packetSubCounter++, &report);
-#else
-  TmPacketStoredPusC tmPacket(PusServiceBase::apid, PusServiceBase::serviceId,
-                              message.getSeverity(), packetSubCounter++, &report);
-#endif
-  ReturnValue_t result =
-      tmPacket.sendPacket(requestQueue->getDefaultDestination(), requestQueue->getId());
+  storeHelper.preparePacket(psbParams.serviceId, message.getSeverity(), tmHelper.sendCounter);
+  storeHelper.setSourceDataSerializable(report);
+  ReturnValue_t result = tmHelper.storeAndSendTmPacket();
   if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "Service5EventReporting::generateEventReport: "
@@ -86,14 +81,19 @@ ReturnValue_t Service5EventReporting::handleRequest(uint8_t subservice) {
 // In addition to the default PUSServiceBase initialization, this service needs
 // to be registered to the event manager to listen for events.
 ReturnValue_t Service5EventReporting::initialize() {
+  ReturnValue_t result = PusServiceBase::initialize();
+  if (result != returnvalue::OK) {
+    return result;
+  }
   auto* manager = ObjectManager::instance()->get<EventManagerIF>(objects::EVENT_MANAGER);
   if (manager == nullptr) {
     return returnvalue::FAILED;
   }
   // register Service 5 as listener for events
-  ReturnValue_t result = manager->registerListener(eventQueue->getId(), true);
+  result = manager->registerListener(eventQueue->getId(), true);
   if (result != returnvalue::OK) {
     return result;
   }
-  return PusServiceBase::initialize();
+  initializeTmHelpers(sendHelper, storeHelper);
+  return result;
 }

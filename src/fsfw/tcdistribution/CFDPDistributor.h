@@ -1,10 +1,10 @@
 #ifndef FSFW_TCDISTRIBUTION_CFDPDISTRIBUTOR_H_
 #define FSFW_TCDISTRIBUTION_CFDPDISTRIBUTOR_H_
 
-#include <fsfw/tcdistribution/TcPacketCheckCFDP.h>
+#include <fsfw/tcdistribution/CfdpPacketChecker.h>
 
 #include "../returnvalues/returnvalue.h"
-#include "../tmtcpacket/cfdp/CFDPPacketStored.h"
+#include "../tmtcpacket/cfdp/CfdpPacketStored.h"
 #include "../tmtcservices/AcceptsTelecommandsIF.h"
 #include "../tmtcservices/VerificationReporter.h"
 #include "CFDPDistributorIF.h"
@@ -31,7 +31,7 @@ class CFDPDistributor : public TcDistributor,
   /**
    * The destructor is empty.
    */
-  virtual ~CFDPDistributor();
+  ~CFDPDistributor() override;
   ReturnValue_t registerHandler(AcceptsTelecommandsIF* handler) override;
   MessageQueueId_t getRequestQueue() override;
   ReturnValue_t initialize() override;
@@ -42,8 +42,8 @@ class CFDPDistributor : public TcDistributor,
   /**
    * The currently handled packet is stored here.
    */
-  CFDPPacketStored* currentPacket = nullptr;
-  TcPacketCheckCFDP checker;
+  CfdpPacketStored* currentPacket = nullptr;
+  CfdpPacketChecker checker;
   /**
    * With this variable, the current check status is stored to generate
    * acceptance messages later.

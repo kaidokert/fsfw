@@ -2,23 +2,22 @@
 
 #include <linux/sysinfo.h>
 #include <sys/sysinfo.h>
-#include <sys/time.h>
-#include <time.h>
 #include <unistd.h>
 
+#include <ctime>
 #include <fstream>
 
 #include "fsfw/ipc/MutexGuard.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
 
-uint32_t Clock::getTicksPerSecond(void) {
+uint32_t Clock::getTicksPerSecond() {
   uint32_t ticks = sysconf(_SC_CLK_TCK);
   return ticks;
 }
 
 ReturnValue_t Clock::setClock(const TimeOfDay_t* time) {
-  timespec timeUnix;
-  timeval timeTimeval;
+  timespec timeUnix{};
+  timeval timeTimeval{};
   convertTimeOfDayToTimeval(time, &timeTimeval);
   timeUnix.tv_sec = timeTimeval.tv_sec;
   timeUnix.tv_nsec = (__syscall_slong_t)timeTimeval.tv_usec * 1000;
@@ -32,7 +31,7 @@ ReturnValue_t Clock::setClock(const TimeOfDay_t* time) {
 }
 
 ReturnValue_t Clock::setClock(const timeval* time) {
-  timespec timeUnix;
+  timespec timeUnix{};
   timeUnix.tv_sec = time->tv_sec;
   timeUnix.tv_nsec = (__syscall_slong_t)time->tv_usec * 1000;
   int status = clock_settime(CLOCK_REALTIME, &timeUnix);
@@ -44,7 +43,7 @@ ReturnValue_t Clock::setClock(const timeval* time) {
 }
 
 ReturnValue_t Clock::getClock_timeval(timeval* time) {
-  timespec timeUnix;
+  timespec timeUnix{};
   int status = clock_gettime(CLOCK_REALTIME, &timeUnix);
   if (status != 0) {
     return returnvalue::FAILED;
@@ -55,18 +54,18 @@ ReturnValue_t Clock::getClock_timeval(timeval* time) {
 }
 
 ReturnValue_t Clock::getClock_usecs(uint64_t* time) {
-  timeval timeVal;
+  timeval timeVal{};
   ReturnValue_t result = getClock_timeval(&timeVal);
   if (result != returnvalue::OK) {
     return result;
   }
-  *time = (uint64_t)timeVal.tv_sec * 1e6 + timeVal.tv_usec;
+  *time = static_cast<uint64_t>(timeVal.tv_sec) * 1e6 + timeVal.tv_usec;
 
   return returnvalue::OK;
 }
 
 timeval Clock::getUptime() {
-  timeval uptime;
+  timeval uptime{};
   auto result = getUptime(&uptime);
   if (result != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -99,7 +98,7 @@ ReturnValue_t Clock::getUptime(timeval* uptime) {
 //}
 
 ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
-  timeval uptime;
+  timeval uptime{};
   ReturnValue_t result = getUptime(&uptime);
   if (result != returnvalue::OK) {
     return result;
@@ -109,7 +108,7 @@ ReturnValue_t Clock::getUptime(uint32_t* uptimeMs) {
 }
 
 ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
-  timespec timeUnix;
+  timespec timeUnix{};
   int status = clock_gettime(CLOCK_REALTIME, &timeUnix);
   if (status != 0) {
     // TODO errno
@@ -122,7 +121,7 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
   MutexGuard helper(timeMutex);
   // gmtime writes its output in a global buffer which is not Thread Safe
   // Therefore we have to use a Mutex here
-  struct tm* timeInfo;
+  struct std::tm* timeInfo;
   timeInfo = gmtime(&timeUnix.tv_sec);
   time->year = timeInfo->tm_year + 1900;
   time->month = timeInfo->tm_mon + 1;
@@ -136,7 +135,7 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
 }
 
 ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from, timeval* to) {
-  tm fromTm;
+  std::tm fromTm{};
   // Note: Fails for years before AD
   fromTm.tm_year = from->year - 1900;
   fromTm.tm_mon = from->month - 1;

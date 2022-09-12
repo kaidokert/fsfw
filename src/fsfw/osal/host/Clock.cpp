@@ -146,7 +146,7 @@ ReturnValue_t Clock::getDateAndTime(TimeOfDay_t* time) {
 }
 
 ReturnValue_t Clock::convertTimeOfDayToTimeval(const TimeOfDay_t* from, timeval* to) {
-  struct tm time_tm;
+  struct tm time_tm {};
 
   time_tm.tm_year = from->year - 1900;
   time_tm.tm_mon = from->month - 1;
