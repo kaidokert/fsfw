@@ -4,6 +4,10 @@
 #include <cstddef>
 #include <cstdint>
 
+// It is assumed the user has a subsystem and class ID list in some user header files.
+// #include "events/subsystemIdRanges.h"
+// #include "returnvalues/classIds.h"
+
 //! Used to determine whether C++ ostreams are used which can increase
 //! the binary size significantly. If this is disabled,
 //! the C stdio functions can be used alternatively
