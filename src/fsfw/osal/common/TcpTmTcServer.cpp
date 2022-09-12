@@ -161,7 +161,7 @@ void TcpTmTcServer::handleServerOperation(socket_t& connSocket) {
 
   while (true) {
     ssize_t retval = recv(connSocket, reinterpret_cast<char*>(receptionBuffer.data()),
-                          receptionBuffer.capacity(), tcpConfig.tcpFlags);
+                          receptionBuffer.size(), tcpConfig.tcpFlags);
     if (retval == 0) {
       size_t availableReadData = ringBuffer.getAvailableReadData();
       if (availableReadData > lastRingBufferSize) {
@@ -335,31 +335,27 @@ ReturnValue_t TcpTmTcServer::handleTcRingBufferData(size_t availableReadData) {
   }
   ringBuffer.readData(receptionBuffer.data(), readAmount, true);
   const uint8_t* bufPtr = receptionBuffer.data();
-  const uint8_t** bufPtrPtr = &bufPtr;
-  size_t startIdx = 0;
-  size_t foundSize = 0;
-  size_t readLen = 0;
-  while (readLen < readAmount) {
-    if (spacePacketParser == nullptr) {
-      return returnvalue::FAILED;
-    }
-    result =
-        spacePacketParser->parseSpacePackets(bufPtrPtr, readAmount, startIdx, foundSize, readLen);
+  SpacePacketParser::FoundPacketInfo info;
+  if (spacePacketParser == nullptr) {
+    return returnvalue::FAILED;
+  }
+  spacePacketParser->reset();
+  while (spacePacketParser->getAmountRead() < readAmount) {
+    result = spacePacketParser->parseSpacePackets(&bufPtr, readAmount, info);
     switch (result) {
       case (SpacePacketParser::NO_PACKET_FOUND):
       case (SpacePacketParser::SPLIT_PACKET): {
         break;
       }
       case (returnvalue::OK): {
-        result = handleTcReception(receptionBuffer.data() + startIdx, foundSize);
+        result = handleTcReception(receptionBuffer.data() + info.startIdx, info.sizeFound);
         if (result != returnvalue::OK) {
           status = result;
         }
       }
     }
-    ringBuffer.deleteData(foundSize);
+    ringBuffer.deleteData(info.sizeFound);
     lastRingBufferSize = ringBuffer.getAvailableReadData();
-    std::memset(receptionBuffer.data() + startIdx, 0, foundSize);
   }
   return status;
 }
