@@ -58,6 +58,9 @@ ServiceInterfaceBuffer::ServiceInterfaceBuffer(std::string setMessage, bool addC
 }
 
 void ServiceInterfaceBuffer::putChars(char const* begin, char const* end) {
+  if (not isActive) {
+    return;
+  }
   char array[BUF_SIZE];
   uint32_t length = end - begin;
   if (length > sizeof(array)) {
