@@ -310,7 +310,7 @@ void MgmRM3100Handler::modeChanged() { internalState = InternalState::NONE; }
 ReturnValue_t MgmRM3100Handler::initializeLocalDataPool(localpool::DataPool &localDataPoolMap,
                                                         LocalDataPoolManager &poolManager) {
   localDataPoolMap.emplace(RM3100::FIELD_STRENGTHS, &mgmXYZ);
-  poolManager.subscribeForPeriodicPacket(primaryDataset.getSid(), false, 10.0, false);
+  poolManager.subscribeForRegularPeriodicPacket({primaryDataset.getSid(), false, 10.0});
   return returnvalue::OK;
 }
 
