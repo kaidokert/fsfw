@@ -1,9 +1,10 @@
 pipeline {
     environment {
         BUILDDIR = 'cmake-build-tests'
+        DOCDDIR = 'cmake-build-documentation'
     }
     agent {
-        docker { image 'fsfw-ci:d3'}
+        docker { image 'fsfw-ci:d4'}
     }
     stages {
         stage('Clean') {
@@ -36,6 +37,18 @@ pipeline {
             steps {
                 dir(BUILDDIR) {
                     sh 'valgrind --leak-check=full --error-exitcode=1 ./fsfw-tests'
+                }
+            }
+        }
+        stage('Documentation') {
+            steps {
+                dir(DOCDDIR) {
+                    sh 'cmake -DFSFW_BUILD_DOCS=ON -DFSFW_OSAL=host ..'
+                    sh 'make Sphinx'
+                    sh 'cd docs/sphinx'
+                    sshagent(credentials: ['documentation-buildfix']) {
+                        sh 'scp -r ./* buildfix@documents.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/development'
+                    }
                 }
             }
         }
