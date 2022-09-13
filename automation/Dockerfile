@@ -20,3 +20,6 @@ RUN git clone https://github.com/ETLCPP/etl.git && \
         git checkout 20.28.0 && \
         cmake -B build . && \
         cmake --install build/
+
+#ssh needs a valid user to work
+RUN adduser -m -u 114 jenkins
