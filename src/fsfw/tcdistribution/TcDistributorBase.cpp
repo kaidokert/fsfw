@@ -1,4 +1,4 @@
-#include "fsfw/tcdistribution/TcDistributorBase.h"
+#include "TcDistributorBase.h"
 
 #include "definitions.h"
 #include "fsfw/ipc/QueueFactory.h"
