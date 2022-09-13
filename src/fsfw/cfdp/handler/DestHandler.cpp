@@ -464,5 +464,5 @@ void cfdp::DestHandler::setEventReporter(EventReportingProxyIF& reporter) {
 
 const cfdp::DestHandlerParams& cfdp::DestHandler::getDestHandlerParams() const { return dp; }
 
-StorageManagerIF* cfdp::DestHandler::getTmStore() const { return fp.tcStore; }
-StorageManagerIF* cfdp::DestHandler::getTcStore() const { return fp.tmStore; }
+StorageManagerIF* cfdp::DestHandler::getTmStore() const { return fp.tmStore; }
+StorageManagerIF* cfdp::DestHandler::getTcStore() const { return fp.tcStore; }
