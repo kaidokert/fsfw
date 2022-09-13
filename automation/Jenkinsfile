@@ -4,7 +4,10 @@ pipeline {
         DOCDDIR = 'cmake-build-documentation'
     }
     agent {
-        docker { image 'fsfw-ci:d5'}
+        docker { 
+            image 'fsfw-ci:d5'
+            args '--network host'
+        }
     }
     stages {
         stage('Clean') {
@@ -41,6 +44,7 @@ pipeline {
             }
         }
         stage('Documentation') {
+            agent any
             when {
                 branch 'mohr/documentation_ci'
             }
@@ -50,7 +54,7 @@ pipeline {
                     sh 'make Sphinx'
                     sh 'cd docs/sphinx'
                     sshagent(credentials: ['documentation-buildfix']) {
-                        sh 'scp -r ./* buildfix@documents.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/development'
+                        sh 'scp -r ./* buildfix@documentation.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/development'
                     }
                 }
             }
