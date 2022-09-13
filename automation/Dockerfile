@@ -22,4 +22,4 @@ RUN git clone https://github.com/ETLCPP/etl.git && \
         cmake --install build/
 
 #ssh needs a valid user to work
-RUN adduser -m -u 114 jenkins
+RUN adduser --uid 114 jenkins
