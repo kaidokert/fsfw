@@ -4,7 +4,7 @@ pipeline {
         DOCDDIR = 'cmake-build-documentation'
     }
     agent {
-        docker { image 'fsfw-ci:d4'}
+        docker { image 'fsfw-ci:d5'}
     }
     stages {
         stage('Clean') {
@@ -42,6 +42,7 @@ pipeline {
         }
         stage('Documentation') {
             steps {
+                echo env.BRANCH_NAME
                 dir(DOCDDIR) {
                     sh 'cmake -DFSFW_BUILD_DOCS=ON -DFSFW_OSAL=host ..'
                     sh 'make Sphinx'
