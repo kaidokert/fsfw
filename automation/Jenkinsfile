@@ -51,9 +51,8 @@ pipeline {
                 dir(DOCDDIR) {
                     sh 'cmake -DFSFW_BUILD_DOCS=ON -DFSFW_OSAL=host ..'
                     sh 'make Sphinx'
-                    sh 'cd docs/sphinx'
                     sshagent(credentials: ['documentation-buildfix']) {
-                        sh 'scp -o StrictHostKeyChecking=no -r ./* buildfix@documentation.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/development'
+                        sh 'scp -o StrictHostKeyChecking=no -r docs/sphinx/* buildfix@documentation.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/development'
                     }
                 }
             }
@@ -66,9 +65,8 @@ pipeline {
                 dir(DOCDDIR) {
                     sh 'cmake -DFSFW_BUILD_DOCS=ON -DFSFW_OSAL=host ..'
                     sh 'make Sphinx'
-                    sh 'cd docs/sphinx'
                     sshagent(credentials: ['documentation-buildfix']) {
-                        sh 'scp -o StrictHostKeyChecking=no -r ./* buildfix@documentation.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/master'
+                        sh 'scp -o StrictHostKeyChecking=no -r docs/sphinx/* buildfix@documentation.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/master'
                     }
                 }
             }
