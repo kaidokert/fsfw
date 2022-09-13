@@ -2,7 +2,6 @@
 #define MISSION_DEVICES_MGMLIS3MDLHANDLER_H_
 
 #include "devicedefinitions/MgmLIS3HandlerDefs.h"
-#include "events/subsystemIdRanges.h"
 #include "fsfw/devicehandlers/DeviceHandlerBase.h"
 #include "fsfw/globalfunctions/PeriodicOperationDivider.h"
 

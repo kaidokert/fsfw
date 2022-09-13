@@ -243,13 +243,14 @@ class LocalDataPoolManager : public ProvidesDataPoolSubscriptionIF, public Acces
   LocalDataPoolManager* getPoolManagerHandle() override;
   ReturnValue_t subscribeForRegularPeriodicPacket(subdp::RegularHkPeriodicParams params) override;
   ReturnValue_t subscribeForDiagPeriodicPacket(subdp::DiagnosticsHkPeriodicParams params) override;
-  ReturnValue_t subscribeForPeriodicPacket(subdp::ParamsBase& params);
 
   ReturnValue_t subscribeForRegularUpdatePacket(subdp::RegularHkUpdateParams params) override;
   ReturnValue_t subscribeForDiagUpdatePacket(subdp::DiagnosticsHkUpdateParams params) override;
-  ReturnValue_t subscribeForUpdatePacket(subdp::ParamsBase& params);
 
  protected:
+  ReturnValue_t subscribeForPeriodicPacket(subdp::ParamsBase& params);
+  ReturnValue_t subscribeForUpdatePacket(subdp::ParamsBase& params);
+
   /** Core data structure for the actual pool data */
   localpool::DataPool localPoolMap;
   /** Every housekeeping data manager has a mutex to protect access

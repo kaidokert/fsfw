@@ -76,7 +76,7 @@ ReturnValue_t cfdp::Lv::deSerialize(const uint8_t** buffer, size_t* size,
   }
   zeroLen = false;
   // Zero-copy implementation
-  value.setConstBuffer(const_cast<uint8_t*>(*buffer + 1), lengthField);
+  value.setConstBuffer(*buffer + 1, lengthField);
   *buffer += 1 + lengthField;
   *size -= 1 + lengthField;
   return returnvalue::OK;
