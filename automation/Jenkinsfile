@@ -56,6 +56,12 @@ pipeline {
                         sh 'scp -o StrictHostKeyChecking=no -r docs/sphinx/* buildfix@documentation.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/development'
                     }
                 }
+                dir(BUILDDIR) {
+                    sshagent(credentials: ['documentation-buildfix']) {
+                        sh 'ssh -o StrictHostKeyChecking=no buildfix@documentation.intra.irs.uni-stuttgart.de rm -rf /mnt/data/www/html/fsfw/coverage/development/*'
+                        sh 'scp -o StrictHostKeyChecking=no -r fsfw-tests_coverage/* buildfix@documentation.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/coverage/development'
+                    }
+                }
             }
         }
         stage('Master Documentation') {
@@ -69,6 +75,12 @@ pipeline {
                     sshagent(credentials: ['documentation-buildfix']) {
                         sh 'ssh -o StrictHostKeyChecking=no buildfix@documentation.intra.irs.uni-stuttgart.de rm -rf /mnt/data/www/html/fsfw/master/*'
                         sh 'scp -o StrictHostKeyChecking=no -r docs/sphinx/* buildfix@documentation.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/master'
+                    }
+                }
+                dir(BUILDDIR) {
+                    sshagent(credentials: ['documentation-buildfix']) {
+                        sh 'ssh -o StrictHostKeyChecking=no buildfix@documentation.intra.irs.uni-stuttgart.de rm -rf /mnt/data/www/html/fsfw/coverage/master/*'
+                        sh 'scp -o StrictHostKeyChecking=no -r fsfw-tests_coverage/* buildfix@documentation.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/coverage/master'
                     }
                 }
             }
