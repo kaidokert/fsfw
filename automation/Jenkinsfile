@@ -47,6 +47,7 @@ pipeline {
                     sh 'make Sphinx'
                     sh 'cd docs/sphinx'
                     sshagent(credentials: ['documentation-buildfix']) {
+                        sh 'ssh -vvv buildfix@documents.intra.irs.uni-stuttgart.de uname -a'
                         sh 'scp -r ./* buildfix@documents.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/development'
                     }
                 }
