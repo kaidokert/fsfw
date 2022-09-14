@@ -25,6 +25,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/655
   which also includes a migration guide
 
+## CFDP
+
+- Refactoring of CFDP stack which was done during implementation of the CFDP source and destination
+  handlers.
+   - New filesystem module, changes for filesystem abstraction `HasFileSystemIF` to better
+     fit requirements of CFDP
+   - New `HostFilesystem` implementation of the `HasFileSystemIF`
+   - New `cfdp::UserBase` class which is the abstraction for the CFDP user in an OBSW context.
+   - mib module for the CFDP stack
+   - PDU classes renamed from `...Serializer`/`...Deserializer` to `...Creator`/`...Reader`
+     respetively
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/682/files
+
 # [v5.0.0] 25.07.2022
 
 ## Changes
