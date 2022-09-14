@@ -36,6 +36,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
    - mib module for the CFDP stack
    - PDU classes renamed from `...Serializer`/`...Deserializer` to `...Creator`/`...Reader`
      respetively
+   - Renamed `TcDistributor` to `TcDistributorBase` to prevent confusion
+   - Refactored `TcDisitributorBase` to be more flexible and usable for CFDP distribution
+   - Renamed `CCSDSDistributor` to `CcsdsDistributor` and add feature which allows it
+     to remove the CCSDS header when routing a packet. This allows CCSDS agnostic receiver
+     implementation without an extra component
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/682/files
 
 # [v5.0.0] 25.07.2022
