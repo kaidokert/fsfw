@@ -1,2 +1,1 @@
-target_sources(${LIB_FSFW_NAME} PRIVATE SourceHandler.cpp DestHandler.cpp
-                                        FaultHandlerBase.cpp UserBase.cpp)
+target_sources(${LIB_FSFW_NAME} PRIVATE FaultHandlerBase.cpp UserBase.cpp)

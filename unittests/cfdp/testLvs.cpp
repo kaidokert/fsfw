@@ -2,6 +2,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "fsfw/cfdp.h"
+#include "fsfw/cfdp/VarLenFields.h"
 
 TEST_CASE("CFDP LV", "[cfdp][lv]") {
   using namespace cfdp;
