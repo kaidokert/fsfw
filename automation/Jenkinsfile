@@ -1,9 +1,13 @@
 pipeline {
     environment {
         BUILDDIR = 'cmake-build-tests'
+        DOCDDIR = 'cmake-build-documentation'
     }
     agent {
-        docker { image 'fsfw-ci:d3'}
+        docker { 
+            image 'fsfw-ci:d5'
+            args '--network host'
+        }
     }
     stages {
         stage('Clean') {
@@ -36,6 +40,48 @@ pipeline {
             steps {
                 dir(BUILDDIR) {
                     sh 'valgrind --leak-check=full --error-exitcode=1 ./fsfw-tests'
+                }
+            }
+        }
+        stage('Documentation') {
+            when {
+                branch 'development'
+            }
+            steps {
+                dir(DOCDDIR) {
+                    sh 'cmake -DFSFW_BUILD_DOCS=ON -DFSFW_OSAL=host ..'
+                    sh 'make Sphinx'
+                    sshagent(credentials: ['documentation-buildfix']) {
+                        sh 'ssh -o StrictHostKeyChecking=no buildfix@documentation.intra.irs.uni-stuttgart.de rm -rf /mnt/data/www/html/fsfw/development/*'
+                        sh 'scp -o StrictHostKeyChecking=no -r docs/sphinx/* buildfix@documentation.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/development'
+                    }
+                }
+                dir(BUILDDIR) {
+                    sshagent(credentials: ['documentation-buildfix']) {
+                        sh 'ssh -o StrictHostKeyChecking=no buildfix@documentation.intra.irs.uni-stuttgart.de rm -rf /mnt/data/www/html/fsfw/coverage/development/*'
+                        sh 'scp -o StrictHostKeyChecking=no -r fsfw-tests_coverage/* buildfix@documentation.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/coverage/development'
+                    }
+                }
+            }
+        }
+        stage('Master Documentation') {
+            when {
+                branch 'master'
+            }
+            steps {
+                dir(DOCDDIR) {
+                    sh 'cmake -DFSFW_BUILD_DOCS=ON -DFSFW_OSAL=host ..'
+                    sh 'make Sphinx'
+                    sshagent(credentials: ['documentation-buildfix']) {
+                        sh 'ssh -o StrictHostKeyChecking=no buildfix@documentation.intra.irs.uni-stuttgart.de rm -rf /mnt/data/www/html/fsfw/master/*'
+                        sh 'scp -o StrictHostKeyChecking=no -r docs/sphinx/* buildfix@documentation.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/master'
+                    }
+                }
+                dir(BUILDDIR) {
+                    sshagent(credentials: ['documentation-buildfix']) {
+                        sh 'ssh -o StrictHostKeyChecking=no buildfix@documentation.intra.irs.uni-stuttgart.de rm -rf /mnt/data/www/html/fsfw/coverage/master/*'
+                        sh 'scp -o StrictHostKeyChecking=no -r fsfw-tests_coverage/* buildfix@documentation.intra.irs.uni-stuttgart.de:/mnt/data/www/html/fsfw/coverage/master'
+                    }
                 }
             }
         }

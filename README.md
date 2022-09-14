@@ -175,7 +175,7 @@ cmake -DFSFW_BUILD_DOCS=ON -DFSFW_OSAL=host ..
 Then you can generate the documentation using
 
 ```sh
-cmake --build . -j
+cmake --build . -- Sphinx -j
 ```
 
 You can find the generated documentation inside the `docs/sphinx` folder inside the build
