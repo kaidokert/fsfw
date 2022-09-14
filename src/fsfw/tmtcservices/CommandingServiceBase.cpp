@@ -3,7 +3,7 @@
 #include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/tcdistribution/PUSDistributorIF.h"
+#include "fsfw/tcdistribution/PusDistributorIF.h"
 #include "fsfw/tmtcpacket/pus/tc.h"
 #include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
@@ -14,7 +14,8 @@ object_id_t CommandingServiceBase::defaultPacketSource = objects::NO_OBJECT;
 object_id_t CommandingServiceBase::defaultPacketDestination = objects::NO_OBJECT;
 
 CommandingServiceBase::CommandingServiceBase(object_id_t setObjectId, uint16_t apid,
-                                             uint8_t service, uint8_t numberOfParallelCommands,
+                                             const char* name, uint8_t service,
+                                             uint8_t numberOfParallelCommands,
                                              uint16_t commandTimeoutSeconds, size_t queueDepth,
                                              VerificationReporterIF* verificationReporter)
     : SystemObject(setObjectId),
@@ -24,7 +25,8 @@ CommandingServiceBase::CommandingServiceBase(object_id_t setObjectId, uint16_t a
       tmStoreHelper(apid),
       tmHelper(service, tmStoreHelper, tmSendHelper),
       verificationReporter(verificationReporter),
-      commandMap(numberOfParallelCommands) {
+      commandMap(numberOfParallelCommands),
+      name(name) {
   commandQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
   requestQueue = QueueFactory::instance()->createMessageQueue(queueDepth);
 }
@@ -50,9 +52,9 @@ ReturnValue_t CommandingServiceBase::performOperation(uint8_t opCode) {
   return returnvalue::OK;
 }
 
-uint16_t CommandingServiceBase::getIdentifier() { return service; }
+uint32_t CommandingServiceBase::getIdentifier() const { return service; }
 
-MessageQueueId_t CommandingServiceBase::getRequestQueue() { return requestQueue->getId(); }
+MessageQueueId_t CommandingServiceBase::getRequestQueue() const { return requestQueue->getId(); }
 
 ReturnValue_t CommandingServiceBase::initialize() {
   ReturnValue_t result = SystemObject::initialize();
@@ -68,7 +70,7 @@ ReturnValue_t CommandingServiceBase::initialize() {
   if (packetSource == objects::NO_OBJECT) {
     packetSource = defaultPacketSource;
   }
-  auto* distributor = ObjectManager::instance()->get<PUSDistributorIF>(packetSource);
+  auto* distributor = ObjectManager::instance()->get<PusDistributorIF>(packetSource);
 
   if (packetForwarding == nullptr or distributor == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -79,7 +81,7 @@ ReturnValue_t CommandingServiceBase::initialize() {
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
-  distributor->registerService(this);
+  distributor->registerService(*this);
   requestQueue->setDefaultDestination(packetForwarding->getReportReceptionQueue());
 
   ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);
@@ -489,3 +491,5 @@ void CommandingServiceBase::prepareVerificationSuccessWithFullInfo(
   successParams.tcPsc = tcInfo.tcSequenceControl;
   successParams.ackFlags = tcInfo.ackFlags;
 }
+
+const char* CommandingServiceBase::getName() const { return name; }

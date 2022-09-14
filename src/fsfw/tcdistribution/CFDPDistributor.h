@@ -33,9 +33,9 @@ class CFDPDistributor : public TcDistributor,
    */
   ~CFDPDistributor() override;
   ReturnValue_t registerHandler(AcceptsTelecommandsIF* handler) override;
-  MessageQueueId_t getRequestQueue() override;
+  MessageQueueId_t getRequestQueue() const override;
   ReturnValue_t initialize() override;
-  uint16_t getIdentifier() override;
+  uint32_t getIdentifier() const override;
 
  protected:
   uint16_t apid;

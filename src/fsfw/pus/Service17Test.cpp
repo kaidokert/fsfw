@@ -8,7 +8,9 @@
 Service17Test::Service17Test(PsbParams params)
     : PusServiceBase(params),
       storeHelper(params.apid),
-      tmHelper(params.serviceId, storeHelper, sendHelper) {}
+      tmHelper(params.serviceId, storeHelper, sendHelper) {
+  params.name = "PUS 17 Test";
+}
 
 Service17Test::~Service17Test() = default;
 

@@ -9,3 +9,5 @@ AcceptsTmMock::AcceptsTmMock(MessageQueueId_t queueToReturn)
 MessageQueueId_t AcceptsTmMock::getReportReceptionQueue(uint8_t virtualChannel) {
   return returnedQueue;
 }
+
+const char* AcceptsTmMock::getName() const { return "TM Acceptor Mock"; }

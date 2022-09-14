@@ -7,9 +7,10 @@
 
 #define TMTCBRIDGE_WIRETAPPING 0
 
-TmTcBridge::TmTcBridge(object_id_t objectId, object_id_t tcDestination, object_id_t tmStoreId,
-                       object_id_t tcStoreId)
+TmTcBridge::TmTcBridge(const char* name, object_id_t objectId, object_id_t tcDestination,
+                       object_id_t tmStoreId, object_id_t tcStoreId)
     : SystemObject(objectId),
+      name(name),
       tmStoreId(tmStoreId),
       tcStoreId(tcStoreId),
       tcDestination(tcDestination)
@@ -67,8 +68,7 @@ ReturnValue_t TmTcBridge::initialize() {
 #endif
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
-  AcceptsTelecommandsIF* tcDistributor =
-      ObjectManager::instance()->get<AcceptsTelecommandsIF>(tcDestination);
+  auto* tcDistributor = ObjectManager::instance()->get<AcceptsTelecommandsIF>(tcDestination);
   if (tcDistributor == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "TmTcBridge::initialize: TC Distributor invalid" << std::endl;
@@ -246,14 +246,16 @@ MessageQueueId_t TmTcBridge::getReportReceptionQueue(uint8_t virtualChannel) {
 
 void TmTcBridge::printData(uint8_t* data, size_t dataLen) { arrayprinter::print(data, dataLen); }
 
-uint16_t TmTcBridge::getIdentifier() {
+uint32_t TmTcBridge::getIdentifier() const {
   // This is no PUS service, so we just return 0
   return 0;
 }
 
-MessageQueueId_t TmTcBridge::getRequestQueue() {
+MessageQueueId_t TmTcBridge::getRequestQueue() const {
   // Default implementation: Relay TC messages to TC distributor directly.
   return tmTcReceptionQueue->getDefaultDestination();
 }
 
 void TmTcBridge::setFifoToOverwriteOldData(bool overwriteOld) { this->overwriteOld = overwriteOld; }
+
+const char* TmTcBridge::getName() const { return name; }

@@ -10,8 +10,8 @@ CService201HealthCommanding::CService201HealthCommanding(object_id_t objectId, u
                                                          uint8_t serviceId,
                                                          uint8_t numParallelCommands,
                                                          uint16_t commandTimeoutSeconds)
-    : CommandingServiceBase(objectId, apid, serviceId, numParallelCommands, commandTimeoutSeconds) {
-}
+    : CommandingServiceBase(objectId, apid, "PUS 201 Health MGMT", serviceId, numParallelCommands,
+                            commandTimeoutSeconds) {}
 
 ReturnValue_t CService201HealthCommanding::isValidSubservice(uint8_t subservice) {
   switch (subservice) {

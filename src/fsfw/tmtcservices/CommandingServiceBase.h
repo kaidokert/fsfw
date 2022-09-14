@@ -75,7 +75,7 @@ class CommandingServiceBase : public SystemObject,
    * @param setPacketDestination
    * @param queueDepth
    */
-  CommandingServiceBase(object_id_t setObjectId, uint16_t apid, uint8_t service,
+  CommandingServiceBase(object_id_t setObjectId, uint16_t apid, const char* name, uint8_t service,
                         uint8_t numberOfParallelCommands, uint16_t commandTimeoutSeconds,
                         size_t queueDepth = 20, VerificationReporterIF* reporter = nullptr);
   ~CommandingServiceBase() override;
@@ -105,7 +105,7 @@ class CommandingServiceBase : public SystemObject,
    */
   ReturnValue_t performOperation(uint8_t opCode) override;
 
-  uint16_t getIdentifier() override;
+  uint32_t getIdentifier() const override;
 
   /**
    * Returns the requestQueue MessageQueueId_t
@@ -114,7 +114,7 @@ class CommandingServiceBase : public SystemObject,
    *
    * @return requestQueue messageQueueId_t
    */
-  MessageQueueId_t getRequestQueue() override;
+  MessageQueueId_t getRequestQueue() const override;
 
   /**
    * Returns the commandQueue MessageQueueId_t
@@ -133,6 +133,7 @@ class CommandingServiceBase : public SystemObject,
    * @param task Pointer to the taskIF of this task
    */
   void setTaskIF(PeriodicTaskIF* task) override;
+  const char* getName() const override;
 
  protected:
   /**
@@ -282,6 +283,8 @@ class CommandingServiceBase : public SystemObject,
   /* May be set be children to return a more precise failure condition. */
   uint32_t failureParameter1 = 0;
   uint32_t failureParameter2 = 0;
+
+  const char* name = "";
 
   static object_id_t defaultPacketSource;
   object_id_t packetSource = objects::NO_OBJECT;

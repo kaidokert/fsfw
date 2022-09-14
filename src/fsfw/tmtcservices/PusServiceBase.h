@@ -22,9 +22,13 @@ class StorageManagerIF;
 struct PsbParams {
   PsbParams() = default;
   PsbParams(uint16_t apid, AcceptsTelemetryIF* tmReceiver) : apid(apid), tmReceiver(tmReceiver) {}
+  PsbParams(const char* name, uint16_t apid, AcceptsTelemetryIF* tmReceiver)
+      : name(name), apid(apid), tmReceiver(tmReceiver) {}
   PsbParams(object_id_t objectId, uint16_t apid, uint8_t serviceId)
       : objectId(objectId), apid(apid), serviceId(serviceId) {}
-
+  PsbParams(const char* name, object_id_t objectId, uint16_t apid, uint8_t serviceId)
+      : name(name), objectId(objectId), apid(apid), serviceId(serviceId) {}
+  const char* name = "";
   object_id_t objectId = objects::NO_OBJECT;
   uint16_t apid = 0;
   uint8_t serviceId = 0;
@@ -187,11 +191,12 @@ class PusServiceBase : public ExecutableObjectIF,
    * 		@c returnvalue::FAILED else.
    */
   ReturnValue_t performOperation(uint8_t opCode) override;
-  uint16_t getIdentifier() override;
-  MessageQueueId_t getRequestQueue() override;
+  uint32_t getIdentifier() const override;
+  MessageQueueId_t getRequestQueue() const override;
   ReturnValue_t initialize() override;
 
   void setTaskIF(PeriodicTaskIF* taskHandle) override;
+  [[nodiscard]] const char* getName() const override;
 
  protected:
   /**
@@ -200,6 +205,7 @@ class PusServiceBase : public ExecutableObjectIF,
    * Will be set by setTaskIF(), which is called on task creation.
    */
   PeriodicTaskIF* taskHandle = nullptr;
+
   /**
    * One of two error parameters for additional error information.
    */

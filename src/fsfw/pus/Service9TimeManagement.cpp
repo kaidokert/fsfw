@@ -5,7 +5,9 @@
 #include "fsfw/serviceinterface/ServiceInterface.h"
 #include "fsfw/timemanager/CCSDSTime.h"
 
-Service9TimeManagement::Service9TimeManagement(PsbParams params) : PusServiceBase(params) {}
+Service9TimeManagement::Service9TimeManagement(PsbParams params) : PusServiceBase(params) {
+  params.name = "PUS 9 Time MGMT";
+}
 
 Service9TimeManagement::~Service9TimeManagement() = default;
 

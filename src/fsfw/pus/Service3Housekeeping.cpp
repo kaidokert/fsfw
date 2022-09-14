@@ -5,7 +5,7 @@
 #include "fsfw/pus/servicepackets/Service3Packets.h"
 
 Service3Housekeeping::Service3Housekeeping(object_id_t objectId, uint16_t apid, uint8_t serviceId)
-    : CommandingServiceBase(objectId, apid, serviceId, NUM_OF_PARALLEL_COMMANDS,
+    : CommandingServiceBase(objectId, apid, "PUS 3 HK", serviceId, NUM_OF_PARALLEL_COMMANDS,
                             COMMAND_TIMEOUT_SECONDS) {}
 
 Service3Housekeeping::~Service3Housekeeping() {}

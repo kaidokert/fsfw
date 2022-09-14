@@ -14,8 +14,8 @@
 Service2DeviceAccess::Service2DeviceAccess(object_id_t objectId, uint16_t apid, uint8_t serviceId,
                                            uint8_t numberOfParallelCommands,
                                            uint16_t commandTimeoutSeconds)
-    : CommandingServiceBase(objectId, apid, serviceId, numberOfParallelCommands,
-                            commandTimeoutSeconds) {}
+    : CommandingServiceBase(objectId, apid, "PUS 2 Raw Commanding", serviceId,
+                            numberOfParallelCommands, commandTimeoutSeconds) {}
 
 Service2DeviceAccess::~Service2DeviceAccess() {}
 

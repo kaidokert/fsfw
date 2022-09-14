@@ -14,6 +14,8 @@ class AcceptsTelemetryIF {
    * @brief The virtual destructor as it is mandatory for C++ interfaces.
    */
   virtual ~AcceptsTelemetryIF() = default;
+
+  [[nodiscard]] virtual const char* getName() const = 0;
   /**
    * @brief	This method returns the message queue id of the telemetry
    * 			receiving message queue.

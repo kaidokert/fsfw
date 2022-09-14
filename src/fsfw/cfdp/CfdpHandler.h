@@ -25,8 +25,8 @@ class CfdpHandler : public ExecutableObjectIF, public AcceptsTelecommandsIF, pub
   virtual ReturnValue_t handleRequest(store_address_t storeId);
 
   virtual ReturnValue_t initialize() override;
-  virtual uint16_t getIdentifier() override;
-  MessageQueueId_t getRequestQueue() override;
+  uint32_t getIdentifier() const override;
+  MessageQueueId_t getRequestQueue() const override;
   ReturnValue_t performOperation(uint8_t opCode) override;
 
  protected:

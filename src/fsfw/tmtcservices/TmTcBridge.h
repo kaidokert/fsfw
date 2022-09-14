@@ -22,9 +22,9 @@ class TmTcBridge : public AcceptsTelemetryIF,
   static constexpr uint8_t DEFAULT_STORED_DATA_SENT_PER_CYCLE = 5;
   static constexpr uint8_t DEFAULT_DOWNLINK_PACKETS_STORED = 10;
 
-  TmTcBridge(object_id_t objectId, object_id_t tcDestination, object_id_t tmStoreId,
-             object_id_t tcStoreId);
-  virtual ~TmTcBridge();
+  TmTcBridge(const char* name, object_id_t objectId, object_id_t tcDestination,
+             object_id_t tmStoreId, object_id_t tcStoreId);
+  ~TmTcBridge() override;
 
   /**
    * Set number of packets sent per performOperation().Please note that this
@@ -57,21 +57,24 @@ class TmTcBridge : public AcceptsTelemetryIF,
    * Initializes necessary FSFW components for the TMTC Bridge
    * @return
    */
-  virtual ReturnValue_t initialize() override;
+  ReturnValue_t initialize() override;
 
   /**
    * @brief	Handles TMTC reception
    */
-  virtual ReturnValue_t performOperation(uint8_t operationCode = 0) override;
+  ReturnValue_t performOperation(uint8_t operationCode = 0) override;
 
   /** AcceptsTelemetryIF override */
-  virtual MessageQueueId_t getReportReceptionQueue(uint8_t virtualChannel = 0) override;
+  MessageQueueId_t getReportReceptionQueue(uint8_t virtualChannel = 0) override;
 
   /** AcceptsTelecommandsIF override */
-  virtual uint16_t getIdentifier() override;
-  virtual MessageQueueId_t getRequestQueue() override;
+  uint32_t getIdentifier() const override;
+  MessageQueueId_t getRequestQueue() const override;
+  const char* getName() const override;
 
  protected:
+  const char* name = "";
+
   //! Cached for initialize function.
   object_id_t tmStoreId = objects::NO_OBJECT;
   object_id_t tcStoreId = objects::NO_OBJECT;

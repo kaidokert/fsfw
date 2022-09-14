@@ -16,7 +16,9 @@ inline Service11TelecommandScheduling<MAX_NUM_TCS>::Service11TelecommandScheduli
     : PusServiceBase(params),
       RELEASE_TIME_MARGIN_SECONDS(releaseTimeMarginSeconds),
       debugMode(debugMode),
-      tcRecipient(tcRecipient) {}
+      tcRecipient(tcRecipient) {
+  params.name = "PUS 11 TC Scheduling";
+}
 
 template <size_t MAX_NUM_TCS>
 inline Service11TelecommandScheduling<MAX_NUM_TCS>::~Service11TelecommandScheduling() = default;
