@@ -3,9 +3,9 @@
 
 #include "fsfw/cfdp/pdu/FileDirectiveCreator.h"
 
-class PromptPduSerializer : public FileDirectiveCreator {
+class PromptPduCreator : public FileDirectiveCreator {
  public:
-  PromptPduSerializer(PduConfig& conf, cfdp::PromptResponseRequired responseRequired);
+  PromptPduCreator(PduConfig& conf, cfdp::PromptResponseRequired responseRequired);
 
   [[nodiscard]] size_t getSerializedSize() const override;
 

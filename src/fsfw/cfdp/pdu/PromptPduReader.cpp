@@ -1,13 +1,13 @@
-#include "PromptPduDeserializer.h"
+#include "PromptPduReader.h"
 
-PromptPduDeserializer::PromptPduDeserializer(const uint8_t *pduBuf, size_t maxSize)
+PromptPduReader::PromptPduReader(const uint8_t *pduBuf, size_t maxSize)
     : FileDirectiveReader(pduBuf, maxSize) {}
 
-cfdp::PromptResponseRequired PromptPduDeserializer::getPromptResponseRequired() const {
+cfdp::PromptResponseRequired PromptPduReader::getPromptResponseRequired() const {
   return responseRequired;
 }
 
-ReturnValue_t PromptPduDeserializer::parseData() {
+ReturnValue_t PromptPduReader::parseData() {
   ReturnValue_t result = FileDirectiveReader::parseData();
   if (result != returnvalue::OK) {
     return result;

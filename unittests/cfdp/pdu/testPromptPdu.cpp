@@ -1,8 +1,8 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw/cfdp/pdu/PromptPduDeserializer.h"
-#include "fsfw/cfdp/pdu/PromptPduSerializer.h"
+#include "fsfw/cfdp/pdu/PromptPduCreator.h"
+#include "fsfw/cfdp/pdu/PromptPduReader.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
 TEST_CASE("Prompt PDU", "[cfdp][pdu]") {
@@ -17,7 +17,7 @@ TEST_CASE("Prompt PDU", "[cfdp][pdu]") {
   PduConfig pduConf(sourceId, destId, TransmissionModes::ACKNOWLEDGED, seqNum);
 
   SECTION("Serialize") {
-    PromptPduSerializer serializer(pduConf, cfdp::PromptResponseRequired::PROMPT_KEEP_ALIVE);
+    PromptPduCreator serializer(pduConf, cfdp::PromptResponseRequired::PROMPT_KEEP_ALIVE);
     result = serializer.serialize(&buffer, &sz, rawBuf.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
     REQUIRE(serializer.getWholePduSize() == 12);
@@ -41,11 +41,11 @@ TEST_CASE("Prompt PDU", "[cfdp][pdu]") {
   }
 
   SECTION("Deserialize") {
-    PromptPduSerializer serializer(pduConf, cfdp::PromptResponseRequired::PROMPT_KEEP_ALIVE);
+    PromptPduCreator serializer(pduConf, cfdp::PromptResponseRequired::PROMPT_KEEP_ALIVE);
     result = serializer.serialize(&buffer, &sz, rawBuf.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
 
-    PromptPduDeserializer deserializer(rawBuf.data(), rawBuf.size());
+    PromptPduReader deserializer(rawBuf.data(), rawBuf.size());
     result = deserializer.parseData();
     REQUIRE(result == returnvalue::OK);
     REQUIRE(deserializer.getPromptResponseRequired() ==

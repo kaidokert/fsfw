@@ -1,8 +1,8 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw/cfdp/pdu/NakPduDeserializer.h"
-#include "fsfw/cfdp/pdu/NakPduSerializer.h"
+#include "fsfw/cfdp/pdu/NakPduCreator.h"
+#include "fsfw/cfdp/pdu/NakPduReader.h"
 #include "fsfw/cfdp/pdu/PduConfig.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
@@ -21,7 +21,7 @@ TEST_CASE("NAK PDU", "[cfdp][pdu]") {
   FileSize endOfScope(1050);
   NakInfo info(startOfScope, endOfScope);
   SECTION("Serializer") {
-    NakPduSerializer serializer(pduConf, info);
+    NakPduCreator serializer(pduConf, info);
     result = serializer.serialize(&buffer, &sz, nakBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
     REQUIRE(serializer.getSerializedSize() == 19);
@@ -87,13 +87,13 @@ TEST_CASE("NAK PDU", "[cfdp][pdu]") {
   }
 
   SECTION("Deserializer") {
-    NakPduSerializer serializer(pduConf, info);
+    NakPduCreator serializer(pduConf, info);
     result = serializer.serialize(&buffer, &sz, nakBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
 
     info.getStartOfScope().setFileSize(0, false);
     info.getEndOfScope().setFileSize(0, false);
-    NakPduDeserializer deserializer(nakBuffer.data(), nakBuffer.size(), info);
+    NakPduReader deserializer(nakBuffer.data(), nakBuffer.size(), info);
     result = deserializer.parseData();
     REQUIRE(result == returnvalue::OK);
     REQUIRE(deserializer.getWholePduSize() == 19);
@@ -112,7 +112,7 @@ TEST_CASE("NAK PDU", "[cfdp][pdu]") {
     result = serializer.serialize(&buffer, &sz, nakBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
 
-    NakPduDeserializer deserializeWithSegReqs(nakBuffer.data(), nakBuffer.size(), info);
+    NakPduReader deserializeWithSegReqs(nakBuffer.data(), nakBuffer.size(), info);
     result = deserializeWithSegReqs.parseData();
     REQUIRE(result == returnvalue::OK);
     NakInfo::SegmentRequest* segReqsPtr = nullptr;
@@ -126,14 +126,14 @@ TEST_CASE("NAK PDU", "[cfdp][pdu]") {
     REQUIRE(deserializeWithSegReqs.getPduDataFieldLen() == 25);
     REQUIRE(info.getSegmentRequestsLen() == 2);
     for (size_t idx = 0; idx < 34; idx++) {
-      NakPduDeserializer faultyDeserializer(nakBuffer.data(), idx, info);
+      NakPduReader faultyDeserializer(nakBuffer.data(), idx, info);
       result = faultyDeserializer.parseData();
       REQUIRE(result != returnvalue::OK);
     }
     for (size_t pduFieldLen = 0; pduFieldLen < 25; pduFieldLen++) {
       nakBuffer[1] = (pduFieldLen >> 8) & 0xff;
       nakBuffer[2] = pduFieldLen & 0xff;
-      NakPduDeserializer faultyDeserializer(nakBuffer.data(), nakBuffer.size(), info);
+      NakPduReader faultyDeserializer(nakBuffer.data(), nakBuffer.size(), info);
       result = faultyDeserializer.parseData();
       if (pduFieldLen == 9) {
         REQUIRE(info.getSegmentRequestsLen() == 0);
