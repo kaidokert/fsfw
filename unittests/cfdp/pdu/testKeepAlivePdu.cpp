@@ -1,8 +1,8 @@
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 
-#include "fsfw/cfdp/pdu/KeepAlivePduDeserializer.h"
-#include "fsfw/cfdp/pdu/KeepAlivePduSerializer.h"
+#include "fsfw/cfdp/pdu/KeepAlivePduCreator.h"
+#include "fsfw/cfdp/pdu/KeepAlivePduReader.h"
 #include "fsfw/globalfunctions/arrayprinter.h"
 
 TEST_CASE("Keep Alive PDU", "[cfdp][pdu]") {
@@ -19,7 +19,7 @@ TEST_CASE("Keep Alive PDU", "[cfdp][pdu]") {
   FileSize progress(0x50);
 
   SECTION("Serialize") {
-    KeepAlivePduSerializer serializer(pduConf, progress);
+    KeepAlivePduCreator serializer(pduConf, progress);
     result = serializer.serialize(&buffer, &sz, kaBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
     REQUIRE(kaBuffer[10] == cfdp::FileDirectives::KEEP_ALIVE);
@@ -55,13 +55,13 @@ TEST_CASE("Keep Alive PDU", "[cfdp][pdu]") {
   }
 
   SECTION("Deserialize") {
-    KeepAlivePduSerializer serializer(pduConf, progress);
+    KeepAlivePduCreator serializer(pduConf, progress);
     result = serializer.serialize(&buffer, &sz, kaBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
 
     // Set another file size
     progress.setFileSize(200, false);
-    KeepAlivePduDeserializer reader(kaBuffer.data(), kaBuffer.size(), progress);
+    KeepAlivePduReader reader(kaBuffer.data(), kaBuffer.size(), progress);
     result = reader.parseData();
     REQUIRE(result == returnvalue::OK);
     auto& progRef = reader.getProgress();

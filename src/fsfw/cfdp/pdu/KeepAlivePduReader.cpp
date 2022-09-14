@@ -1,10 +1,10 @@
-#include "KeepAlivePduDeserializer.h"
+#include "KeepAlivePduReader.h"
 
-KeepAlivePduDeserializer::KeepAlivePduDeserializer(const uint8_t* pduBuf, size_t maxSize,
-                                                   cfdp::FileSize& progress)
+KeepAlivePduReader::KeepAlivePduReader(const uint8_t* pduBuf, size_t maxSize,
+                                       cfdp::FileSize& progress)
     : FileDirectiveReader(pduBuf, maxSize), progress(progress) {}
 
-ReturnValue_t KeepAlivePduDeserializer::parseData() {
+ReturnValue_t KeepAlivePduReader::parseData() {
   ReturnValue_t result = FileDirectiveReader::parseData();
   if (result != returnvalue::OK) {
     return result;
@@ -15,4 +15,4 @@ ReturnValue_t KeepAlivePduDeserializer::parseData() {
   return progress.deSerialize(&buffer, &remLen, getEndianness());
 }
 
-cfdp::FileSize& KeepAlivePduDeserializer::getProgress() { return progress; }
+cfdp::FileSize& KeepAlivePduReader::getProgress() { return progress; }

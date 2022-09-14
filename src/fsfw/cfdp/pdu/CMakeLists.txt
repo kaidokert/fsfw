@@ -12,18 +12,18 @@ target_sources(
           EofPduCreator.cpp
           EofPduReader.cpp
           NakInfo.cpp
-          NakPduSerializer.cpp
-          NakPduDeserializer.cpp
+          NakPduCreator.cpp
+          NakPduReader.cpp
           FinishedInfo.cpp
           FinishedPduCreator.cpp
           FinishedPduReader.cpp
           MetadataInfo.cpp
           MetadataPduCreator.cpp
           MetadataPduReader.cpp
-          KeepAlivePduSerializer.cpp
-          KeepAlivePduDeserializer.cpp
-          PromptPduSerializer.cpp
-          PromptPduDeserializer.cpp
+          KeepAlivePduCreator.cpp
+          KeepAlivePduReader.cpp
+          PromptPduCreator.cpp
+          PromptPduReader.cpp
           FileDataCreator.cpp
           FileDataReader.cpp
           FileDataInfo.cpp)

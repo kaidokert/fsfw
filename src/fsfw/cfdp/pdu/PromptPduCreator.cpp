@@ -1,16 +1,15 @@
-#include "PromptPduSerializer.h"
+#include "PromptPduCreator.h"
 
-PromptPduSerializer::PromptPduSerializer(PduConfig &conf,
-                                         cfdp::PromptResponseRequired responseRequired)
+PromptPduCreator::PromptPduCreator(PduConfig &conf, cfdp::PromptResponseRequired responseRequired)
     : FileDirectiveCreator(conf, cfdp::FileDirectives::PROMPT, 1),
       responseRequired(responseRequired) {}
 
-size_t PromptPduSerializer::getSerializedSize() const {
+size_t PromptPduCreator::getSerializedSize() const {
   return FileDirectiveCreator::getWholePduSize();
 }
 
-ReturnValue_t PromptPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
-                                             Endianness streamEndianness) const {
+ReturnValue_t PromptPduCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
+                                          Endianness streamEndianness) const {
   ReturnValue_t result = FileDirectiveCreator::serialize(buffer, size, maxSize, streamEndianness);
   if (result != returnvalue::OK) {
     return result;

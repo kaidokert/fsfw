@@ -3,9 +3,9 @@
 
 #include "fsfw/cfdp/pdu/FileDirectiveReader.h"
 
-class PromptPduDeserializer : public FileDirectiveReader {
+class PromptPduReader : public FileDirectiveReader {
  public:
-  PromptPduDeserializer(const uint8_t *pduBuf, size_t maxSize);
+  PromptPduReader(const uint8_t *pduBuf, size_t maxSize);
 
   [[nodiscard]] cfdp::PromptResponseRequired getPromptResponseRequired() const;
   ReturnValue_t parseData() override;

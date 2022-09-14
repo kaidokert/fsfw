@@ -1,5 +1,5 @@
-#ifndef FSFW_SRC_FSFW_CFDP_PDU_NAKPDUSERIALIZER_H_
-#define FSFW_SRC_FSFW_CFDP_PDU_NAKPDUSERIALIZER_H_
+#ifndef FSFW_CFDP_PDU_NAKPDUSERIALIZER_H_
+#define FSFW_CFDP_PDU_NAKPDUSERIALIZER_H_
 
 #include <vector>
 
@@ -8,7 +8,7 @@
 #include "fsfw/cfdp/definitions.h"
 #include "fsfw/cfdp/pdu/FileDirectiveCreator.h"
 
-class NakPduSerializer : public FileDirectiveCreator {
+class NakPduCreator : public FileDirectiveCreator {
  public:
   /**
    *
@@ -18,9 +18,9 @@ class NakPduSerializer : public FileDirectiveCreator {
    * @param [in] segmentRequests Pointer to the start of a list of segment requests
    * @param segmentRequestLen Length of the segment request list to be serialized
    */
-  NakPduSerializer(PduConfig& PduConf, NakInfo& nakInfo);
+  NakPduCreator(PduConfig& PduConf, NakInfo& nakInfo);
 
-  size_t getSerializedSize() const override;
+  [[nodiscard]] size_t getSerializedSize() const override;
 
   ReturnValue_t serialize(uint8_t** buffer, size_t* size, size_t maxSize,
                           Endianness streamEndianness) const override;
@@ -35,4 +35,4 @@ class NakPduSerializer : public FileDirectiveCreator {
   NakInfo& nakInfo;
 };
 
-#endif /* FSFW_SRC_FSFW_CFDP_PDU_NAKPDUSERIALIZER_H_ */
+#endif /* FSFW_CFDP_PDU_NAKPDUSERIALIZER_H_ */

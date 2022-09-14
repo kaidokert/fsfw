@@ -1,20 +1,18 @@
-#include "NakPduSerializer.h"
+#include "NakPduCreator.h"
 
-NakPduSerializer::NakPduSerializer(PduConfig &pduConf, NakInfo &nakInfo)
+NakPduCreator::NakPduCreator(PduConfig &pduConf, NakInfo &nakInfo)
     : FileDirectiveCreator(pduConf, cfdp::FileDirectives::NAK, 0), nakInfo(nakInfo) {
   updateDirectiveFieldLen();
 }
 
-void NakPduSerializer::updateDirectiveFieldLen() {
+void NakPduCreator::updateDirectiveFieldLen() {
   this->setDirectiveDataFieldLen(nakInfo.getSerializedSize(getLargeFileFlag()));
 }
 
-size_t NakPduSerializer::getSerializedSize() const {
-  return FileDirectiveCreator::getWholePduSize();
-}
+size_t NakPduCreator::getSerializedSize() const { return FileDirectiveCreator::getWholePduSize(); }
 
-ReturnValue_t NakPduSerializer::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
-                                          Endianness streamEndianness) const {
+ReturnValue_t NakPduCreator::serialize(uint8_t **buffer, size_t *size, size_t maxSize,
+                                       Endianness streamEndianness) const {
   ReturnValue_t result = FileDirectiveCreator::serialize(buffer, size, maxSize, streamEndianness);
   if (result != returnvalue::OK) {
     return result;

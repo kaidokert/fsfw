@@ -1,9 +1,9 @@
-#include "NakPduDeserializer.h"
+#include "NakPduReader.h"
 
-NakPduDeserializer::NakPduDeserializer(const uint8_t* pduBuf, size_t maxSize, NakInfo& info)
+NakPduReader::NakPduReader(const uint8_t* pduBuf, size_t maxSize, NakInfo& info)
     : FileDirectiveReader(pduBuf, maxSize), nakInfo(info) {}
 
-ReturnValue_t NakPduDeserializer::parseData() {
+ReturnValue_t NakPduReader::parseData() {
   ReturnValue_t result = FileDirectiveReader::parseData();
   if (result != returnvalue::OK) {
     return result;
