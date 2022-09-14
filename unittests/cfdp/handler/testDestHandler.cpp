@@ -39,8 +39,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
   StorageManagerMock tcStore(2, storeCfg);
   StorageManagerMock tmStore(3, storeCfg);
   FsfwParams fp(tmReceiver, &mqMock, &eventReporterMock);
-  RemoteEntityCfg cfg;
-  cfg.remoteId = remoteId;
+  RemoteEntityCfg cfg(remoteId);
   remoteCfgTableMock.addRemoteConfig(cfg);
   fp.tcStore = &tcStore;
   fp.tmStore = &tmStore;
