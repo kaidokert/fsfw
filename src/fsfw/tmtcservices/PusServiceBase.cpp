@@ -3,7 +3,7 @@
 #include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/tcdistribution/PusDistributorIF.h"
+#include "fsfw/tcdistribution/PUSDistributorIF.h"
 #include "fsfw/timemanager/CdsShortTimeStamper.h"
 #include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
 #include "fsfw/tmtcservices/PusVerificationReport.h"
@@ -111,7 +111,7 @@ ReturnValue_t PusServiceBase::initialize() {
   }
 
   if (psbParams.pusDistributor == nullptr) {
-    psbParams.pusDistributor = ObjectManager::instance()->get<PusDistributorIF>(PUS_DISTRIBUTOR);
+    psbParams.pusDistributor = ObjectManager::instance()->get<PUSDistributorIF>(PUS_DISTRIBUTOR);
     if (psbParams.pusDistributor != nullptr) {
       registerService(*psbParams.pusDistributor);
     }
@@ -193,8 +193,8 @@ void PusServiceBase::setVerificationReporter(VerificationReporterIF& reporter) {
   psbParams.verifReporter = &reporter;
 }
 
-ReturnValue_t PusServiceBase::registerService(PusDistributorIF& distributor) {
-  return distributor.registerService(*this);
+ReturnValue_t PusServiceBase::registerService(PUSDistributorIF& distributor) {
+  return distributor.registerService(this);
 }
 
 void PusServiceBase::setTmReceiver(AcceptsTelemetryIF& tmReceiver_) {

@@ -10,19 +10,19 @@ ReturnValue_t CcsdsPacketChecker::checkPacket(const SpacePacketReader& currentPa
                                               size_t packetLen) {
   if (checkApid) {
     if (currentPacket.getApid() != apid) {
-      return tmtcdistrib::INVALID_APID;
+      return tcdistrib::INVALID_APID;
     }
   }
 
   if (currentPacket.getVersion() != ccsdsVersion) {
-    return tmtcdistrib::INVALID_CCSDS_VERSION;
+    return tcdistrib::INVALID_CCSDS_VERSION;
   }
   if (currentPacket.getPacketType() != packetType) {
-    return tmtcdistrib::INVALID_PACKET_TYPE;
+    return tcdistrib::INVALID_PACKET_TYPE;
   }
   // This assumes that the getFullPacketLen version uses the space packet data length field
   if (currentPacket.getFullPacketLen() != packetLen) {
-    return tmtcdistrib::INCOMPLETE_PACKET;
+    return tcdistrib::INCOMPLETE_PACKET;
   }
   return returnvalue::OK;
 }

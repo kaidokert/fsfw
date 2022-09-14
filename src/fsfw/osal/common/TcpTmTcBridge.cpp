@@ -18,7 +18,7 @@
 
 TcpTmTcBridge::TcpTmTcBridge(object_id_t objectId, object_id_t tcDestination, object_id_t tmStoreId,
                              object_id_t tcStoreId)
-    : TmTcBridge(objectId, tcDestination, tmStoreId, tcStoreId) {
+    : TmTcBridge("TCP TMTC Bridge", objectId, tcDestination, tmStoreId, tcStoreId) {
   mutex = MutexFactory::instance()->createMutex();
   // Connection is always up, TM is requested by connecting to server and receiving packets
   registerCommConnect();

@@ -59,7 +59,7 @@ TcDistributor::TcMqMapIter CCSDSDistributor::selectDestination() {
   }
 }
 
-MessageQueueId_t CCSDSDistributor::getRequestQueue() { return tcQueue->getId(); }
+MessageQueueId_t CCSDSDistributor::getRequestQueue() const { return tcQueue->getId(); }
 
 ReturnValue_t CCSDSDistributor::registerApplication(AcceptsTelecommandsIF* application) {
   ReturnValue_t returnValue = returnvalue::OK;
@@ -80,7 +80,7 @@ ReturnValue_t CCSDSDistributor::registerApplication(uint16_t apid, MessageQueueI
   return returnValue;
 }
 
-uint16_t CCSDSDistributor::getIdentifier() { return 0; }
+uint32_t CCSDSDistributor::getIdentifier() const { return 0; }
 
 ReturnValue_t CCSDSDistributor::initialize() {
   if (packetChecker == nullptr) {

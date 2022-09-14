@@ -3,7 +3,7 @@
 #include "fsfw/ipc/QueueFactory.h"
 #include "fsfw/objectmanager/ObjectManager.h"
 #include "fsfw/serviceinterface/ServiceInterface.h"
-#include "fsfw/tcdistribution/PusDistributorIF.h"
+#include "fsfw/tcdistribution/PUSDistributorIF.h"
 #include "fsfw/tmtcpacket/pus/tc.h"
 #include "fsfw/tmtcservices/AcceptsTelemetryIF.h"
 #include "fsfw/tmtcservices/TmTcMessage.h"
@@ -70,7 +70,7 @@ ReturnValue_t CommandingServiceBase::initialize() {
   if (packetSource == objects::NO_OBJECT) {
     packetSource = defaultPacketSource;
   }
-  auto* distributor = ObjectManager::instance()->get<PusDistributorIF>(packetSource);
+  auto* distributor = ObjectManager::instance()->get<PUSDistributorIF>(packetSource);
 
   if (packetForwarding == nullptr or distributor == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -81,7 +81,7 @@ ReturnValue_t CommandingServiceBase::initialize() {
     return ObjectManagerIF::CHILD_INIT_FAILED;
   }
 
-  distributor->registerService(*this);
+  distributor->registerService(this);
   requestQueue->setDefaultDestination(packetForwarding->getReportReceptionQueue());
 
   ipcStore = ObjectManager::instance()->get<StorageManagerIF>(objects::IPC_STORE);

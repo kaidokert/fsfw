@@ -35,10 +35,10 @@ class CCSDSDistributor : public TcDistributor,
    */
   ~CCSDSDistributor() override;
 
-  MessageQueueId_t getRequestQueue() override;
+  MessageQueueId_t getRequestQueue() const override;
   ReturnValue_t registerApplication(uint16_t apid, MessageQueueId_t id) override;
   ReturnValue_t registerApplication(AcceptsTelecommandsIF* application) override;
-  uint16_t getIdentifier() override;
+  uint32_t getIdentifier() const override;
   ReturnValue_t initialize() override;
 
  protected:

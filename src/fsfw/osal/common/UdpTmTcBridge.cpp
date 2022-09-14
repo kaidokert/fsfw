@@ -22,7 +22,7 @@ const std::string UdpTmTcBridge::DEFAULT_SERVER_PORT = tcpip::DEFAULT_SERVER_POR
 UdpTmTcBridge::UdpTmTcBridge(object_id_t objectId, object_id_t tcDestination,
                              const std::string &udpServerPort_, object_id_t tmStoreId,
                              object_id_t tcStoreId)
-    : TmTcBridge(objectId, tcDestination, tmStoreId, tcStoreId) {
+    : TmTcBridge("UDP TMTC Bridge", objectId, tcDestination, tmStoreId, tcStoreId) {
   if (udpServerPort_.empty()) {
     udpServerPort = DEFAULT_SERVER_PORT;
   } else {
