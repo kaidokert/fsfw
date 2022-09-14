@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 void __attribute__((weak)) printChar(const char* character, bool errStream) {
   if (errStream) {

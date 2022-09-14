@@ -27,6 +27,7 @@ struct LocalEntityCfg {
 };
 
 struct RemoteEntityCfg {
+  explicit RemoteEntityCfg(EntityId id) : remoteId(std::move(id)) {}
   EntityId remoteId;
   size_t maxFileSegmentLen = 2048;
   bool closureRequested = false;

@@ -252,7 +252,8 @@ ReturnValue_t cfdp::DestHandler::handleMetadataParseError(ReturnValue_t result,
   headerReader.getDestId(destId);
   RemoteEntityCfg* remoteCfg;
   if (not dp.remoteCfgTable.getRemoteCfg(destId, &remoteCfg)) {
-// TODO: No remote config for dest ID. I consider this a configuration error.
+// TODO: No remote config for dest ID. I consider this a configuration error, which is not
+//       covered by the standard.
 //       Warning or error, yield or cache appropriate returnvalue
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "No remote config exists for destination ID" << std::endl;
@@ -267,8 +268,9 @@ ReturnValue_t cfdp::DestHandler::handleMetadataParseError(ReturnValue_t result,
 ReturnValue_t cfdp::DestHandler::startTransaction(MetadataPduReader& reader, MetadataInfo& info) {
   if (fsmRes.state != CfdpStates::IDLE) {
     // According to standard, discard metadata PDU if we are busy
-    return returnvalue::OK;
+    return OK;
   }
+  ReturnValue_t result = OK;
   fsmRes.step = TransactionStep::TRANSACTION_START;
   if (reader.getTransmissionMode() == TransmissionModes::UNACKNOWLEDGED) {
     fsmRes.state = CfdpStates::BUSY_CLASS_1_NACKED;
@@ -302,9 +304,25 @@ ReturnValue_t cfdp::DestHandler::startTransaction(MetadataPduReader& reader, Met
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "cfdp::DestHandler" << __func__
                  << ": No remote configuration found for destination ID "
-                 << tp.pduConf.destId.getValue() << std::endl;
+                 << tp.pduConf.sourceId.getValue() << std::endl;
 #endif
     return FAILED;
+  }
+  // If both dest name size and source name size are 0, we are dealing with a metadata only PDU,
+  // so there is no need to create a file or truncate an existing file
+  if (destNameSize > 0 and sourceNameSize > 0) {
+    FilesystemParams fparams(tp.destName.data());
+    // TODO: Filesystem errors?
+    if (dp.user.vfs.fileExists(fparams)) {
+      dp.user.vfs.truncateFile(fparams);
+    } else {
+      result = dp.user.vfs.createFile(fparams);
+      if (result != OK) {
+        // TODO: Handle FS error. This is probably a case for the filestore rejection mechanism of
+        // CFDP.
+        //       In any case, it does not really make sense to continue here
+      }
+    }
   }
   fsmRes.step = TransactionStep::RECEIVING_FILE_DATA_PDUS;
   MetadataRecvdParams params(tp.transactionId, tp.pduConf.sourceId);
@@ -313,15 +331,8 @@ ReturnValue_t cfdp::DestHandler::startTransaction(MetadataPduReader& reader, Met
   params.sourceFileName = tp.sourceName.data();
   params.msgsToUserArray = dynamic_cast<MessageToUserTlv*>(userTlvVec.data());
   params.msgsToUserLen = info.getOptionsLen();
-  FilesystemParams fparams(tp.destName.data());
-  // TODO: Filesystem errors?
-  if (dp.user.vfs.fileExists(fparams)) {
-    dp.user.vfs.truncateFile(fparams);
-  } else {
-    dp.user.vfs.createFile(fparams);
-  }
   dp.user.metadataRecvdIndication(params);
-  return OK;
+  return result;
 }
 
 cfdp::CfdpStates cfdp::DestHandler::getCfdpState() const { return fsmRes.state; }
@@ -376,7 +387,8 @@ ReturnValue_t cfdp::DestHandler::checksumVerification() {
       params.size = readLen;
       auto result = dp.user.vfs.readFromFile(params, buf.data(), buf.size());
       if (result != OK) {
-        // TODO: Better error handling
+        // TODO: I think this is a case for a filestore rejection, but it might sense to print
+        //       a warning or trigger an event because this should generally not happen
         return FAILED;
       }
       crcCalc.add(buf.begin(), buf.begin() + readLen);
@@ -391,7 +403,7 @@ ReturnValue_t cfdp::DestHandler::checksumVerification() {
   } else {
     // TODO: Proper error handling
 #if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "CRC check for file " << tp.sourceName.data() << " failed" << std::endl;
+    sif::warning << "CRC check for file " << tp.destName.data() << " failed" << std::endl;
 #endif
     tp.conditionCode = ConditionCode::FILE_CHECKSUM_FAILURE;
   }

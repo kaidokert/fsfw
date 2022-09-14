@@ -7,6 +7,7 @@
 
 #include "fsfw/cfdp/definitions.h"
 #include "fsfw/serialize/SerializeIF.h"
+#include "fsfw/serviceinterface.h"
 #include "fsfw/util/UnsignedByteField.h"
 
 namespace cfdp {
@@ -42,6 +43,14 @@ class VarLenField : public SerializeIF {
 
   [[nodiscard]] cfdp::WidthInBytes getWidth() const;
   [[nodiscard]] size_t getValue() const;
+
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+  friend std::ostream &operator<<(std::ostream &os, const VarLenField &id) {
+    os << "dec: " << id.getValue() << ", hex: " << std::hex << std::setw(id.getWidth())
+       << std::setfill('0') << id.getValue() << std::dec << std::setfill('0');
+    return os;
+  }
+#endif
 
  private:
   ReturnValue_t deSerialize(const uint8_t **buffer, size_t *size,
@@ -83,6 +92,12 @@ struct TransactionId {
     return entityId == other.entityId and seqNum == other.seqNum;
   }
 
+#if FSFW_CPP_OSTREAM_ENABLED == 1
+  friend std::ostream &operator<<(std::ostream &os, const TransactionId &id) {
+    os << "Source ID { " << id.entityId << " }, Sequence Number " << id.seqNum.getValue();
+    return os;
+  }
+#endif
   EntityId entityId;
   TransactionSeqNum seqNum;
 };

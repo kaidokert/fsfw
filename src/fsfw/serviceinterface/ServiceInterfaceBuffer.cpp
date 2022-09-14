@@ -3,7 +3,6 @@
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 
 #include <cinttypes>
-
 #include <cstring>
 
 #include "fsfw/serviceinterface/serviceInterfaceDefintions.h"
