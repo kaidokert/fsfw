@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Bugfix for Serial Buffer Stream: Setting `doActive` to false now
   actually fully disables printing.
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/680
+- `TcpTmTcServer.cpp`: The server was actually not able to handle
+  CCSDS packets which were clumped together. This has been fixed now.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/673
 
 ## Added
 
@@ -41,6 +44,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - `#include "returnvalues/classIds.h"`
   The user has to include those themselves now
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/675
+- `DeviceHandlerBase`: Set command sender before calling `buildCommandFromCommand`.
+  This allows finishing action commands immediately inside the function.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/672
+- `DeviceHandlerBase`: New signature of `handleDeviceTm` which expects
+  a `const SerializeIF&` and additional helper variant which expects `const uint8_t*`
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/671
 - Move some generic `StorageManagerIF` implementations from `LocalPool` to
   interface itself so it can be re-used more easily. Also add new
   abstract function `bool hasDataAtId(store_address_t storeId) const`.
