@@ -7,11 +7,11 @@
 class PduConfig {
  public:
   PduConfig() = default;
-  PduConfig(cfdp::EntityId sourceId, cfdp::EntityId destId, cfdp::TransmissionModes mode,
+  PduConfig(cfdp::EntityId sourceId, cfdp::EntityId destId, cfdp::TransmissionMode mode,
             cfdp::TransactionSeqNum seqNum, bool crcFlag = false, bool largeFile = false,
             cfdp::Direction direction = cfdp::Direction::TOWARDS_RECEIVER);
 
-  cfdp::TransmissionModes mode = cfdp::TransmissionModes::ACKNOWLEDGED;
+  cfdp::TransmissionMode mode = cfdp::TransmissionMode::ACKNOWLEDGED;
   cfdp::TransactionSeqNum seqNum;
   cfdp::EntityId sourceId;
   cfdp::EntityId destId;

@@ -5,7 +5,7 @@
 
 namespace cfdp {
 
-const char* getConditionCodeString(cfdp::ConditionCodes code);
+const char* getConditionCodeString(cfdp::ConditionCode code);
 
 }
 #endif  // FSFW_EXAMPLE_HOSTED_HELPER_H

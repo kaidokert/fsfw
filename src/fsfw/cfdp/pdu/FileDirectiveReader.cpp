@@ -3,7 +3,7 @@
 FileDirectiveReader::FileDirectiveReader(const uint8_t *pduBuf, size_t maxSize)
     : PduHeaderReader(pduBuf, maxSize) {}
 
-cfdp::FileDirectives FileDirectiveReader::getFileDirective() const { return fileDirective; }
+cfdp::FileDirective FileDirectiveReader::getFileDirective() const { return fileDirective; }
 
 ReturnValue_t FileDirectiveReader::parseData() {
   ReturnValue_t result = PduHeaderReader::parseData();
@@ -20,7 +20,7 @@ ReturnValue_t FileDirectiveReader::parseData() {
   if (not checkFileDirective(pointers.rawPtr[currentIdx])) {
     return cfdp::INVALID_DIRECTIVE_FIELD;
   }
-  setFileDirective(static_cast<cfdp::FileDirectives>(pointers.rawPtr[currentIdx]));
+  setFileDirective(static_cast<cfdp::FileDirective>(pointers.rawPtr[currentIdx]));
   return returnvalue::OK;
 }
 
@@ -30,15 +30,15 @@ size_t FileDirectiveReader::getHeaderSize() const {
 }
 
 bool FileDirectiveReader::checkFileDirective(uint8_t rawByte) {
-  if (rawByte < cfdp::FileDirectives::EOF_DIRECTIVE or
-      (rawByte > cfdp::FileDirectives::PROMPT and rawByte != cfdp::FileDirectives::KEEP_ALIVE)) {
+  if (rawByte < cfdp::FileDirective::EOF_DIRECTIVE or
+      (rawByte > cfdp::FileDirective::PROMPT and rawByte != cfdp::FileDirective::KEEP_ALIVE)) {
     // Invalid directive field
     return false;
   }
   return true;
 }
 
-void FileDirectiveReader::setFileDirective(cfdp::FileDirectives fileDirective_) {
+void FileDirectiveReader::setFileDirective(cfdp::FileDirective fileDirective_) {
   fileDirective = fileDirective_;
 }
 

@@ -41,7 +41,7 @@ TEST_CASE("CFDP Other TLVs", "[cfdp][tlv]") {
     result = response.convertToTlv(rawResponse, serBuf.data(), serBuf.size(),
                                    SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
-    REQUIRE(rawResponse.getType() == cfdp::TlvTypes::FILESTORE_RESPONSE);
+    REQUIRE(rawResponse.getType() == cfdp::TlvType::FILESTORE_RESPONSE);
     cfdp::StringLv emptyMsg;
     cfdp::StringLv emptySecondName;
     FilestoreResponseTlv emptyTlv(firstName, &emptyMsg);
@@ -96,12 +96,12 @@ TEST_CASE("CFDP Other TLVs", "[cfdp][tlv]") {
     result = request.convertToTlv(rawRequest, serBuf.data(), serBuf.size(),
                                   SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
-    REQUIRE(rawRequest.getType() == cfdp::TlvTypes::FILESTORE_REQUEST);
+    REQUIRE(rawRequest.getType() == cfdp::TlvType::FILESTORE_REQUEST);
 
     emptyRequest.setActionCode(cfdp::FilestoreActionCode::DELETE_FILE);
     result = emptyRequest.deSerialize(rawRequest, SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
-    REQUIRE(emptyRequest.getType() == cfdp::TlvTypes::FILESTORE_REQUEST);
+    REQUIRE(emptyRequest.getType() == cfdp::TlvType::FILESTORE_REQUEST);
     REQUIRE(emptyRequest.getActionCode() == cfdp::FilestoreActionCode::APPEND_FILE);
   }
 
@@ -111,7 +111,7 @@ TEST_CASE("CFDP Other TLVs", "[cfdp][tlv]") {
     FlowLabelTlv flowLabelTlv(&flowLabel, 1);
 
     FaultHandlerOverrideTlv faultOverrideTlv(cfdp::ConditionCode::FILESTORE_REJECTION,
-                                             cfdp::FaultHandlerCodes::NOTICE_OF_CANCELLATION);
+                                             cfdp::FaultHandlerCode::NOTICE_OF_CANCELLATION);
     size_t sz = 0;
     result =
         faultOverrideTlv.serialize(&serPtr, &sz, rawBuf.size(), SerializeIF::Endianness::NETWORK);
@@ -128,7 +128,7 @@ TEST_CASE("CFDP Other TLVs", "[cfdp][tlv]") {
     EntityIdTlv idTlv(emptyId);
     serPtr = rawBuf.data();
     result = idTlv.serialize(&serPtr, &deserSize, rawBuf.size(), SerializeIF::Endianness::NETWORK);
-    cfdp::Tlv rawTlv(cfdp::TlvTypes::ENTITY_ID, rawBuf.data() + 2, 2);
+    cfdp::Tlv rawTlv(cfdp::TlvType::ENTITY_ID, rawBuf.data() + 2, 2);
     REQUIRE(result == returnvalue::OK);
     deserPtr = rawBuf.data();
     result = idTlv.deSerialize(rawTlv, SerializeIF::Endianness::NETWORK);

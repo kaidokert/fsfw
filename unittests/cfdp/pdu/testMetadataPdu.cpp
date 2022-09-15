@@ -17,13 +17,13 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
   EntityId destId(WidthInBytes::TWO_BYTES, 2);
   TransactionSeqNum seqNum(WidthInBytes::TWO_BYTES, 15);
   EntityId sourceId(WidthInBytes::TWO_BYTES, 1);
-  PduConfig pduConf(sourceId, destId, TransmissionModes::ACKNOWLEDGED, seqNum);
+  PduConfig pduConf(sourceId, destId, TransmissionMode::ACKNOWLEDGED, seqNum);
 
   std::string firstFileName = "hello.txt";
   cfdp::StringLv sourceFileName(firstFileName);
   cfdp::StringLv destFileName;
   FileSize fileSize(35);
-  MetadataInfo info(false, ChecksumTypes::MODULAR, fileSize, sourceFileName, destFileName);
+  MetadataInfo info(false, ChecksumType::MODULAR, fileSize, sourceFileName, destFileName);
 
   FilestoreResponseTlv response(FilestoreActionCode::CREATE_DIRECTORY, FSR_CREATE_NOT_ALLOWED,
                                 sourceFileName, nullptr);
@@ -46,7 +46,7 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
     REQUIRE(info.getDestFileName().getSerializedSize() == 1);
     REQUIRE(info.getSerializedSize() == 16);
     REQUIRE((mdBuffer[1] << 8 | mdBuffer[2]) == 17);
-    REQUIRE(mdBuffer[10] == FileDirectives::METADATA);
+    REQUIRE(mdBuffer[10] == FileDirective::METADATA);
     // no closure requested and checksum type is modular => 0x00
     REQUIRE(mdBuffer[11] == 0x00);
     uint32_t fileSizeRaw = 0;
@@ -74,7 +74,7 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
     REQUIRE(info.getMaxOptionsLen() == 2);
     info.setMaxOptionsLen(3);
     REQUIRE(info.getMaxOptionsLen() == 3);
-    info.setChecksumType(cfdp::ChecksumTypes::CRC_32C);
+    info.setChecksumType(cfdp::ChecksumType::CRC_32C);
     info.setClosureRequested(true);
     uint8_t* buffer = mdBuffer.data();
     size_t sz = 0;
@@ -83,8 +83,8 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
     result = serializer.serialize(&buffer, &sz, mdBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
     REQUIRE((mdBuffer[1] << 8 | mdBuffer[2]) == 37);
-    auto checksumType = static_cast<cfdp::ChecksumTypes>(mdBuffer[11] & 0x0f);
-    REQUIRE(checksumType == cfdp::ChecksumTypes::CRC_32C);
+    auto checksumType = static_cast<cfdp::ChecksumType>(mdBuffer[11] & 0x0f);
+    REQUIRE(checksumType == cfdp::ChecksumType::CRC_32C);
     bool closureRequested = mdBuffer[11] >> 6 & 0x01;
     REQUIRE(closureRequested == true);
     // The size of the two options is 19. Summing up:
@@ -130,7 +130,7 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
     size_t maxSize = 4;
     info.setOptionsArray(options.data(), sizeOfOptions, maxSize);
     REQUIRE(info.getOptionsLen() == 2);
-    info.setChecksumType(cfdp::ChecksumTypes::CRC_32C);
+    info.setChecksumType(cfdp::ChecksumType::CRC_32C);
     info.setClosureRequested(true);
     uint8_t* buffer = mdBuffer.data();
     size_t sz = 0;
@@ -143,9 +143,9 @@ TEST_CASE("Metadata PDU", "[cfdp][pdu]") {
     MetadataPduReader deserializer2(mdBuffer.data(), mdBuffer.size(), info);
     result = deserializer2.parseData();
     REQUIRE(result == returnvalue::OK);
-    REQUIRE(options[0]->getType() == cfdp::TlvTypes::FILESTORE_RESPONSE);
+    REQUIRE(options[0]->getType() == cfdp::TlvType::FILESTORE_RESPONSE);
     REQUIRE(options[0]->getSerializedSize() == 14);
-    REQUIRE(options[1]->getType() == cfdp::TlvTypes::MSG_TO_USER);
+    REQUIRE(options[1]->getType() == cfdp::TlvType::MSG_TO_USER);
     REQUIRE(options[1]->getSerializedSize() == 5);
 
     for (size_t invalidFieldLen = 0; invalidFieldLen < 36; invalidFieldLen++) {

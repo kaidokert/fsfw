@@ -1,7 +1,7 @@
 #include "FinishedPduCreator.h"
 
 FinishPduCreator::FinishPduCreator(PduConfig &conf, FinishedInfo &finishInfo)
-    : FileDirectiveCreator(conf, cfdp::FileDirectives::FINISH, 0), finishInfo(finishInfo) {
+    : FileDirectiveCreator(conf, cfdp::FileDirective::FINISH, 0), finishInfo(finishInfo) {
   updateDirectiveFieldLen();
 }
 

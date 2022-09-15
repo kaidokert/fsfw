@@ -9,7 +9,7 @@
 class HeaderCreator : public SerializeIF, public PduHeaderIF {
  public:
   HeaderCreator(
-      PduConfig& pduConf, cfdp::PduTypes pduType, size_t initPduDataFieldLen,
+      PduConfig& pduConf, cfdp::PduType pduType, size_t initPduDataFieldLen,
       cfdp::SegmentMetadataFlag segmentMetadataFlag = cfdp::SegmentMetadataFlag::NOT_PRESENT,
       cfdp::SegmentationControl segCtrl =
           cfdp::SegmentationControl::NO_RECORD_BOUNDARIES_PRESERVATION);
@@ -29,15 +29,15 @@ class HeaderCreator : public SerializeIF, public PduHeaderIF {
                             Endianness streamEndianness) override;
 
   void setPduDataFieldLen(size_t pduDataFieldLen);
-  void setPduType(cfdp::PduTypes pduType);
+  void setPduType(cfdp::PduType pduType);
   void setSegmentMetadataFlag(cfdp::SegmentMetadataFlag);
 
   [[nodiscard]] size_t getPduDataFieldLen() const override;
   [[nodiscard]] size_t getWholePduSize() const override;
 
-  [[nodiscard]] cfdp::PduTypes getPduType() const override;
+  [[nodiscard]] cfdp::PduType getPduType() const override;
   [[nodiscard]] cfdp::Direction getDirection() const override;
-  [[nodiscard]] cfdp::TransmissionModes getTransmissionMode() const override;
+  [[nodiscard]] cfdp::TransmissionMode getTransmissionMode() const override;
   [[nodiscard]] bool getCrcFlag() const override;
   [[nodiscard]] bool getLargeFileFlag() const override;
   [[nodiscard]] cfdp::SegmentationControl getSegmentationControl() const override;
@@ -52,7 +52,7 @@ class HeaderCreator : public SerializeIF, public PduHeaderIF {
   void getTransactionSeqNum(cfdp::TransactionSeqNum& seqNum) const override;
 
  private:
-  cfdp::PduTypes pduType;
+  cfdp::PduType pduType;
   cfdp::SegmentMetadataFlag segmentMetadataFlag;
   cfdp::SegmentationControl segmentationCtrl;
   size_t pduDataFieldLen;

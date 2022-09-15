@@ -22,7 +22,7 @@ class FileDirectiveReader : public PduHeaderReader {
   ReturnValue_t parseData() override;
   [[nodiscard]] size_t getHeaderSize() const override;
 
-  [[nodiscard]] cfdp::FileDirectives getFileDirective() const;
+  [[nodiscard]] cfdp::FileDirective getFileDirective() const;
 
   void setEndianness(SerializeIF::Endianness endianness);
   [[nodiscard]] SerializeIF::Endianness getEndianness() const;
@@ -30,8 +30,8 @@ class FileDirectiveReader : public PduHeaderReader {
 
  protected:
  private:
-  void setFileDirective(cfdp::FileDirectives fileDirective);
-  cfdp::FileDirectives fileDirective = cfdp::FileDirectives::INVALID_DIRECTIVE;
+  void setFileDirective(cfdp::FileDirective fileDirective);
+  cfdp::FileDirective fileDirective = cfdp::FileDirective::INVALID_DIRECTIVE;
   SerializeIF::Endianness endianness = SerializeIF::Endianness::NETWORK;
 };
 

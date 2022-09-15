@@ -16,13 +16,13 @@ TEST_CASE("CFDP Base", "[cfdp]") {
   cfdp::EntityId sourceId = EntityId(cfdp::WidthInBytes::ONE_BYTE, 0);
   cfdp::EntityId destId = EntityId(cfdp::WidthInBytes::ONE_BYTE, 1);
   PduConfig pduConf =
-      PduConfig(sourceId, destId, cfdp::TransmissionModes::ACKNOWLEDGED, seqNum, false);
+      PduConfig(sourceId, destId, cfdp::TransmissionMode::ACKNOWLEDGED, seqNum, false);
   uint8_t* serTarget = serBuf.data();
   const uint8_t* deserTarget = serTarget;
   size_t serSize = 0;
 
   SECTION("File Directive") {
-    auto fdSer = FileDirectiveCreator(pduConf, FileDirectives::ACK, 4);
+    auto fdSer = FileDirectiveCreator(pduConf, FileDirective::ACK, 4);
     REQUIRE(fdSer.getSerializedSize() == 8);
     serTarget = serBuf.data();
     serSize = 0;
@@ -41,7 +41,7 @@ TEST_CASE("CFDP Base", "[cfdp]") {
     REQUIRE(serBuf[5] == 2);
     // Dest ID
     REQUIRE(serBuf[6] == 1);
-    REQUIRE(serBuf[7] == FileDirectives::ACK);
+    REQUIRE(serBuf[7] == FileDirective::ACK);
 
     serTarget = serBuf.data();
     size_t deserSize = 20;
@@ -65,10 +65,10 @@ TEST_CASE("CFDP Base", "[cfdp]") {
     REQUIRE(fdDeser.getEndianness() == SerializeIF::Endianness::MACHINE);
     fdDeser.setEndianness(SerializeIF::Endianness::NETWORK);
     REQUIRE(fdDeser.parseData() == returnvalue::OK);
-    REQUIRE(fdDeser.getFileDirective() == FileDirectives::ACK);
+    REQUIRE(fdDeser.getFileDirective() == FileDirective::ACK);
     REQUIRE(fdDeser.getPduDataFieldLen() == 5);
     REQUIRE(fdDeser.getHeaderSize() == 8);
-    REQUIRE(fdDeser.getPduType() == cfdp::PduTypes::FILE_DIRECTIVE);
+    REQUIRE(fdDeser.getPduType() == cfdp::PduType::FILE_DIRECTIVE);
 
     serBuf[7] = 0xff;
     // Invalid file directive

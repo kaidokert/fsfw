@@ -112,4 +112,4 @@ ReturnValue_t FilestoreResponseTlv::deSerialize(const cfdp::Tlv &tlv, Endianness
 
 uint8_t FilestoreResponseTlv::getStatusCode() const { return statusCode; }
 
-cfdp::TlvTypes FilestoreResponseTlv::getType() const { return cfdp::TlvTypes::FILESTORE_RESPONSE; }
+cfdp::TlvType FilestoreResponseTlv::getType() const { return cfdp::TlvType::FILESTORE_RESPONSE; }

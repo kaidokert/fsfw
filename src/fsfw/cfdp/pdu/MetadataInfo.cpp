@@ -1,6 +1,6 @@
 #include "MetadataInfo.h"
 
-MetadataInfo::MetadataInfo(bool closureRequested, cfdp::ChecksumTypes checksumType,
+MetadataInfo::MetadataInfo(bool closureRequested, cfdp::ChecksumType checksumType,
                            cfdp::FileSize& fileSize, cfdp::StringLv& sourceFileName,
                            cfdp::StringLv& destFileName)
     : MetadataInfo(fileSize, sourceFileName, destFileName) {
@@ -23,9 +23,9 @@ void MetadataInfo::setOptionsArray(cfdp::Tlv** optionsArray_, std::optional<size
   }
 }
 
-cfdp::ChecksumTypes MetadataInfo::getChecksumType() const { return checksumType; }
+cfdp::ChecksumType MetadataInfo::getChecksumType() const { return checksumType; }
 
-void MetadataInfo::setChecksumType(cfdp::ChecksumTypes checksumType_) {
+void MetadataInfo::setChecksumType(cfdp::ChecksumType checksumType_) {
   checksumType = checksumType_;
 }
 

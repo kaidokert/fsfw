@@ -3,7 +3,7 @@
 #include "fsfw/FSFW.h"
 
 EofPduCreator::EofPduCreator(PduConfig &conf, EofInfo &info)
-    : FileDirectiveCreator(conf, cfdp::FileDirectives::EOF_DIRECTIVE, 9), info(info) {
+    : FileDirectiveCreator(conf, cfdp::FileDirective::EOF_DIRECTIVE, 9), info(info) {
   setDirectiveDataFieldLen(info.getSerializedSize(HeaderCreator::getLargeFileFlag()));
 }
 
@@ -33,7 +33,7 @@ ReturnValue_t EofPduCreator::serialize(uint8_t **buffer, size_t *size, size_t ma
     uint32_t fileSizeValue = info.getFileSize().getSize();
     result = SerializeAdapter::serialize(&fileSizeValue, buffer, size, maxSize, streamEndianness);
   }
-  if (info.getFaultLoc() != nullptr and info.getConditionCode() != cfdp::ConditionCodes::NO_ERROR) {
+  if (info.getFaultLoc() != nullptr and info.getConditionCode() != cfdp::ConditionCode::NO_ERROR) {
     result = info.getFaultLoc()->serialize(buffer, size, maxSize, streamEndianness);
   }
   return result;

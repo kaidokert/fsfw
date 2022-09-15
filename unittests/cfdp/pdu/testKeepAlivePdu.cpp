@@ -14,7 +14,7 @@ TEST_CASE("Keep Alive PDU", "[cfdp][pdu]") {
   EntityId destId(WidthInBytes::TWO_BYTES, 2);
   TransactionSeqNum seqNum(WidthInBytes::TWO_BYTES, 15);
   EntityId sourceId(WidthInBytes::TWO_BYTES, 1);
-  PduConfig pduConf(sourceId, destId, TransmissionModes::ACKNOWLEDGED, seqNum);
+  PduConfig pduConf(sourceId, destId, TransmissionMode::ACKNOWLEDGED, seqNum);
 
   FileSize progress(0x50);
 
@@ -22,7 +22,7 @@ TEST_CASE("Keep Alive PDU", "[cfdp][pdu]") {
     KeepAlivePduCreator serializer(pduConf, progress);
     result = serializer.serialize(&buffer, &sz, kaBuffer.size(), SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
-    REQUIRE(kaBuffer[10] == cfdp::FileDirectives::KEEP_ALIVE);
+    REQUIRE(kaBuffer[10] == cfdp::FileDirective::KEEP_ALIVE);
     uint32_t fsRaw = 0;
     result = SerializeAdapter::deSerialize(&fsRaw, kaBuffer.data() + 11, nullptr,
                                            SerializeIF::Endianness::NETWORK);

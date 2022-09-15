@@ -11,7 +11,7 @@ ReturnValue_t EntityIdTlv::serialize(uint8_t **buffer, size_t *size, size_t maxS
   if (maxSize < this->getSerializedSize()) {
     return BUFFER_TOO_SHORT;
   }
-  **buffer = cfdp::TlvTypes::ENTITY_ID;
+  **buffer = cfdp::TlvType::ENTITY_ID;
   *size += 1;
   *buffer += 1;
   size_t serLen = entityId.getSerializedSize();
@@ -28,8 +28,8 @@ ReturnValue_t EntityIdTlv::deSerialize(const uint8_t **buffer, size_t *size,
   if (*size < 3) {
     return STREAM_TOO_SHORT;
   }
-  cfdp::TlvTypes type = static_cast<cfdp::TlvTypes>(**buffer);
-  if (type != cfdp::TlvTypes::ENTITY_ID) {
+  cfdp::TlvType type = static_cast<cfdp::TlvType>(**buffer);
+  if (type != cfdp::TlvType::ENTITY_ID) {
     return cfdp::INVALID_TLV_TYPE;
   }
   *buffer += 1;
@@ -54,6 +54,6 @@ ReturnValue_t EntityIdTlv::deSerialize(cfdp::Tlv &tlv, Endianness endianness) {
 
 uint8_t EntityIdTlv::getLengthField() const { return 1 + entityId.getSerializedSize(); }
 
-cfdp::TlvTypes EntityIdTlv::getType() const { return cfdp::TlvTypes::ENTITY_ID; }
+cfdp::TlvType EntityIdTlv::getType() const { return cfdp::TlvType::ENTITY_ID; }
 
 cfdp::EntityId &EntityIdTlv::getEntityId() { return entityId; }
