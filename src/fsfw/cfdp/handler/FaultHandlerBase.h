@@ -3,6 +3,7 @@
 
 #include <etl/flat_map.h>
 
+#include "fsfw/cfdp/VarLenFields.h"
 #include "fsfw/cfdp/definitions.h"
 
 namespace cfdp {
@@ -42,33 +43,33 @@ class FaultHandlerBase {
    *  - true if the condition code is valid
    *  - false otherwise
    */
-  bool getFaultHandler(cfdp::ConditionCode code, cfdp::FaultHandlerCodes& handler) const;
+  bool getFaultHandler(cfdp::ConditionCodes code, cfdp::FaultHandlerCodes& handler) const;
 
-  bool setFaultHandler(cfdp::ConditionCode code, cfdp::FaultHandlerCodes handler);
+  bool setFaultHandler(cfdp::ConditionCodes code, cfdp::FaultHandlerCodes handler);
 
-  bool reportFault(cfdp::ConditionCode code);
+  bool reportFault(cfdp::TransactionId& id, cfdp::ConditionCodes code);
 
-  virtual void noticeOfSuspensionCb(cfdp::ConditionCode code) = 0;
-  virtual void noticeOfCancellationCb(cfdp::ConditionCode code) = 0;
-  virtual void abandonCb(cfdp::ConditionCode code) = 0;
-  virtual void ignoreCb(cfdp::ConditionCode code) = 0;
+  virtual void noticeOfSuspensionCb(cfdp::TransactionId& id, cfdp::ConditionCodes code) = 0;
+  virtual void noticeOfCancellationCb(cfdp::TransactionId& id, cfdp::ConditionCodes code) = 0;
+  virtual void abandonCb(cfdp::TransactionId& id, cfdp::ConditionCodes code) = 0;
+  virtual void ignoreCb(cfdp::TransactionId& id, cfdp::ConditionCodes code) = 0;
 
  private:
-  etl::flat_map<cfdp::ConditionCode, cfdp::FaultHandlerCodes, 10> faultHandlerMap = {
-      etl::pair{cfdp::ConditionCode::POSITIVE_ACK_LIMIT_REACHED,
+  etl::flat_map<cfdp::ConditionCodes, cfdp::FaultHandlerCodes, 10> faultHandlerMap = {
+      etl::pair{cfdp::ConditionCodes::POSITIVE_ACK_LIMIT_REACHED,
                 cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCode::KEEP_ALIVE_LIMIT_REACHED,
+      etl::pair{cfdp::ConditionCodes::KEEP_ALIVE_LIMIT_REACHED,
                 cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCode::INVALID_TRANSMISSION_MODE,
+      etl::pair{cfdp::ConditionCodes::INVALID_TRANSMISSION_MODE,
                 cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCode::FILE_CHECKSUM_FAILURE, cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCode::FILE_SIZE_ERROR, cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCode::NAK_LIMIT_REACHED, cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCode::INACTIVITY_DETECTED, cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCode::UNSUPPORTED_CHECKSUM_TYPE,
+      etl::pair{cfdp::ConditionCodes::FILE_CHECKSUM_FAILURE, cfdp::FaultHandlerCodes::IGNORE_ERROR},
+      etl::pair{cfdp::ConditionCodes::FILE_SIZE_ERROR, cfdp::FaultHandlerCodes::IGNORE_ERROR},
+      etl::pair{cfdp::ConditionCodes::NAK_LIMIT_REACHED, cfdp::FaultHandlerCodes::IGNORE_ERROR},
+      etl::pair{cfdp::ConditionCodes::INACTIVITY_DETECTED, cfdp::FaultHandlerCodes::IGNORE_ERROR},
+      etl::pair{cfdp::ConditionCodes::UNSUPPORTED_CHECKSUM_TYPE,
                 cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCode::FILESTORE_REJECTION, cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCode::CHECK_LIMIT_REACHED, cfdp::FaultHandlerCodes::IGNORE_ERROR}};
+      etl::pair{cfdp::ConditionCodes::FILESTORE_REJECTION, cfdp::FaultHandlerCodes::IGNORE_ERROR},
+      etl::pair{cfdp::ConditionCodes::CHECK_LIMIT_REACHED, cfdp::FaultHandlerCodes::IGNORE_ERROR}};
 };
 
 }  // namespace cfdp

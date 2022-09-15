@@ -13,7 +13,7 @@ ReturnValue_t AckPduCreator::serialize(uint8_t **buffer, size_t *size, size_t ma
   }
   cfdp::FileDirectives ackedDirective = ackInfo.getAckedDirective();
   uint8_t directiveSubtypeCode = ackInfo.getDirectiveSubtypeCode();
-  cfdp::ConditionCode ackedConditionCode = ackInfo.getAckedConditionCode();
+  cfdp::ConditionCodes ackedConditionCode = ackInfo.getAckedConditionCode();
   cfdp::AckTransactionStatus transactionStatus = ackInfo.getTransactionStatus();
   if (ackedDirective != cfdp::FileDirectives::FINISH and
       ackedDirective != cfdp::FileDirectives::EOF_DIRECTIVE) {

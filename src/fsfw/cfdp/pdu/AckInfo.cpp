@@ -1,6 +1,6 @@
 #include "AckInfo.h"
 
-AckInfo::AckInfo(cfdp::FileDirectives ackedDirective, cfdp::ConditionCode ackedConditionCode,
+AckInfo::AckInfo(cfdp::FileDirectives ackedDirective, cfdp::ConditionCodes ackedConditionCode,
                  cfdp::AckTransactionStatus transactionStatus, uint8_t directiveSubtypeCode)
     : ackedDirective(ackedDirective),
       ackedConditionCode(ackedConditionCode),
@@ -13,9 +13,9 @@ AckInfo::AckInfo(cfdp::FileDirectives ackedDirective, cfdp::ConditionCode ackedC
   }
 }
 
-cfdp::ConditionCode AckInfo::getAckedConditionCode() const { return ackedConditionCode; }
+cfdp::ConditionCodes AckInfo::getAckedConditionCode() const { return ackedConditionCode; }
 
-void AckInfo::setAckedConditionCode(cfdp::ConditionCode ackedConditionCode) {
+void AckInfo::setAckedConditionCode(cfdp::ConditionCodes ackedConditionCode) {
   this->ackedConditionCode = ackedConditionCode;
   if (ackedDirective == cfdp::FileDirectives::FINISH) {
     this->directiveSubtypeCode = 0b0001;

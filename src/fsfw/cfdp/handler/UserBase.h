@@ -14,12 +14,12 @@
 namespace cfdp {
 
 struct TransactionFinishedParams {
-  TransactionFinishedParams(const TransactionId& id, ConditionCode code, FileDeliveryCode delivCode,
+  TransactionFinishedParams(const TransactionId& id, ConditionCodes code, FileDeliveryCode delivCode,
                             FileDeliveryStatus status)
       : id(id), condCode(code), status(status), deliveryCode(delivCode) {}
 
   const TransactionId& id;
-  ConditionCode condCode;
+  ConditionCodes condCode;
   FileDeliveryStatus status;
   FileDeliveryCode deliveryCode;
   std::vector<FilestoreResponseTlv*> fsResponses;
@@ -85,10 +85,10 @@ class UserBase {
   virtual void metadataRecvdIndication(const MetadataRecvdParams& params) = 0;
   virtual void fileSegmentRecvdIndication(const FileSegmentRecvdParams& params) = 0;
   virtual void reportIndication(const TransactionId& id, StatusReportIF& report) = 0;
-  virtual void suspendedIndication(const TransactionId& id, ConditionCode code) = 0;
+  virtual void suspendedIndication(const TransactionId& id, ConditionCodes code) = 0;
   virtual void resumedIndication(const TransactionId& id, size_t progress) = 0;
-  virtual void faultIndication(const TransactionId& id, ConditionCode code, size_t progress) = 0;
-  virtual void abandonedIndication(const TransactionId& id, ConditionCode code,
+  virtual void faultIndication(const TransactionId& id, ConditionCodes code, size_t progress) = 0;
+  virtual void abandonedIndication(const TransactionId& id, ConditionCodes code,
                                    size_t progress) = 0;
   virtual void eofRecvIndication(const TransactionId& id) = 0;
 

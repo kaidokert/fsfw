@@ -16,7 +16,7 @@ class FinishPduReader : public FileDirectiveReader {
   FinishedInfo& finishedInfo;
 
   ReturnValue_t parseTlvs(size_t remLen, size_t currentIdx, const uint8_t* buf,
-                          cfdp::ConditionCode conditionCode);
+                          cfdp::ConditionCodes conditionCode);
 };
 
 #endif /* FSFW_CFDP_PDU_FINISHEDPDUDESERIALIZER_H_ */

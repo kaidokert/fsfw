@@ -6,11 +6,11 @@
 class AckInfo {
  public:
   AckInfo();
-  AckInfo(cfdp::FileDirectives ackedDirective, cfdp::ConditionCode ackedConditionCode,
+  AckInfo(cfdp::FileDirectives ackedDirective, cfdp::ConditionCodes ackedConditionCode,
           cfdp::AckTransactionStatus transactionStatus, uint8_t directiveSubtypeCode = 0);
 
-  cfdp::ConditionCode getAckedConditionCode() const;
-  void setAckedConditionCode(cfdp::ConditionCode ackedConditionCode);
+  cfdp::ConditionCodes getAckedConditionCode() const;
+  void setAckedConditionCode(cfdp::ConditionCodes ackedConditionCode);
 
   cfdp::FileDirectives getAckedDirective() const;
   void setAckedDirective(cfdp::FileDirectives ackedDirective);
@@ -23,7 +23,7 @@ class AckInfo {
 
  private:
   cfdp::FileDirectives ackedDirective = cfdp::FileDirectives::INVALID_DIRECTIVE;
-  cfdp::ConditionCode ackedConditionCode = cfdp::ConditionCode::NO_CONDITION_FIELD;
+  cfdp::ConditionCodes ackedConditionCode = cfdp::ConditionCodes::NO_CONDITION_FIELD;
   cfdp::AckTransactionStatus transactionStatus = cfdp::AckTransactionStatus::UNDEFINED;
   uint8_t directiveSubtypeCode = 0;
 };
