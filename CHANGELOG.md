@@ -32,7 +32,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   which also includes a migration guide
 - Bump Catch2 dependency to regular version `v3.1.0`
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/678
-
+- `SerialBufferAdapter`: Rename `setBuffer` to `setConstBuffer` and update
+  API to expect `const uint8_t*` accordingly.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/677
+ 
 # [v5.0.0] 25.07.2022
 
 ## Changes
