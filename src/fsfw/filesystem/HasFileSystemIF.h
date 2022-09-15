@@ -83,7 +83,11 @@ class HasFileSystemIF {
   virtual ReturnValue_t truncateFile(FilesystemParams params) = 0;
 
   /**
-   * @brief   Generic function to append to file.
+   * @brief   Generic function to write to a file.
+   *
+   * @details
+   * Implementations should not truncate the file. This is equivalent to opening a  file with "r+" on Unix systems
+   * or using ios::out | ios::in with the C++ API.
    * @param fileOpInfo General information: File name, size to write, offset, additional arguments
    * @param data The data to write to the file
    */
