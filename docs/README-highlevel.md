@@ -4,14 +4,12 @@ High-level overview
 # Structure
 
 The general structure is driven by the usage of interfaces provided by objects. 
-The FSFW uses C++17 as baseline. Most modern compilers like GCC should have support for this
-standard, even for micocontrollers.
-
-The FSFW uses dynamic allocation during the initialization but provides static containers during
-runtime.This simplifies the instantiation of objects and allows the usage of some standard
-containers.  Dynamic Allocation after initialization is discouraged and different solutions are
-provided in the FSFW to achieve that. The fsfw uses run-time type information but will not throw
-exceptions.
+The FSFW uses C++11 as baseline. The intention behind this is that this C++ Standard should be
+widely available, even with older compilers.
+The FSFW uses dynamic allocation during the initialization but provides static containers during runtime. 
+This simplifies the instantiation of objects and allows the usage of some standard containers. 
+Dynamic Allocation after initialization is discouraged and different solutions are provided in the
+FSFW to achieve that. The fsfw uses run-time type information but exceptions are not allowed.
 
 # Failure Handling
 
