@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [v6.0.0]
 
+## Fixes
+
+- Bugfix for Serial Buffer Stream: Setting `doActive` to false now
+  actually fully disables printing.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/680/files
+
 ## Added
 
 - Add new `UnsignedByteField` class
