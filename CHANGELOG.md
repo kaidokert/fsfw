@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [v6.0.0]
 
+## Fixes
+
+- Bugfix for Serial Buffer Stream: Setting `doActive` to false now
+  actually fully disables printing.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/680
+
 ## Added
 
 - Add new `UnsignedByteField` class
@@ -24,6 +30,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   for other modules
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/655
   which also includes a migration guide
+- Bump Catch2 dependency to regular version `v3.1.0`
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/678
+- `SerialBufferAdapter`: Rename `setBuffer` to `setConstBuffer` and update
+  API to expect `const uint8_t*` accordingly.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/677
+- Remove the following user includes from `fsfw/events/Event.h` and
+  `fsfw/returnvalues/returnvalue.h`:
+  - `#include "events/subsystemIdRanges.h"`
+  - `#include "returnvalues/classIds.h"`
+  The user has to include those themselves now
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/675
 
 # [v5.0.0] 25.07.2022
 
