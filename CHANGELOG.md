@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Bugfix for Serial Buffer Stream: Setting `doActive` to false now
   actually fully disables printing.
-  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/680/files
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/680
 
 ## Added
 
@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   for other modules
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/655
   which also includes a migration guide
+- Bump Catch2 dependency to regular version `v3.1.0`
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/678
 
 # [v5.0.0] 25.07.2022
 
