@@ -48,11 +48,11 @@ LocalPoolObjectBase::LocalPoolObjectBase(object_id_t poolOwner, lp_id_t poolId, 
   if (hkOwner == nullptr) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::error << "LocalPoolVariable: The supplied pool owner 0x" << std::hex << poolOwner
-               << std::dec << "  does not exists or did not implement the correct interface "
+               << std::dec << "  does not exist or does not implement the correct interface "
                << "HasLocalDataPoolIF" << std::endl;
 #else
     sif::printError(
-        "LocalPoolVariable: The supplied pool owner 0x%08x does not exists or does not implement "
+        "LocalPoolVariable: The supplied pool owner 0x%08x does not exist or does not implement "
         "the correct interface HasLocalDataPoolIF\n",
         poolOwner);
 #endif
