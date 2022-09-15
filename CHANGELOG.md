@@ -44,6 +44,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - `#include "returnvalues/classIds.h"`
   The user has to include those themselves now
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/675
+- `DeviceHandlerBase`: Set command sender before calling `buildCommandFromCommand`.
+  This allows finishing action commands immediately inside the function.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/672
 
 # [v5.0.0] 25.07.2022
 
