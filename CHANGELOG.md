@@ -47,6 +47,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `DeviceHandlerBase`: Set command sender before calling `buildCommandFromCommand`.
   This allows finishing action commands immediately inside the function.
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/672
+- `DeviceHandlerBase`: New signature of `handleDeviceTm` which expects
+  a `const SerializeIF&` and additional helper variant which expects `const uint8_t*`
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/671
 
 # [v5.0.0] 25.07.2022
 
