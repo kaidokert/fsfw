@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Move some generic `StorageManagerIF` implementations from `LocalPool` to
   interface itself so it can be re-used more easily. Also add new
   abstract function `bool hasDataAtId(store_address_t storeId) const`.
-  PR: 
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/685
 
 # [v5.0.0] 25.07.2022
 
