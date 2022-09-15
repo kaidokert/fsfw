@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Bugfix for Serial Buffer Stream: Setting `doActive` to false now
   actually fully disables printing.
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/680
+- `TcpTmTcServer.cpp`: The server was actually not able to handle
+  CCSDS packets which were clumped together. This has been fixed now.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/673
 
 ## Added
 
