@@ -1,18 +1,18 @@
 #include "EofInfo.h"
 
-EofInfo::EofInfo(cfdp::ConditionCode conditionCode, uint32_t checksum, cfdp::FileSize fileSize,
+EofInfo::EofInfo(cfdp::ConditionCodes conditionCode, uint32_t checksum, cfdp::FileSize fileSize,
                  EntityIdTlv* faultLoc)
     : conditionCode(conditionCode), checksum(checksum), fileSize(fileSize), faultLoc(faultLoc) {}
 
 EofInfo::EofInfo(EntityIdTlv* faultLoc)
-    : conditionCode(cfdp::ConditionCode::NO_CONDITION_FIELD),
+    : conditionCode(cfdp::ConditionCodes::NO_CONDITION_FIELD),
       checksum(0),
       fileSize(0),
       faultLoc(faultLoc) {}
 
 uint32_t EofInfo::getChecksum() const { return checksum; }
 
-cfdp::ConditionCode EofInfo::getConditionCode() const { return conditionCode; }
+cfdp::ConditionCodes EofInfo::getConditionCode() const { return conditionCode; }
 
 EntityIdTlv* EofInfo::getFaultLoc() const { return faultLoc; }
 
@@ -20,7 +20,7 @@ cfdp::FileSize& EofInfo::getFileSize() { return fileSize; }
 
 void EofInfo::setChecksum(uint32_t checksum) { this->checksum = checksum; }
 
-void EofInfo::setConditionCode(cfdp::ConditionCode conditionCode) {
+void EofInfo::setConditionCode(cfdp::ConditionCodes conditionCode) {
   this->conditionCode = conditionCode;
 }
 
@@ -36,7 +36,7 @@ size_t EofInfo::getSerializedSize(bool fssLarge) {
   }
   // Do not account for fault location if the condition code is NO_ERROR. We assume that
   // a serializer will not serialize the fault location here.
-  if (getFaultLoc() != nullptr and getConditionCode() != cfdp::ConditionCode::NO_ERROR) {
+  if (getFaultLoc() != nullptr and getConditionCode() != cfdp::ConditionCodes::NO_ERROR) {
     size += faultLoc->getSerializedSize();
   }
   return size;

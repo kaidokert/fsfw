@@ -6,7 +6,7 @@
 class FaultHandlerOverrideTlv : public TlvIF {
  public:
   FaultHandlerOverrideTlv();
-  FaultHandlerOverrideTlv(cfdp::ConditionCode conditionCode, cfdp::FaultHandlerCodes handlerCode);
+  FaultHandlerOverrideTlv(cfdp::ConditionCodes conditionCode, cfdp::FaultHandlerCodes handlerCode);
 
   ReturnValue_t serialize(uint8_t **buffer, size_t *size, size_t maxSize,
                           Endianness streamEndianness) const override;
@@ -19,7 +19,7 @@ class FaultHandlerOverrideTlv : public TlvIF {
   [[nodiscard]] cfdp::TlvTypes getType() const override;
 
  private:
-  cfdp::ConditionCode conditionCode = cfdp::ConditionCode::NO_CONDITION_FIELD;
+  cfdp::ConditionCodes conditionCode = cfdp::ConditionCodes::NO_CONDITION_FIELD;
   cfdp::FaultHandlerCodes handlerCode = cfdp::FaultHandlerCodes::RESERVED;
 };
 

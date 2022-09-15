@@ -82,7 +82,7 @@ enum FileDirectives : uint8_t {
   KEEP_ALIVE = 0x0c
 };
 
-enum ConditionCode : uint8_t {
+enum ConditionCodes : uint8_t {
   NO_CONDITION_FIELD = 0xff,
   NO_ERROR = 0b0000,
   POSITIVE_ACK_LIMIT_REACHED = 0b0001,
@@ -98,6 +98,7 @@ enum ConditionCode : uint8_t {
   SUSPEND_REQUEST_RECEIVED = 0b1110,
   CANCEL_REQUEST_RECEIVED = 0b1111
 };
+
 
 enum FaultHandlerCodes {
   RESERVED = 0b0000,

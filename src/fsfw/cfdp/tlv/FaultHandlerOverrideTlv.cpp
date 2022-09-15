@@ -1,6 +1,6 @@
 #include "FaultHandlerOverrideTlv.h"
 
-FaultHandlerOverrideTlv::FaultHandlerOverrideTlv(cfdp::ConditionCode conditionCode,
+FaultHandlerOverrideTlv::FaultHandlerOverrideTlv(cfdp::ConditionCodes conditionCode,
                                                  cfdp::FaultHandlerCodes handlerCode)
     : conditionCode(conditionCode), handlerCode(handlerCode) {}
 
@@ -44,7 +44,7 @@ ReturnValue_t FaultHandlerOverrideTlv::deSerialize(const uint8_t **buffer, size_
   }
   *buffer += 1;
   *size += 1;
-  this->conditionCode = static_cast<cfdp::ConditionCode>((**buffer >> 4) & 0x0f);
+  this->conditionCode = static_cast<cfdp::ConditionCodes>((**buffer >> 4) & 0x0f);
   this->handlerCode = static_cast<cfdp::FaultHandlerCodes>(**buffer & 0x0f);
   *buffer += 1;
   *size += 1;

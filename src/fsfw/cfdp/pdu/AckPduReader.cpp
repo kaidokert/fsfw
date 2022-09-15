@@ -29,7 +29,7 @@ bool AckPduReader::checkAndSetCodes(uint8_t firstByte, uint8_t secondByte) {
     return false;
   }
   this->info.setDirectiveSubtypeCode(directiveSubtypeCode);
-  this->info.setAckedConditionCode(static_cast<cfdp::ConditionCode>(secondByte >> 4));
+  this->info.setAckedConditionCode(static_cast<cfdp::ConditionCodes>(secondByte >> 4));
   this->info.setTransactionStatus(static_cast<cfdp::AckTransactionStatus>(secondByte & 0x0f));
   return true;
 }

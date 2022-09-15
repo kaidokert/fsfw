@@ -25,7 +25,7 @@ ReturnValue_t EofPduReader::parseData() {
 
   bufPtr += currentIdx;
   deserLen -= currentIdx;
-  info.setConditionCode(static_cast<cfdp::ConditionCode>(*bufPtr >> 4));
+  info.setConditionCode(static_cast<cfdp::ConditionCodes>(*bufPtr >> 4));
   bufPtr += 1;
   deserLen -= 1;
   uint32_t checksum = 0;
@@ -47,7 +47,7 @@ ReturnValue_t EofPduReader::parseData() {
   if (result != returnvalue::OK) {
     return result;
   }
-  if (info.getConditionCode() != cfdp::ConditionCode::NO_ERROR) {
+  if (info.getConditionCode() != cfdp::ConditionCodes::NO_ERROR) {
     EntityIdTlv* tlvPtr = info.getFaultLoc();
     if (tlvPtr == nullptr) {
 #if FSFW_VERBOSE_LEVEL >= 1

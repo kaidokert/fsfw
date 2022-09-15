@@ -15,7 +15,7 @@ ReturnValue_t FinishPduReader::parseData() {
     return SerializeIF::STREAM_TOO_SHORT;
   }
   uint8_t firstByte = *buf;
-  auto condCode = static_cast<cfdp::ConditionCode>((firstByte >> 4) & 0x0f);
+  auto condCode = static_cast<cfdp::ConditionCodes>((firstByte >> 4) & 0x0f);
   finishedInfo.setConditionCode(condCode);
   finishedInfo.setDeliveryCode(static_cast<cfdp::FileDeliveryCode>(firstByte >> 2 & 0b1));
   finishedInfo.setFileStatus(static_cast<cfdp::FileDeliveryStatus>(firstByte & 0b11));
@@ -31,7 +31,7 @@ ReturnValue_t FinishPduReader::parseData() {
 FinishedInfo& FinishPduReader::getInfo() { return finishedInfo; }
 
 ReturnValue_t FinishPduReader::parseTlvs(size_t remLen, size_t currentIdx, const uint8_t* buf,
-                                         cfdp::ConditionCode conditionCode) {
+                                         cfdp::ConditionCodes conditionCode) {
   ReturnValue_t result = returnvalue::OK;
   size_t fsResponsesIdx = 0;
   auto endianness = getEndianness();
@@ -66,8 +66,8 @@ ReturnValue_t FinishPduReader::parseTlvs(size_t remLen, size_t currentIdx, const
     } else if (nextTlv == cfdp::TlvTypes::ENTITY_ID) {
       // This needs to be the last TLV and it should not be here if the condition code
       // is "No Error" or "Unsupported Checksum Type"
-      if (conditionCode == cfdp::ConditionCode::NO_ERROR or
-          conditionCode == cfdp::ConditionCode::UNSUPPORTED_CHECKSUM_TYPE) {
+      if (conditionCode == cfdp::ConditionCodes::NO_ERROR or
+          conditionCode == cfdp::ConditionCodes::UNSUPPORTED_CHECKSUM_TYPE) {
         return cfdp::INVALID_TLV_TYPE;
       }
       result = finishedInfo.getFaultLocation(&faultLocation);

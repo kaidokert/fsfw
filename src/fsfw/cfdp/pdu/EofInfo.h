@@ -8,23 +8,23 @@
 struct EofInfo {
  public:
   explicit EofInfo(EntityIdTlv* faultLoc = nullptr);
-  EofInfo(cfdp::ConditionCode conditionCode, uint32_t checksum, cfdp::FileSize fileSize,
+  EofInfo(cfdp::ConditionCodes conditionCode, uint32_t checksum, cfdp::FileSize fileSize,
           EntityIdTlv* faultLoc = nullptr);
 
   size_t getSerializedSize(bool fssLarge = false);
 
   [[nodiscard]] uint32_t getChecksum() const;
-  [[nodiscard]] cfdp::ConditionCode getConditionCode() const;
+  [[nodiscard]] cfdp::ConditionCodes getConditionCode() const;
 
   [[nodiscard]] EntityIdTlv* getFaultLoc() const;
   cfdp::FileSize& getFileSize();
   void setChecksum(uint32_t checksum);
-  void setConditionCode(cfdp::ConditionCode conditionCode);
+  void setConditionCode(cfdp::ConditionCodes conditionCode);
   void setFaultLoc(EntityIdTlv* faultLoc);
   ReturnValue_t setFileSize(size_t size, bool isLarge);
 
  private:
-  cfdp::ConditionCode conditionCode;
+  cfdp::ConditionCodes conditionCode;
   uint32_t checksum;
   cfdp::FileSize fileSize;
   EntityIdTlv* faultLoc = nullptr;
