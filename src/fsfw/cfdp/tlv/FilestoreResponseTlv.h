@@ -33,7 +33,7 @@ class FilestoreResponseTlv : public cfdp::FilestoreTlvBase {
                             Endianness streamEndianness) override;
 
   [[nodiscard]] uint8_t getLengthField() const override;
-  [[nodiscard]] cfdp::TlvTypes getType() const override;
+  [[nodiscard]] cfdp::TlvType getType() const override;
 
  private:
   uint8_t statusCode;

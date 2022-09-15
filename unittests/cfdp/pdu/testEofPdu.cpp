@@ -20,7 +20,7 @@ TEST_CASE("EOF PDU", "[cfdp][pdu]") {
   TransactionSeqNum seqNum(WidthInBytes::TWO_BYTES, 15);
   EntityId sourceId(WidthInBytes::TWO_BYTES, 1);
 
-  PduConfig pduConf(sourceId, destId, TransmissionModes::ACKNOWLEDGED, seqNum);
+  PduConfig pduConf(sourceId, destId, TransmissionMode::ACKNOWLEDGED, seqNum);
 
   auto eofSerializer = EofPduCreator(pduConf, eofInfo);
   SECTION("Serialize") {
@@ -37,7 +37,7 @@ TEST_CASE("EOF PDU", "[cfdp][pdu]") {
                                            SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
     REQUIRE(fileSizeVal == 12);
-    REQUIRE(buf[sz - 10] == cfdp::FileDirectives::EOF_DIRECTIVE);
+    REQUIRE(buf[sz - 10] == cfdp::FileDirective::EOF_DIRECTIVE);
     REQUIRE(buf[sz - 9] == 0x00);
     REQUIRE(sz == 20);
 
@@ -52,13 +52,13 @@ TEST_CASE("EOF PDU", "[cfdp][pdu]") {
                                                   SerializeIF::Endianness::NETWORK);
     REQUIRE(result == returnvalue::OK);
     REQUIRE(sz == 28);
-    REQUIRE(buf[10] == cfdp::FileDirectives::EOF_DIRECTIVE);
+    REQUIRE(buf[10] == cfdp::FileDirective::EOF_DIRECTIVE);
     REQUIRE(buf[11] >> 4 == cfdp::ConditionCode::FILESTORE_REJECTION);
     uint64_t fileSizeLarge = 0;
     result = SerializeAdapter::deSerialize(&fileSizeLarge, buf.data() + 16, nullptr,
                                            SerializeIF::Endianness::NETWORK);
     REQUIRE(fileSizeLarge == 0x10ffffff10);
-    REQUIRE(buf[sz - 4] == cfdp::TlvTypes::ENTITY_ID);
+    REQUIRE(buf[sz - 4] == cfdp::TlvType::ENTITY_ID);
     // width of entity ID is 2
     REQUIRE(buf[sz - 3] == 2);
     uint16_t entityIdRaw = 0;
@@ -105,7 +105,7 @@ TEST_CASE("EOF PDU", "[cfdp][pdu]") {
     REQUIRE(emptyInfo.getConditionCode() == cfdp::ConditionCode::FILESTORE_REJECTION);
     REQUIRE(emptyInfo.getChecksum() == 5);
     REQUIRE(emptyInfo.getFileSize().getSize() == 0x10ffffff10);
-    REQUIRE(emptyInfo.getFaultLoc()->getType() == cfdp::TlvTypes::ENTITY_ID);
+    REQUIRE(emptyInfo.getFaultLoc()->getType() == cfdp::TlvType::ENTITY_ID);
     REQUIRE(emptyInfo.getFaultLoc()->getSerializedSize() == 4);
     uint16_t destId = emptyInfo.getFaultLoc()->getEntityId().getValue();
     REQUIRE(destId == 2);

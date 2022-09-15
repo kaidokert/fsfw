@@ -5,10 +5,10 @@
 
 class FileDirectiveCreator : public HeaderCreator {
  public:
-  FileDirectiveCreator(PduConfig& pduConf, cfdp::FileDirectives directiveCode,
+  FileDirectiveCreator(PduConfig& pduConf, cfdp::FileDirective directiveCode,
                        size_t directiveParamFieldLen);
 
-  [[nodiscard]] cfdp::FileDirectives getDirectiveCode() const;
+  [[nodiscard]] cfdp::FileDirective getDirectiveCode() const;
 
   /**
    * This only returns the size of the PDU header + 1 for the directive code octet.
@@ -28,7 +28,7 @@ class FileDirectiveCreator : public HeaderCreator {
   void setDirectiveDataFieldLen(size_t len);
 
  private:
-  cfdp::FileDirectives directiveCode = cfdp::FileDirectives::INVALID_DIRECTIVE;
+  cfdp::FileDirective directiveCode = cfdp::FileDirective::INVALID_DIRECTIVE;
 };
 
 #endif /* FSFW_SRC_FSFW_CFDP_PDU_FILEDIRECTIVESERIALIZER_H_ */

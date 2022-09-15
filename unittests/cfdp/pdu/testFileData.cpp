@@ -17,7 +17,7 @@ TEST_CASE("File Data PDU", "[cfdp][pdu]") {
   EntityId destId(WidthInBytes::TWO_BYTES, 2);
   TransactionSeqNum seqNum(WidthInBytes::TWO_BYTES, 15);
   EntityId sourceId(WidthInBytes::TWO_BYTES, 1);
-  PduConfig pduConf(sourceId, destId, TransmissionModes::ACKNOWLEDGED, seqNum);
+  PduConfig pduConf(sourceId, destId, TransmissionMode::ACKNOWLEDGED, seqNum);
 
   for (uint8_t idx = 0; idx < 10; idx++) {
     fileBuffer[idx] = idx;

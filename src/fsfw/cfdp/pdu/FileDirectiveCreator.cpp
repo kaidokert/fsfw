@@ -1,8 +1,8 @@
 #include "FileDirectiveCreator.h"
 
-FileDirectiveCreator::FileDirectiveCreator(PduConfig &pduConf, cfdp::FileDirectives directiveCode,
+FileDirectiveCreator::FileDirectiveCreator(PduConfig &pduConf, cfdp::FileDirective directiveCode,
                                            size_t directiveParamFieldLen)
-    : HeaderCreator(pduConf, cfdp::PduTypes::FILE_DIRECTIVE, directiveParamFieldLen + 1),
+    : HeaderCreator(pduConf, cfdp::PduType::FILE_DIRECTIVE, directiveParamFieldLen + 1),
       directiveCode(directiveCode) {}
 
 size_t FileDirectiveCreator::getSerializedSize() const {
@@ -36,4 +36,4 @@ void FileDirectiveCreator::setDirectiveDataFieldLen(size_t len) {
   HeaderCreator::setPduDataFieldLen(len + 1);
 }
 
-cfdp::FileDirectives FileDirectiveCreator::getDirectiveCode() const { return directiveCode; }
+cfdp::FileDirective FileDirectiveCreator::getDirectiveCode() const { return directiveCode; }

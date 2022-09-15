@@ -1,32 +1,32 @@
 #include "AckInfo.h"
 
-AckInfo::AckInfo(cfdp::FileDirectives ackedDirective, cfdp::ConditionCodes ackedConditionCode,
+AckInfo::AckInfo(cfdp::FileDirective ackedDirective, cfdp::ConditionCode ackedConditionCode,
                  cfdp::AckTransactionStatus transactionStatus, uint8_t directiveSubtypeCode)
     : ackedDirective(ackedDirective),
       ackedConditionCode(ackedConditionCode),
       transactionStatus(transactionStatus),
       directiveSubtypeCode(directiveSubtypeCode) {
-  if (ackedDirective == cfdp::FileDirectives::FINISH) {
+  if (ackedDirective == cfdp::FileDirective::FINISH) {
     this->directiveSubtypeCode = 0b0001;
   } else {
     this->directiveSubtypeCode = 0b0000;
   }
 }
 
-cfdp::ConditionCodes AckInfo::getAckedConditionCode() const { return ackedConditionCode; }
+cfdp::ConditionCode AckInfo::getAckedConditionCode() const { return ackedConditionCode; }
 
-void AckInfo::setAckedConditionCode(cfdp::ConditionCodes ackedConditionCode) {
+void AckInfo::setAckedConditionCode(cfdp::ConditionCode ackedConditionCode) {
   this->ackedConditionCode = ackedConditionCode;
-  if (ackedDirective == cfdp::FileDirectives::FINISH) {
+  if (ackedDirective == cfdp::FileDirective::FINISH) {
     this->directiveSubtypeCode = 0b0001;
   } else {
     this->directiveSubtypeCode = 0b0000;
   }
 }
 
-cfdp::FileDirectives AckInfo::getAckedDirective() const { return ackedDirective; }
+cfdp::FileDirective AckInfo::getAckedDirective() const { return ackedDirective; }
 
-void AckInfo::setAckedDirective(cfdp::FileDirectives ackedDirective) {
+void AckInfo::setAckedDirective(cfdp::FileDirective ackedDirective) {
   this->ackedDirective = ackedDirective;
 }
 

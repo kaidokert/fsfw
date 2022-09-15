@@ -43,33 +43,33 @@ class FaultHandlerBase {
    *  - true if the condition code is valid
    *  - false otherwise
    */
-  bool getFaultHandler(cfdp::ConditionCodes code, cfdp::FaultHandlerCodes& handler) const;
+  bool getFaultHandler(cfdp::ConditionCode code, cfdp::FaultHandlerCode& handler) const;
 
-  bool setFaultHandler(cfdp::ConditionCodes code, cfdp::FaultHandlerCodes handler);
+  bool setFaultHandler(cfdp::ConditionCode code, cfdp::FaultHandlerCode handler);
 
-  bool reportFault(cfdp::TransactionId& id, cfdp::ConditionCodes code);
+  bool reportFault(cfdp::TransactionId& id, cfdp::ConditionCode code);
 
-  virtual void noticeOfSuspensionCb(cfdp::TransactionId& id, cfdp::ConditionCodes code) = 0;
-  virtual void noticeOfCancellationCb(cfdp::TransactionId& id, cfdp::ConditionCodes code) = 0;
-  virtual void abandonCb(cfdp::TransactionId& id, cfdp::ConditionCodes code) = 0;
-  virtual void ignoreCb(cfdp::TransactionId& id, cfdp::ConditionCodes code) = 0;
+  virtual void noticeOfSuspensionCb(cfdp::TransactionId& id, cfdp::ConditionCode code) = 0;
+  virtual void noticeOfCancellationCb(cfdp::TransactionId& id, cfdp::ConditionCode code) = 0;
+  virtual void abandonCb(cfdp::TransactionId& id, cfdp::ConditionCode code) = 0;
+  virtual void ignoreCb(cfdp::TransactionId& id, cfdp::ConditionCode code) = 0;
 
  private:
-  etl::flat_map<cfdp::ConditionCodes, cfdp::FaultHandlerCodes, 10> faultHandlerMap = {
-      etl::pair{cfdp::ConditionCodes::POSITIVE_ACK_LIMIT_REACHED,
-                cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCodes::KEEP_ALIVE_LIMIT_REACHED,
-                cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCodes::INVALID_TRANSMISSION_MODE,
-                cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCodes::FILE_CHECKSUM_FAILURE, cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCodes::FILE_SIZE_ERROR, cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCodes::NAK_LIMIT_REACHED, cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCodes::INACTIVITY_DETECTED, cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCodes::UNSUPPORTED_CHECKSUM_TYPE,
-                cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCodes::FILESTORE_REJECTION, cfdp::FaultHandlerCodes::IGNORE_ERROR},
-      etl::pair{cfdp::ConditionCodes::CHECK_LIMIT_REACHED, cfdp::FaultHandlerCodes::IGNORE_ERROR}};
+  etl::flat_map<cfdp::ConditionCode, cfdp::FaultHandlerCode, 10> faultHandlerMap = {
+      etl::pair{cfdp::ConditionCode::POSITIVE_ACK_LIMIT_REACHED,
+                cfdp::FaultHandlerCode::IGNORE_ERROR},
+      etl::pair{cfdp::ConditionCode::KEEP_ALIVE_LIMIT_REACHED,
+                cfdp::FaultHandlerCode::IGNORE_ERROR},
+      etl::pair{cfdp::ConditionCode::INVALID_TRANSMISSION_MODE,
+                cfdp::FaultHandlerCode::IGNORE_ERROR},
+      etl::pair{cfdp::ConditionCode::FILE_CHECKSUM_FAILURE, cfdp::FaultHandlerCode::IGNORE_ERROR},
+      etl::pair{cfdp::ConditionCode::FILE_SIZE_ERROR, cfdp::FaultHandlerCode::IGNORE_ERROR},
+      etl::pair{cfdp::ConditionCode::NAK_LIMIT_REACHED, cfdp::FaultHandlerCode::IGNORE_ERROR},
+      etl::pair{cfdp::ConditionCode::INACTIVITY_DETECTED, cfdp::FaultHandlerCode::IGNORE_ERROR},
+      etl::pair{cfdp::ConditionCode::UNSUPPORTED_CHECKSUM_TYPE,
+                cfdp::FaultHandlerCode::IGNORE_ERROR},
+      etl::pair{cfdp::ConditionCode::FILESTORE_REJECTION, cfdp::FaultHandlerCode::IGNORE_ERROR},
+      etl::pair{cfdp::ConditionCode::CHECK_LIMIT_REACHED, cfdp::FaultHandlerCode::IGNORE_ERROR}};
 };
 
 }  // namespace cfdp

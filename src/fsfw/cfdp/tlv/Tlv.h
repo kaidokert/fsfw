@@ -13,7 +13,7 @@ namespace cfdp {
  */
 class Tlv : public TlvIF {
  public:
-  Tlv(TlvTypes type, const uint8_t *value, size_t size);
+  Tlv(TlvType type, const uint8_t *value, size_t size);
   Tlv();
 
   /**
@@ -47,15 +47,15 @@ class Tlv : public TlvIF {
   void setValue(uint8_t *value, size_t len);
 
   [[nodiscard]] const uint8_t *getValue() const;
-  void setType(TlvTypes type);
-  [[nodiscard]] TlvTypes getType() const override;
+  void setType(TlvType type);
+  [[nodiscard]] TlvType getType() const override;
   [[nodiscard]] uint8_t getLengthField() const override;
 
  private:
   bool checkType(uint8_t rawType);
 
   bool zeroLen = true;
-  TlvTypes type = TlvTypes::INVALID_TLV;
+  TlvType type = TlvType::INVALID_TLV;
   SerialBufferAdapter<uint8_t> value;
 };
 

@@ -3,7 +3,7 @@
 #include <cstring>
 
 FileDataCreator::FileDataCreator(PduConfig& conf, FileDataInfo& info)
-    : HeaderCreator(conf, cfdp::PduTypes::FILE_DATA, 0, info.getSegmentMetadataFlag()), info(info) {
+    : HeaderCreator(conf, cfdp::PduType::FILE_DATA, 0, info.getSegmentMetadataFlag()), info(info) {
   update();
 }
 

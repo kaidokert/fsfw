@@ -76,4 +76,4 @@ ReturnValue_t FilestoreRequestTlv::deSerializeFromValue(const uint8_t **buffer, 
   return result;
 }
 
-cfdp::TlvTypes FilestoreRequestTlv::getType() const { return cfdp::TlvTypes::FILESTORE_REQUEST; }
+cfdp::TlvType FilestoreRequestTlv::getType() const { return cfdp::TlvType::FILESTORE_REQUEST; }

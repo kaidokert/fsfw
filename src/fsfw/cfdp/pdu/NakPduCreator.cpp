@@ -1,7 +1,7 @@
 #include "NakPduCreator.h"
 
 NakPduCreator::NakPduCreator(PduConfig &pduConf, NakInfo &nakInfo)
-    : FileDirectiveCreator(pduConf, cfdp::FileDirectives::NAK, 0), nakInfo(nakInfo) {
+    : FileDirectiveCreator(pduConf, cfdp::FileDirective::NAK, 0), nakInfo(nakInfo) {
   updateDirectiveFieldLen();
 }
 

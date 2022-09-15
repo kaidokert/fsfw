@@ -14,7 +14,7 @@ TEST_CASE("Prompt PDU", "[cfdp][pdu]") {
   EntityId destId(WidthInBytes::TWO_BYTES, 2);
   TransactionSeqNum seqNum(WidthInBytes::TWO_BYTES, 15);
   EntityId sourceId(WidthInBytes::TWO_BYTES, 1);
-  PduConfig pduConf(sourceId, destId, TransmissionModes::ACKNOWLEDGED, seqNum);
+  PduConfig pduConf(sourceId, destId, TransmissionMode::ACKNOWLEDGED, seqNum);
 
   SECTION("Serialize") {
     PromptPduCreator serializer(pduConf, cfdp::PromptResponseRequired::PROMPT_KEEP_ALIVE);
@@ -23,7 +23,7 @@ TEST_CASE("Prompt PDU", "[cfdp][pdu]") {
     REQUIRE(serializer.getWholePduSize() == 12);
     REQUIRE(sz == 12);
     REQUIRE(serializer.getPduDataFieldLen() == 2);
-    REQUIRE(rawBuf[10] == FileDirectives::PROMPT);
+    REQUIRE(rawBuf[10] == FileDirective::PROMPT);
     REQUIRE(((rawBuf[sz - 1] >> 7) & 0x01) == cfdp::PromptResponseRequired::PROMPT_KEEP_ALIVE);
 
     for (size_t invalidMaxSz = 0; invalidMaxSz < sz; invalidMaxSz++) {

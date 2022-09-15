@@ -1,7 +1,7 @@
 #include "MetadataPduCreator.h"
 
 MetadataPduCreator::MetadataPduCreator(PduConfig &conf, MetadataInfo &info)
-    : FileDirectiveCreator(conf, cfdp::FileDirectives::METADATA, 5), info(info) {
+    : FileDirectiveCreator(conf, cfdp::FileDirective::METADATA, 5), info(info) {
   updateDirectiveFieldLen();
 }
 

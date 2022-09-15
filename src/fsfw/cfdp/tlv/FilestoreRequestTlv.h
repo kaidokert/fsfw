@@ -30,7 +30,7 @@ class FilestoreRequestTlv : public cfdp::FilestoreTlvBase {
                             Endianness streamEndianness) override;
 
   [[nodiscard]] uint8_t getLengthField() const override;
-  [[nodiscard]] cfdp::TlvTypes getType() const override;
+  [[nodiscard]] cfdp::TlvType getType() const override;
 
  private:
   cfdp::Lv *secondFileName = nullptr;

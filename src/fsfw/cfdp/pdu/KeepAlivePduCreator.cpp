@@ -1,7 +1,7 @@
 #include "KeepAlivePduCreator.h"
 
 KeepAlivePduCreator::KeepAlivePduCreator(PduConfig &conf, cfdp::FileSize &progress)
-    : FileDirectiveCreator(conf, cfdp::FileDirectives::KEEP_ALIVE, 4), progress(progress) {
+    : FileDirectiveCreator(conf, cfdp::FileDirective::KEEP_ALIVE, 4), progress(progress) {
   updateDirectiveFieldLen();
 }
 

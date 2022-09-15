@@ -1,7 +1,7 @@
 #include "AckPduCreator.h"
 
 AckPduCreator::AckPduCreator(AckInfo &ackInfo, PduConfig &pduConf)
-    : FileDirectiveCreator(pduConf, cfdp::FileDirectives::ACK, 2), ackInfo(ackInfo) {}
+    : FileDirectiveCreator(pduConf, cfdp::FileDirective::ACK, 2), ackInfo(ackInfo) {}
 
 size_t AckPduCreator::getSerializedSize() const { return FileDirectiveCreator::getWholePduSize(); }
 
@@ -11,12 +11,12 @@ ReturnValue_t AckPduCreator::serialize(uint8_t **buffer, size_t *size, size_t ma
   if (result != returnvalue::OK) {
     return result;
   }
-  cfdp::FileDirectives ackedDirective = ackInfo.getAckedDirective();
+  cfdp::FileDirective ackedDirective = ackInfo.getAckedDirective();
   uint8_t directiveSubtypeCode = ackInfo.getDirectiveSubtypeCode();
-  cfdp::ConditionCodes ackedConditionCode = ackInfo.getAckedConditionCode();
+  cfdp::ConditionCode ackedConditionCode = ackInfo.getAckedConditionCode();
   cfdp::AckTransactionStatus transactionStatus = ackInfo.getTransactionStatus();
-  if (ackedDirective != cfdp::FileDirectives::FINISH and
-      ackedDirective != cfdp::FileDirectives::EOF_DIRECTIVE) {
+  if (ackedDirective != cfdp::FileDirective::FINISH and
+      ackedDirective != cfdp::FileDirective::EOF_DIRECTIVE) {
     // TODO: better returncode
     return returnvalue::FAILED;
   }

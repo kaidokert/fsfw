@@ -32,8 +32,8 @@ struct RemoteEntityCfg {
   size_t maxFileSegmentLen = 2048;
   bool closureRequested = false;
   bool crcOnTransmission = false;
-  TransmissionModes defaultTransmissionMode = TransmissionModes::UNACKNOWLEDGED;
-  ChecksumTypes defaultChecksum = ChecksumTypes::NULL_CHECKSUM;
+  TransmissionMode defaultTransmissionMode = TransmissionMode::UNACKNOWLEDGED;
+  ChecksumType defaultChecksum = ChecksumType::NULL_CHECKSUM;
   const uint8_t version = CFDP_VERSION_2;
 };
 

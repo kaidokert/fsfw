@@ -19,7 +19,7 @@ ReturnValue_t AckPduReader::parseData() {
 }
 
 bool AckPduReader::checkAndSetCodes(uint8_t firstByte, uint8_t secondByte) {
-  cfdp::FileDirectives directive;
+  cfdp::FileDirective directive;
   if (not checkAckedDirectiveField(firstByte, directive)) {
     return false;
   }
@@ -29,17 +29,17 @@ bool AckPduReader::checkAndSetCodes(uint8_t firstByte, uint8_t secondByte) {
     return false;
   }
   this->info.setDirectiveSubtypeCode(directiveSubtypeCode);
-  this->info.setAckedConditionCode(static_cast<cfdp::ConditionCodes>(secondByte >> 4));
+  this->info.setAckedConditionCode(static_cast<cfdp::ConditionCode>(secondByte >> 4));
   this->info.setTransactionStatus(static_cast<cfdp::AckTransactionStatus>(secondByte & 0x0f));
   return true;
 }
 bool AckPduReader::checkAckedDirectiveField(uint8_t firstPduDataByte,
-                                            cfdp::FileDirectives& ackedDirective) {
-  uint8_t ackedDirectiveRaw = static_cast<cfdp::FileDirectives>(firstPduDataByte >> 4);
-  if (ackedDirectiveRaw != cfdp::FileDirectives::EOF_DIRECTIVE and
-      ackedDirectiveRaw != cfdp::FileDirectives::FINISH) {
+                                            cfdp::FileDirective& ackedDirective) {
+  uint8_t ackedDirectiveRaw = static_cast<cfdp::FileDirective>(firstPduDataByte >> 4);
+  if (ackedDirectiveRaw != cfdp::FileDirective::EOF_DIRECTIVE and
+      ackedDirectiveRaw != cfdp::FileDirective::FINISH) {
     return false;
   }
-  ackedDirective = (static_cast<cfdp::FileDirectives>(ackedDirectiveRaw));
+  ackedDirective = (static_cast<cfdp::FileDirective>(ackedDirectiveRaw));
   return true;
 }

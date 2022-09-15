@@ -27,7 +27,7 @@ class EntityIdTlv : public TlvIF {
                             Endianness streamEndianness) override;
 
   uint8_t getLengthField() const override;
-  cfdp::TlvTypes getType() const override;
+  cfdp::TlvType getType() const override;
 
   cfdp::EntityId& getEntityId();
 

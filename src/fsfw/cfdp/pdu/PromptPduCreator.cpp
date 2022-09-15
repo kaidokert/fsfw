@@ -1,7 +1,7 @@
 #include "PromptPduCreator.h"
 
 PromptPduCreator::PromptPduCreator(PduConfig &conf, cfdp::PromptResponseRequired responseRequired)
-    : FileDirectiveCreator(conf, cfdp::FileDirectives::PROMPT, 1),
+    : FileDirectiveCreator(conf, cfdp::FileDirective::PROMPT, 1),
       responseRequired(responseRequired) {}
 
 size_t PromptPduCreator::getSerializedSize() const {

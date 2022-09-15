@@ -102,7 +102,7 @@ class FilestoreTlvBase : public TlvIF {
     if (*size < 3) {
       return SerializeIF::STREAM_TOO_SHORT;
     }
-    auto type = static_cast<cfdp::TlvTypes>(**buffer);
+    auto type = static_cast<cfdp::TlvType>(**buffer);
     if (type != getType()) {
       return cfdp::INVALID_TLV_TYPE;
     }

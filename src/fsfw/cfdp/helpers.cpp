@@ -1,23 +1,21 @@
 #include "helpers.h"
 
-const char* COND_CODE_STRINGS[14] = {
-    "Unknown",
-    "No Error",
-    "Positive ACK Limit Reached",
-    "Keep Alive Limit Reached",
-    "Invalid Transmission Mode",
-    "Filestore Rejection",
-    "File Checksum Failure",
-    "File Size Error",
-    "NAK limit reached",
-    "Inactivity Detected",
-    "Check Limit Reached",
-    "Unsupported Checksum Type",
-    "Suspend Request Received",
-    "Cancel Request Received"
-};
+const char* COND_CODE_STRINGS[14] = {"Unknown",
+                                     "No Error",
+                                     "Positive ACK Limit Reached",
+                                     "Keep Alive Limit Reached",
+                                     "Invalid Transmission Mode",
+                                     "Filestore Rejection",
+                                     "File Checksum Failure",
+                                     "File Size Error",
+                                     "NAK limit reached",
+                                     "Inactivity Detected",
+                                     "Check Limit Reached",
+                                     "Unsupported Checksum Type",
+                                     "Suspend Request Received",
+                                     "Cancel Request Received"};
 
-const char* cfdp::getConditionCodeString(cfdp::ConditionCodes code) {
+const char* cfdp::getConditionCodeString(cfdp::ConditionCode code) {
   switch (code) {
     case NO_CONDITION_FIELD:
       return COND_CODE_STRINGS[0];

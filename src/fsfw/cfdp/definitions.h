@@ -41,7 +41,7 @@ static constexpr ReturnValue_t INVALID_PDU_FORMAT = returnvalue::makeCode(CFDP_C
 
 //! Checksum types according to the SANA Checksum Types registry
 //! https://sanaregistry.org/r/checksum_identifiers/
-enum ChecksumTypes {
+enum ChecksumType {
   // Modular legacy checksum
   MODULAR = 0,
   CRC_32_PROXIMITY_1 = 1,
@@ -50,9 +50,9 @@ enum ChecksumTypes {
   NULL_CHECKSUM = 15
 };
 
-enum PduTypes : uint8_t { FILE_DIRECTIVE = 0, FILE_DATA = 1 };
+enum PduType : uint8_t { FILE_DIRECTIVE = 0, FILE_DATA = 1 };
 
-enum TransmissionModes : uint8_t { ACKNOWLEDGED = 0, UNACKNOWLEDGED = 1 };
+enum TransmissionMode : uint8_t { ACKNOWLEDGED = 0, UNACKNOWLEDGED = 1 };
 
 enum SegmentMetadataFlag : bool { NOT_PRESENT = false, PRESENT = true };
 
@@ -70,7 +70,7 @@ enum WidthInBytes : uint8_t {
   FOUR_BYTES = 4,
 };
 
-enum FileDirectives : uint8_t {
+enum FileDirective : uint8_t {
   INVALID_DIRECTIVE = 0x0f,
   // The _DIRECTIVE suffix is mandatory here because of some nameclash!
   EOF_DIRECTIVE = 0x04,
@@ -82,7 +82,7 @@ enum FileDirectives : uint8_t {
   KEEP_ALIVE = 0x0c
 };
 
-enum ConditionCodes : uint8_t {
+enum ConditionCode : uint8_t {
   NO_CONDITION_FIELD = 0xff,
   NO_ERROR = 0b0000,
   POSITIVE_ACK_LIMIT_REACHED = 0b0001,
@@ -99,8 +99,7 @@ enum ConditionCodes : uint8_t {
   CANCEL_REQUEST_RECEIVED = 0b1111
 };
 
-
-enum FaultHandlerCodes {
+enum FaultHandlerCode {
   RESERVED = 0b0000,
   NOTICE_OF_CANCELLATION = 0b0001,
   NOTICE_OF_SUSPENSION = 0b0010,
@@ -126,7 +125,7 @@ enum FileDeliveryStatus {
 
 enum PromptResponseRequired : uint8_t { PROMPT_NAK = 0, PROMPT_KEEP_ALIVE = 1 };
 
-enum TlvTypes : uint8_t {
+enum TlvType : uint8_t {
   FILESTORE_REQUEST = 0x00,
   FILESTORE_RESPONSE = 0x01,
   MSG_TO_USER = 0x02,

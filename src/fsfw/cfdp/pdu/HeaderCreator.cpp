@@ -1,6 +1,6 @@
 #include "HeaderCreator.h"
 
-HeaderCreator::HeaderCreator(PduConfig &pduConf, cfdp::PduTypes pduType, size_t initPduDataFieldLen,
+HeaderCreator::HeaderCreator(PduConfig &pduConf, cfdp::PduType pduType, size_t initPduDataFieldLen,
                              cfdp::SegmentMetadataFlag segmentMetadataFlag,
                              cfdp::SegmentationControl segCtrl)
     : pduType(pduType),
@@ -65,17 +65,17 @@ void HeaderCreator::setPduDataFieldLen(size_t pduDataFieldLen_) {
   pduDataFieldLen = pduDataFieldLen_;
 }
 
-void HeaderCreator::setPduType(cfdp::PduTypes pduType_) { pduType = pduType_; }
+void HeaderCreator::setPduType(cfdp::PduType pduType_) { pduType = pduType_; }
 
 void HeaderCreator::setSegmentMetadataFlag(cfdp::SegmentMetadataFlag segmentMetadataFlag_) {
   segmentMetadataFlag = segmentMetadataFlag_;
 }
 
-cfdp::PduTypes HeaderCreator::getPduType() const { return pduType; }
+cfdp::PduType HeaderCreator::getPduType() const { return pduType; }
 
 cfdp::Direction HeaderCreator::getDirection() const { return pduConf.direction; }
 
-cfdp::TransmissionModes HeaderCreator::getTransmissionMode() const { return pduConf.mode; }
+cfdp::TransmissionMode HeaderCreator::getTransmissionMode() const { return pduConf.mode; }
 
 bool HeaderCreator::getCrcFlag() const { return pduConf.crcFlag; }
 

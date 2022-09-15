@@ -57,16 +57,16 @@ size_t PduHeaderReader::getWholePduSize() const {
   return getPduDataFieldLen() + PduHeaderReader::getHeaderSize();
 }
 
-cfdp::PduTypes PduHeaderReader::getPduType() const {
-  return static_cast<cfdp::PduTypes>((pointers.fixedHeader->firstByte >> 4) & 0x01);
+cfdp::PduType PduHeaderReader::getPduType() const {
+  return static_cast<cfdp::PduType>((pointers.fixedHeader->firstByte >> 4) & 0x01);
 }
 
 cfdp::Direction PduHeaderReader::getDirection() const {
   return static_cast<cfdp::Direction>((pointers.fixedHeader->firstByte >> 3) & 0x01);
 }
 
-cfdp::TransmissionModes PduHeaderReader::getTransmissionMode() const {
-  return static_cast<cfdp::TransmissionModes>((pointers.fixedHeader->firstByte >> 2) & 0x01);
+cfdp::TransmissionMode PduHeaderReader::getTransmissionMode() const {
+  return static_cast<cfdp::TransmissionMode>((pointers.fixedHeader->firstByte >> 2) & 0x01);
 }
 
 bool PduHeaderReader::getCrcFlag() const { return (pointers.fixedHeader->firstByte >> 1) & 0x01; }

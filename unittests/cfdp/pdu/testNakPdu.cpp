@@ -15,7 +15,7 @@ TEST_CASE("NAK PDU", "[cfdp][pdu]") {
   EntityId destId(WidthInBytes::TWO_BYTES, 2);
   TransactionSeqNum seqNum(WidthInBytes::TWO_BYTES, 15);
   EntityId sourceId(WidthInBytes::TWO_BYTES, 1);
-  PduConfig pduConf(sourceId, destId, TransmissionModes::ACKNOWLEDGED, seqNum);
+  PduConfig pduConf(sourceId, destId, TransmissionMode::ACKNOWLEDGED, seqNum);
 
   FileSize startOfScope(50);
   FileSize endOfScope(1050);
@@ -29,7 +29,7 @@ TEST_CASE("NAK PDU", "[cfdp][pdu]") {
     REQUIRE(sz == 19);
     REQUIRE(serializer.getPduDataFieldLen() == 9);
     REQUIRE(((nakBuffer[1] << 8) | nakBuffer[2]) == 0x09);
-    REQUIRE(nakBuffer[10] == cfdp::FileDirectives::NAK);
+    REQUIRE(nakBuffer[10] == cfdp::FileDirective::NAK);
     uint32_t scope = 0;
     result = SerializeAdapter::deSerialize(&scope, nakBuffer.data() + 11, nullptr,
                                            SerializeIF::Endianness::NETWORK);

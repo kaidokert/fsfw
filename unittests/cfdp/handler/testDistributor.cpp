@@ -25,12 +25,12 @@ TEST_CASE("CFDP Distributor", "[cfdp][distributor]") {
   const cfdp::EntityId& sourceId(groundEntityId);
   const cfdp::EntityId& destId(obswEntityId);
   cfdp::TransactionSeqNum seqNum(UnsignedByteField<uint16_t>(12));
-  auto pduConf = PduConfig(sourceId, destId, cfdp::TransmissionModes::UNACKNOWLEDGED, seqNum);
+  auto pduConf = PduConfig(sourceId, destId, cfdp::TransmissionMode::UNACKNOWLEDGED, seqNum);
   std::string sourceFileString = "hello.txt";
   cfdp::StringLv sourceFileName(sourceFileString);
   std::string destFileString = "hello2.txt";
   cfdp::StringLv destFileName(destFileString);
-  MetadataInfo metadataInfo(false, cfdp::ChecksumTypes::CRC_32, fileSize, sourceFileName,
+  MetadataInfo metadataInfo(false, cfdp::ChecksumType::CRC_32, fileSize, sourceFileName,
                             destFileName);
   MetadataPduCreator creator(pduConf, metadataInfo);
   uint8_t* dataPtr = nullptr;

@@ -16,7 +16,7 @@ class AckPduReader : public FileDirectiveReader {
   ReturnValue_t parseData() override;
 
   static bool checkAckedDirectiveField(uint8_t firstPduDataByte,
-                                       cfdp::FileDirectives& ackedDirective);
+                                       cfdp::FileDirective& ackedDirective);
 
  private:
   bool checkAndSetCodes(uint8_t rawAckedByte, uint8_t rawAckedConditionCode);

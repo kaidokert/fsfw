@@ -2,7 +2,7 @@
 
 FinishedInfo::FinishedInfo() {}
 
-FinishedInfo::FinishedInfo(cfdp::ConditionCodes conditionCode, cfdp::FileDeliveryCode deliveryCode,
+FinishedInfo::FinishedInfo(cfdp::ConditionCode conditionCode, cfdp::FileDeliveryCode deliveryCode,
                            cfdp::FileDeliveryStatus fileStatus)
     : conditionCode(conditionCode), deliveryCode(deliveryCode), fileStatus(fileStatus) {}
 
@@ -76,9 +76,9 @@ ReturnValue_t FinishedInfo::getFaultLocation(EntityIdTlv** faultLocation) {
   return returnvalue::OK;
 }
 
-cfdp::ConditionCodes FinishedInfo::getConditionCode() const { return conditionCode; }
+cfdp::ConditionCode FinishedInfo::getConditionCode() const { return conditionCode; }
 
-void FinishedInfo::setConditionCode(cfdp::ConditionCodes conditionCode) {
+void FinishedInfo::setConditionCode(cfdp::ConditionCode conditionCode) {
   this->conditionCode = conditionCode;
 }
 

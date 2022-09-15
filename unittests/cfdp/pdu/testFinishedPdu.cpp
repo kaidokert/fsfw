@@ -14,7 +14,7 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
   EntityId destId(WidthInBytes::TWO_BYTES, 2);
   TransactionSeqNum seqNum(WidthInBytes::TWO_BYTES, 15);
   EntityId sourceId(WidthInBytes::TWO_BYTES, 1);
-  PduConfig pduConf(sourceId, destId, TransmissionModes::ACKNOWLEDGED, seqNum);
+  PduConfig pduConf(sourceId, destId, TransmissionMode::ACKNOWLEDGED, seqNum);
 
   cfdp::Lv emptyFsMsg;
   FinishedInfo info(cfdp::ConditionCode::INACTIVITY_DETECTED,
@@ -27,7 +27,7 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
     REQUIRE(result == returnvalue::OK);
     REQUIRE(serializer.getSerializedSize() == 12);
     REQUIRE(((fnBuffer[1] << 8) | fnBuffer[2]) == 2);
-    REQUIRE(fnBuffer[10] == cfdp::FileDirectives::FINISH);
+    REQUIRE(fnBuffer[10] == cfdp::FileDirective::FINISH);
     REQUIRE(((fnBuffer[sz - 1] >> 4) & 0x0f) == cfdp::ConditionCode::INACTIVITY_DETECTED);
     REQUIRE(((fnBuffer[sz - 1] >> 2) & 0x01) == cfdp::FileDeliveryCode::DATA_INCOMPLETE);
     REQUIRE((fnBuffer[sz - 1] & 0b11) == cfdp::FileDeliveryStatus::DISCARDED_DELIBERATELY);
@@ -176,7 +176,7 @@ TEST_CASE("Finished PDU", "[cfdp][pdu]") {
 
     fnBuffer[11] = tmp;
     // Invalid TLV type, should be entity ID
-    fnBuffer[sz - 4] = cfdp::TlvTypes::FILESTORE_REQUEST;
+    fnBuffer[sz - 4] = cfdp::TlvType::FILESTORE_REQUEST;
     result = deserializer3.parseData();
     REQUIRE(result == cfdp::INVALID_TLV_TYPE);
 

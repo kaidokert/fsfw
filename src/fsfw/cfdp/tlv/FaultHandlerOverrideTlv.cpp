@@ -1,7 +1,7 @@
 #include "FaultHandlerOverrideTlv.h"
 
-FaultHandlerOverrideTlv::FaultHandlerOverrideTlv(cfdp::ConditionCodes conditionCode,
-                                                 cfdp::FaultHandlerCodes handlerCode)
+FaultHandlerOverrideTlv::FaultHandlerOverrideTlv(cfdp::ConditionCode conditionCode,
+                                                 cfdp::FaultHandlerCode handlerCode)
     : conditionCode(conditionCode), handlerCode(handlerCode) {}
 
 FaultHandlerOverrideTlv::FaultHandlerOverrideTlv() = default;
@@ -32,8 +32,8 @@ ReturnValue_t FaultHandlerOverrideTlv::deSerialize(const uint8_t **buffer, size_
   if (*size < 3) {
     return SerializeIF::STREAM_TOO_SHORT;
   }
-  auto detectedType = static_cast<cfdp::TlvTypes>(**buffer);
-  if (detectedType != cfdp::TlvTypes::FAULT_HANDLER) {
+  auto detectedType = static_cast<cfdp::TlvType>(**buffer);
+  if (detectedType != cfdp::TlvType::FAULT_HANDLER) {
     return cfdp::INVALID_TLV_TYPE;
   }
   *buffer += 1;
@@ -44,11 +44,11 @@ ReturnValue_t FaultHandlerOverrideTlv::deSerialize(const uint8_t **buffer, size_
   }
   *buffer += 1;
   *size += 1;
-  this->conditionCode = static_cast<cfdp::ConditionCodes>((**buffer >> 4) & 0x0f);
-  this->handlerCode = static_cast<cfdp::FaultHandlerCodes>(**buffer & 0x0f);
+  this->conditionCode = static_cast<cfdp::ConditionCode>((**buffer >> 4) & 0x0f);
+  this->handlerCode = static_cast<cfdp::FaultHandlerCode>(**buffer & 0x0f);
   *buffer += 1;
   *size += 1;
   return returnvalue::OK;
 }
 
-cfdp::TlvTypes FaultHandlerOverrideTlv::getType() const { return cfdp::TlvTypes::FAULT_HANDLER; }
+cfdp::TlvType FaultHandlerOverrideTlv::getType() const { return cfdp::TlvType::FAULT_HANDLER; }
