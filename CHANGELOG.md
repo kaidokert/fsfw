@@ -35,7 +35,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `SerialBufferAdapter`: Rename `setBuffer` to `setConstBuffer` and update
   API to expect `const uint8_t*` accordingly.
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/677
- 
+- Remove the following user includes from `fsfw/events/Event.h` and
+  `fsfw/returnvalues/returnvalue.h`:
+  - `#include "events/subsystemIdRanges.h"`
+  - `#include "returnvalues/classIds.h"`
+  The user has to include those themselves now
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/675
+
 # [v5.0.0] 25.07.2022
 
 ## Changes
