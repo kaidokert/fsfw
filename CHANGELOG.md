@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   for other modules
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/655
   which also includes a migration guide
+- Improvements for `AcceptsTelemetryIF` and `AcceptsTelecommandsIF`:
+  - Make functions `const` where it makes sense
+  - Add `const char* getName const` abstract function
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/684
 
 ## CFDP
 
