@@ -19,7 +19,7 @@ ConstStorageAccessor::~ConstStorageAccessor() {
   }
 }
 
-ConstStorageAccessor::ConstStorageAccessor(ConstStorageAccessor&& other)
+ConstStorageAccessor::ConstStorageAccessor(ConstStorageAccessor&& other) noexcept
     : constDataPointer(other.constDataPointer),
       storeId(other.storeId),
       size_(other.size_),
@@ -30,7 +30,7 @@ ConstStorageAccessor::ConstStorageAccessor(ConstStorageAccessor&& other)
   other.store = nullptr;
 }
 
-ConstStorageAccessor& ConstStorageAccessor::operator=(ConstStorageAccessor&& other) {
+ConstStorageAccessor& ConstStorageAccessor::operator=(ConstStorageAccessor&& other) noexcept {
   constDataPointer = other.constDataPointer;
   storeId = other.storeId;
   store = other.store;
@@ -84,7 +84,7 @@ void ConstStorageAccessor::print() const {
   arrayprinter::print(constDataPointer, size_);
 }
 
-void ConstStorageAccessor::assignStore(StorageManagerIF* store) {
+void ConstStorageAccessor::assignStore(StorageManagerIF* store_) {
   internalState = AccessState::ASSIGNED;
-  this->store = store;
+  store = store_;
 }

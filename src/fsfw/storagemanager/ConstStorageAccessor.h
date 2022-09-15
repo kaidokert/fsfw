@@ -23,6 +23,7 @@ class ConstStorageAccessor {
   //! StorageManager classes have exclusive access to private variables.
   friend class PoolManager;
   friend class LocalPool;
+  friend class StorageManagerIF;
 
  public:
   /**
@@ -30,7 +31,7 @@ class ConstStorageAccessor {
    * 			entry to access.
    * @param storeId
    */
-  ConstStorageAccessor(store_address_t storeId);
+  explicit ConstStorageAccessor(store_address_t storeId);
   ConstStorageAccessor(store_address_t storeId, StorageManagerIF* store);
 
   /**
@@ -43,7 +44,7 @@ class ConstStorageAccessor {
    * @brief	Returns a pointer to the read-only data
    * @return
    */
-  const uint8_t* data() const;
+  [[nodiscard]] const uint8_t* data() const;
 
   /**
    * @brief	Copies the read-only data to the supplied pointer
@@ -61,13 +62,13 @@ class ConstStorageAccessor {
    * Get the size of the data
    * @return
    */
-  size_t size() const;
+  [[nodiscard]] size_t size() const;
 
   /**
    * Get the storage ID.
    * @return
    */
-  store_address_t getId() const;
+  [[nodiscard]] store_address_t getId() const;
 
   void print() const;
 
@@ -79,8 +80,8 @@ class ConstStorageAccessor {
    * @param
    * @return
    */
-  ConstStorageAccessor& operator=(ConstStorageAccessor&&);
-  ConstStorageAccessor(ConstStorageAccessor&&);
+  ConstStorageAccessor& operator=(ConstStorageAccessor&&) noexcept;
+  ConstStorageAccessor(ConstStorageAccessor&&) noexcept;
 
   //! The copy ctor and copy assignemnt should be deleted implicitely
   //! according to https://foonathan.net/2019/02/special-member-functions/

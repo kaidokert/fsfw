@@ -29,7 +29,7 @@ LocalPool::LocalPool(object_id_t setObjectId, const LocalPoolConfig& poolConfig,
   }
 }
 
-LocalPool::~LocalPool(void) {}
+LocalPool::~LocalPool() = default;
 
 ReturnValue_t LocalPool::addData(store_address_t* storageId, const uint8_t* data, size_t size,
                                  bool ignoreFault) {
@@ -48,22 +48,6 @@ ReturnValue_t LocalPool::getData(store_address_t packetId, const uint8_t** packe
   return status;
 }
 
-ReturnValue_t LocalPool::getData(store_address_t storeId, ConstStorageAccessor& storeAccessor) {
-  uint8_t* tempData = nullptr;
-  ReturnValue_t status = modifyData(storeId, &tempData, &storeAccessor.size_);
-  storeAccessor.assignStore(this);
-  storeAccessor.constDataPointer = tempData;
-  return status;
-}
-
-ConstAccessorPair LocalPool::getData(store_address_t storeId) {
-  uint8_t* tempData = nullptr;
-  ConstStorageAccessor constAccessor(storeId, this);
-  ReturnValue_t status = modifyData(storeId, &tempData, &constAccessor.size_);
-  constAccessor.constDataPointer = tempData;
-  return ConstAccessorPair(status, std::move(constAccessor));
-}
-
 ReturnValue_t LocalPool::getFreeElement(store_address_t* storageId, const size_t size,
                                         uint8_t** pData, bool ignoreFault) {
   ReturnValue_t status = reserveSpace(size, storageId, ignoreFault);
@@ -72,20 +56,6 @@ ReturnValue_t LocalPool::getFreeElement(store_address_t* storageId, const size_t
   } else {
     *pData = nullptr;
   }
-  return status;
-}
-
-AccessorPair LocalPool::modifyData(store_address_t storeId) {
-  StorageAccessor accessor(storeId, this);
-  ReturnValue_t status = modifyData(storeId, &accessor.dataPointer, &accessor.size_);
-  accessor.assignConstPointer();
-  return AccessorPair(status, std::move(accessor));
-}
-
-ReturnValue_t LocalPool::modifyData(store_address_t storeId, StorageAccessor& storeAccessor) {
-  storeAccessor.assignStore(this);
-  ReturnValue_t status = modifyData(storeId, &storeAccessor.dataPointer, &storeAccessor.size_);
-  storeAccessor.assignConstPointer();
   return status;
 }
 
@@ -197,8 +167,7 @@ void LocalPool::clearStore() {
   }
 }
 
-ReturnValue_t LocalPool::reserveSpace(const size_t size, store_address_t* storeId,
-                                      bool ignoreFault) {
+ReturnValue_t LocalPool::reserveSpace(size_t size, store_address_t* storeId, bool ignoreFault) {
   ReturnValue_t status = getSubPoolIndex(size, &storeId->poolIndex);
   if (status != returnvalue::OK) {
 #if FSFW_CPP_OSTREAM_ENABLED == 1
@@ -348,4 +317,28 @@ bool LocalPool::hasDataAtId(store_address_t storeId) const {
     return true;
   }
   return false;
+}
+
+ReturnValue_t LocalPool::getFreeElement(store_address_t* storeId, size_t size, uint8_t** pData) {
+  return StorageManagerIF::getFreeElement(storeId, size, pData);
+}
+
+ConstAccessorPair LocalPool::getData(store_address_t storeId) {
+  return StorageManagerIF::getData(storeId);
+}
+
+ReturnValue_t LocalPool::addData(store_address_t* storeId, const uint8_t* data, size_t size) {
+  return StorageManagerIF::addData(storeId, data, size);
+}
+
+ReturnValue_t LocalPool::getData(store_address_t storeId, ConstStorageAccessor& accessor) {
+  return StorageManagerIF::getData(storeId, accessor);
+}
+
+ReturnValue_t LocalPool::modifyData(store_address_t storeId, StorageAccessor& accessor) {
+  return StorageManagerIF::modifyData(storeId, accessor);
+}
+
+AccessorPair LocalPool::modifyData(store_address_t storeId) {
+  return StorageManagerIF::modifyData(storeId);
 }

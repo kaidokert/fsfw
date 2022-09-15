@@ -87,21 +87,23 @@ class LocalPool : public SystemObject, public StorageManagerIF {
    * Documentation: See StorageManagerIF.h
    */
   ReturnValue_t addData(store_address_t* storeId, const uint8_t* data, size_t size,
-                        bool ignoreFault = false) override;
-  ReturnValue_t getFreeElement(store_address_t* storeId, const size_t size, uint8_t** pData,
-                               bool ignoreFault = false) override;
+                        bool ignoreFault) override;
+  ReturnValue_t addData(store_address_t* storeId, const uint8_t* data, size_t size) override;
+
+  ReturnValue_t getFreeElement(store_address_t* storeId, size_t size, uint8_t** pData) override;
+  ReturnValue_t getFreeElement(store_address_t* storeId, size_t size, uint8_t** pData,
+                               bool ignoreFault) override;
 
   ConstAccessorPair getData(store_address_t storeId) override;
-  ReturnValue_t getData(store_address_t storeId, ConstStorageAccessor& constAccessor) override;
+  ReturnValue_t getData(store_address_t storeId, ConstStorageAccessor& accessor) override;
   ReturnValue_t getData(store_address_t storeId, const uint8_t** packet_ptr, size_t* size) override;
 
   AccessorPair modifyData(store_address_t storeId) override;
-  ReturnValue_t modifyData(store_address_t storeId, StorageAccessor& storeAccessor) override;
   ReturnValue_t modifyData(store_address_t storeId, uint8_t** packet_ptr, size_t* size) override;
+  ReturnValue_t modifyData(store_address_t storeId, StorageAccessor& accessor) override;
 
-  virtual ReturnValue_t deleteData(store_address_t storeId) override;
-  virtual ReturnValue_t deleteData(uint8_t* ptr, size_t size,
-                                   store_address_t* storeId = nullptr) override;
+  ReturnValue_t deleteData(store_address_t storeId) override;
+  ReturnValue_t deleteData(uint8_t* ptr, size_t size, store_address_t* storeId) override;
 
   /**
    * Get the total size of allocated memory for pool data.
@@ -131,8 +133,8 @@ class LocalPool : public SystemObject, public StorageManagerIF {
    * Get number sub pools. Each pool has pages with a specific bucket size.
    * @return
    */
-  max_subpools_t getNumberOfSubPools() const override;
-  bool hasDataAtId(store_address_t storeId) const override;
+  [[nodiscard]] max_subpools_t getNumberOfSubPools() const override;
+  [[nodiscard]] bool hasDataAtId(store_address_t storeId) const override;
 
  protected:
   /**
@@ -142,7 +144,7 @@ class LocalPool : public SystemObject, public StorageManagerIF {
    * @return	- returnvalue::OK on success,
    * 			- the return codes of #getPoolIndex or #findEmpty otherwise.
    */
-  virtual ReturnValue_t reserveSpace(const size_t size, store_address_t* address, bool ignoreFault);
+  virtual ReturnValue_t reserveSpace(size_t size, store_address_t* address, bool ignoreFault);
 
  private:
   /**

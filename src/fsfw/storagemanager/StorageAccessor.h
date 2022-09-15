@@ -12,9 +12,10 @@ class StorageAccessor : public ConstStorageAccessor {
   //! StorageManager classes have exclusive access to private variables.
   friend class PoolManager;
   friend class LocalPool;
+  friend class StorageManagerIF;
 
  public:
-  StorageAccessor(store_address_t storeId);
+  explicit StorageAccessor(store_address_t storeId);
   StorageAccessor(store_address_t storeId, StorageManagerIF* store);
 
   /**
@@ -25,8 +26,8 @@ class StorageAccessor : public ConstStorageAccessor {
    * @param
    * @return
    */
-  StorageAccessor& operator=(StorageAccessor&&);
-  StorageAccessor(StorageAccessor&&);
+  StorageAccessor& operator=(StorageAccessor&&) noexcept;
+  StorageAccessor(StorageAccessor&&) noexcept;
 
   ReturnValue_t write(uint8_t* data, size_t size, uint16_t offset = 0);
   uint8_t* data();
