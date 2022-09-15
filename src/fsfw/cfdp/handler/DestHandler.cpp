@@ -206,7 +206,7 @@ ReturnValue_t cfdp::DestHandler::handleEofPdu(const cfdp::PacketInfo& info) {
     return result;
   }
   // TODO: Error handling
-  if (eofInfo.getConditionCode() == ConditionCode::NO_ERROR) {
+  if (eofInfo.getConditionCode() == ConditionCodes::NO_ERROR) {
     tp.crc = eofInfo.getChecksum();
     uint64_t fileSizeFromEof = eofInfo.getFileSize().value();
     // CFDP 4.6.1.2.9: Declare file size error if progress exceeds file size
@@ -345,7 +345,7 @@ ReturnValue_t cfdp::DestHandler::handleTransferCompletion() {
       // TODO: Warning / error handling?
     }
   } else {
-    tp.conditionCode = ConditionCode::NO_ERROR;
+    tp.conditionCode = ConditionCodes::NO_ERROR;
   }
   result = noticeOfCompletion();
   if (result != OK) {
@@ -398,14 +398,14 @@ ReturnValue_t cfdp::DestHandler::checksumVerification() {
 
   uint32_t value = crcCalc.value();
   if (value == tp.crc) {
-    tp.conditionCode = ConditionCode::NO_ERROR;
+    tp.conditionCode = ConditionCodes::NO_ERROR;
     tp.deliveryCode = FileDeliveryCode::DATA_COMPLETE;
   } else {
     // TODO: Proper error handling
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "CRC check for file " << tp.destName.data() << " failed" << std::endl;
 #endif
-    tp.conditionCode = ConditionCode::FILE_CHECKSUM_FAILURE;
+    tp.conditionCode = ConditionCodes::FILE_CHECKSUM_FAILURE;
   }
   return OK;
 }

@@ -150,7 +150,7 @@ class DestHandler {
       std::fill(sourceName.begin(), sourceName.end(), '\0');
       std::fill(destName.begin(), destName.end(), '\0');
       fileSize.setFileSize(0, false);
-      conditionCode = ConditionCode::NO_ERROR;
+      conditionCode = ConditionCodes::NO_ERROR;
       deliveryCode = FileDeliveryCode::DATA_INCOMPLETE;
       deliveryStatus = FileDeliveryStatus::DISCARDED_DELIBERATELY;
       crc = 0;
@@ -167,7 +167,7 @@ class DestHandler {
     cfdp::FileSize fileSize;
     TransactionId transactionId;
     PduConfig pduConf;
-    ConditionCode conditionCode = ConditionCode::NO_ERROR;
+    ConditionCodes conditionCode = ConditionCodes::NO_ERROR;
     FileDeliveryCode deliveryCode = FileDeliveryCode::DATA_INCOMPLETE;
     FileDeliveryStatus deliveryStatus = FileDeliveryStatus::DISCARDED_DELIBERATELY;
     uint32_t crc = 0;
