@@ -50,7 +50,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
   auto destHandler = DestHandler(dp, fp);
   CHECK(destHandler.initialize() == OK);
 
-  auto metadataPreparation = [&](FileSize cfdpFileSize, ChecksumTypes checksumType) {
+  auto metadataPreparation = [&](FileSize cfdpFileSize, ChecksumType checksumType) {
     std::string srcNameString = "hello.txt";
     std::string destNameString = "hello-cpy.txt";
     StringLv srcName(srcNameString);
@@ -59,7 +59,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     TransactionSeqNum seqNum(UnsignedByteField<uint16_t>(1));
     conf.sourceId = remoteId;
     conf.destId = localId;
-    conf.mode = TransmissionModes::UNACKNOWLEDGED;
+    conf.mode = TransmissionMode::UNACKNOWLEDGED;
     conf.seqNum = seqNum;
     MetadataPduCreator metadataCreator(conf, info);
     REQUIRE(tcStore.getFreeElement(&storeId, metadataCreator.getSerializedSize(), &buf) == OK);
@@ -146,7 +146,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     const DestHandler::FsmResult& res = destHandler.performStateMachine();
     CHECK(res.result == OK);
     FileSize cfdpFileSize(0);
-    metadataPreparation(cfdpFileSize, ChecksumTypes::NULL_CHECKSUM);
+    metadataPreparation(cfdpFileSize, ChecksumType::NULL_CHECKSUM);
     destHandler.performStateMachine();
     metadataCheck(res, "hello.txt", "hello-cpy.txt", 0);
     destHandler.performStateMachine();
@@ -166,7 +166,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     crcCalc.add(fileData.begin(), fileData.end());
     uint32_t crc32 = crcCalc.value();
     FileSize cfdpFileSize(fileData.size());
-    metadataPreparation(cfdpFileSize, ChecksumTypes::CRC_32);
+    metadataPreparation(cfdpFileSize, ChecksumType::CRC_32);
     destHandler.performStateMachine();
     metadataCheck(res, "hello.txt", "hello-cpy.txt", fileData.size());
     destHandler.performStateMachine();
@@ -202,7 +202,7 @@ TEST_CASE("CFDP Dest Handler", "[cfdp]") {
     crcCalc.add(largerFileData.begin(), largerFileData.end());
     uint32_t crc32 = crcCalc.value();
     FileSize cfdpFileSize(largerFileData.size());
-    metadataPreparation(cfdpFileSize, ChecksumTypes::CRC_32);
+    metadataPreparation(cfdpFileSize, ChecksumType::CRC_32);
     destHandler.performStateMachine();
     metadataCheck(res, "hello.txt", "hello-cpy.txt", largerFileData.size());
     destHandler.performStateMachine();

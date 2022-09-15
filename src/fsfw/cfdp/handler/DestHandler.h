@@ -21,12 +21,12 @@
 namespace cfdp {
 
 struct PacketInfo {
-  PacketInfo(PduTypes type, store_address_t storeId,
-             std::optional<FileDirectives> directive = std::nullopt)
+  PacketInfo(PduType type, store_address_t storeId,
+             std::optional<FileDirective> directive = std::nullopt)
       : pduType(type), directiveType(directive), storeId(storeId) {}
 
-  PduTypes pduType = PduTypes::FILE_DATA;
-  std::optional<FileDirectives> directiveType = FileDirectives::INVALID_DIRECTIVE;
+  PduType pduType = PduType::FILE_DATA;
+  std::optional<FileDirective> directiveType = FileDirective::INVALID_DIRECTIVE;
   store_address_t storeId = store_address_t::invalid();
   PacketInfo() = default;
 };
@@ -150,24 +150,24 @@ class DestHandler {
       std::fill(sourceName.begin(), sourceName.end(), '\0');
       std::fill(destName.begin(), destName.end(), '\0');
       fileSize.setFileSize(0, false);
-      conditionCode = ConditionCodes::NO_ERROR;
+      conditionCode = ConditionCode::NO_ERROR;
       deliveryCode = FileDeliveryCode::DATA_INCOMPLETE;
       deliveryStatus = FileDeliveryStatus::DISCARDED_DELIBERATELY;
       crc = 0;
       progress = 0;
       remoteCfg = nullptr;
       closureRequested = false;
-      checksumType = ChecksumTypes::NULL_CHECKSUM;
+      checksumType = ChecksumType::NULL_CHECKSUM;
     }
 
-    ChecksumTypes checksumType = ChecksumTypes::NULL_CHECKSUM;
+    ChecksumType checksumType = ChecksumType::NULL_CHECKSUM;
     bool closureRequested = false;
     std::vector<char> sourceName;
     std::vector<char> destName;
     cfdp::FileSize fileSize;
     TransactionId transactionId;
     PduConfig pduConf;
-    ConditionCodes conditionCode = ConditionCodes::NO_ERROR;
+    ConditionCode conditionCode = ConditionCode::NO_ERROR;
     FileDeliveryCode deliveryCode = FileDeliveryCode::DATA_INCOMPLETE;
     FileDeliveryStatus deliveryStatus = FileDeliveryStatus::DISCARDED_DELIBERATELY;
     uint32_t crc = 0;

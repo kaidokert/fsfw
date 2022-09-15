@@ -74,9 +74,9 @@ ReturnValue_t CfdpHandler::handleCfdpPacket(TmTcMessage& msg) {
     return INVALID_PDU_FORMAT;
   }
   // The CFDP distributor should have taken care of ensuring the destination ID is correct
-  PduTypes type = reader.getPduType();
+  PduType type = reader.getPduType();
   // Only the destination handler can process these PDUs
-  if (type == PduTypes::FILE_DATA) {
+  if (type == PduType::FILE_DATA) {
     // Disable auto-deletion of packet
     accessorPair.second.release();
     PacketInfo info(type, msg.getStorageId());
@@ -96,7 +96,7 @@ ReturnValue_t CfdpHandler::handleCfdpPacket(TmTcMessage& msg) {
     if (not FileDirectiveReader::checkFileDirective(pduDataField[0])) {
       return INVALID_DIRECTIVE_FIELD;
     }
-    auto directive = static_cast<FileDirectives>(pduDataField[0]);
+    auto directive = static_cast<FileDirective>(pduDataField[0]);
 
     auto passToDestHandler = [&]() {
       accessorPair.second.release();
@@ -106,27 +106,27 @@ ReturnValue_t CfdpHandler::handleCfdpPacket(TmTcMessage& msg) {
     auto passToSourceHandler = [&]() {
 
     };
-    if (directive == FileDirectives::METADATA or directive == FileDirectives::EOF_DIRECTIVE or
-        directive == FileDirectives::PROMPT) {
+    if (directive == FileDirective::METADATA or directive == FileDirective::EOF_DIRECTIVE or
+        directive == FileDirective::PROMPT) {
       // Section b) of 4.5.3: These PDUs should always be targeted towards the file receiver a.k.a.
       // the destination handler
       passToDestHandler();
-    } else if (directive == FileDirectives::FINISH or directive == FileDirectives::NAK or
-               directive == FileDirectives::KEEP_ALIVE) {
+    } else if (directive == FileDirective::FINISH or directive == FileDirective::NAK or
+               directive == FileDirective::KEEP_ALIVE) {
       // Section c) of 4.5.3: These PDUs should always be targeted towards the file sender a.k.a.
       // the source handler
       passToSourceHandler();
-    } else if (directive == FileDirectives::ACK) {
+    } else if (directive == FileDirective::ACK) {
       // Section a): Recipient depends of the type of PDU that is being acknowledged. We can simply
       // extract the PDU type from the raw stream. If it is an EOF PDU, this packet is passed to
       // the source handler, for a Finished PDU, it is passed to the destination handler.
-      FileDirectives ackedDirective;
+      FileDirective ackedDirective;
       if (not AckPduReader::checkAckedDirectiveField(pduDataField[1], ackedDirective)) {
         return INVALID_ACK_DIRECTIVE_FIELDS;
       }
-      if (ackedDirective == FileDirectives::EOF_DIRECTIVE) {
+      if (ackedDirective == FileDirective::EOF_DIRECTIVE) {
         passToSourceHandler();
-      } else if (ackedDirective == FileDirectives::FINISH) {
+      } else if (ackedDirective == FileDirective::FINISH) {
         passToDestHandler();
       }
     }

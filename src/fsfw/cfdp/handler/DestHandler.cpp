@@ -29,8 +29,8 @@ const cfdp::DestHandler::FsmResult& cfdp::DestHandler::performStateMachine() {
   fsmRes.resetOfIteration();
   if (fsmRes.step == TransactionStep::IDLE) {
     for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
-      if (infoIter->pduType == PduTypes::FILE_DIRECTIVE and
-          infoIter->directiveType == FileDirectives::METADATA) {
+      if (infoIter->pduType == PduType::FILE_DIRECTIVE and
+          infoIter->directiveType == FileDirective::METADATA) {
         result = handleMetadataPdu(*infoIter);
         checkAndHandleError(result, errorIdx);
         // Store data was deleted in PDU handler because a store guard is used
@@ -57,13 +57,13 @@ const cfdp::DestHandler::FsmResult& cfdp::DestHandler::performStateMachine() {
   if (fsmRes.state == CfdpStates::BUSY_CLASS_1_NACKED) {
     if (fsmRes.step == TransactionStep::RECEIVING_FILE_DATA_PDUS) {
       for (auto infoIter = dp.packetListRef.begin(); infoIter != dp.packetListRef.end();) {
-        if (infoIter->pduType == PduTypes::FILE_DATA) {
+        if (infoIter->pduType == PduType::FILE_DATA) {
           result = handleFileDataPdu(*infoIter);
           checkAndHandleError(result, errorIdx);
           // Store data was deleted in PDU handler because a store guard is used
           dp.packetListRef.erase(infoIter++);
-        } else if (infoIter->pduType == PduTypes::FILE_DIRECTIVE and
-                   infoIter->directiveType == FileDirectives::EOF_DIRECTIVE) {
+        } else if (infoIter->pduType == PduType::FILE_DIRECTIVE and
+                   infoIter->directiveType == FileDirective::EOF_DIRECTIVE) {
           // TODO: Support for check timer missing
           result = handleEofPdu(*infoIter);
           checkAndHandleError(result, errorIdx);
@@ -206,7 +206,7 @@ ReturnValue_t cfdp::DestHandler::handleEofPdu(const cfdp::PacketInfo& info) {
     return result;
   }
   // TODO: Error handling
-  if (eofInfo.getConditionCode() == ConditionCodes::NO_ERROR) {
+  if (eofInfo.getConditionCode() == ConditionCode::NO_ERROR) {
     tp.crc = eofInfo.getChecksum();
     uint64_t fileSizeFromEof = eofInfo.getFileSize().value();
     // CFDP 4.6.1.2.9: Declare file size error if progress exceeds file size
@@ -272,9 +272,9 @@ ReturnValue_t cfdp::DestHandler::startTransaction(MetadataPduReader& reader, Met
   }
   ReturnValue_t result = OK;
   fsmRes.step = TransactionStep::TRANSACTION_START;
-  if (reader.getTransmissionMode() == TransmissionModes::UNACKNOWLEDGED) {
+  if (reader.getTransmissionMode() == TransmissionMode::UNACKNOWLEDGED) {
     fsmRes.state = CfdpStates::BUSY_CLASS_1_NACKED;
-  } else if (reader.getTransmissionMode() == TransmissionModes::ACKNOWLEDGED) {
+  } else if (reader.getTransmissionMode() == TransmissionMode::ACKNOWLEDGED) {
     fsmRes.state = CfdpStates::BUSY_CLASS_2_ACKED;
   }
   tp.checksumType = info.getChecksumType();
@@ -339,13 +339,13 @@ cfdp::CfdpStates cfdp::DestHandler::getCfdpState() const { return fsmRes.state; 
 
 ReturnValue_t cfdp::DestHandler::handleTransferCompletion() {
   ReturnValue_t result;
-  if (tp.checksumType != ChecksumTypes::NULL_CHECKSUM) {
+  if (tp.checksumType != ChecksumType::NULL_CHECKSUM) {
     result = checksumVerification();
     if (result != OK) {
       // TODO: Warning / error handling?
     }
   } else {
-    tp.conditionCode = ConditionCodes::NO_ERROR;
+    tp.conditionCode = ConditionCode::NO_ERROR;
   }
   result = noticeOfCompletion();
   if (result != OK) {
@@ -398,14 +398,14 @@ ReturnValue_t cfdp::DestHandler::checksumVerification() {
 
   uint32_t value = crcCalc.value();
   if (value == tp.crc) {
-    tp.conditionCode = ConditionCodes::NO_ERROR;
+    tp.conditionCode = ConditionCode::NO_ERROR;
     tp.deliveryCode = FileDeliveryCode::DATA_COMPLETE;
   } else {
     // TODO: Proper error handling
 #if FSFW_CPP_OSTREAM_ENABLED == 1
     sif::warning << "CRC check for file " << tp.destName.data() << " failed" << std::endl;
 #endif
-    tp.conditionCode = ConditionCodes::FILE_CHECKSUM_FAILURE;
+    tp.conditionCode = ConditionCode::FILE_CHECKSUM_FAILURE;
   }
   return OK;
 }
