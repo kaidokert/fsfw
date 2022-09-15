@@ -1,6 +1,9 @@
+#include <etl/crc32.h>
+
 #include <catch2/catch_test_macros.hpp>
 #include <filesystem>
 #include <fstream>
+#include <random>
 
 #include "fsfw/serialize/SerializeIF.h"
 #include "fsfw_hal/host/HostFilesystem.h"
@@ -70,10 +73,35 @@ TEST_CASE("Host Filesystem", "[hal][host]") {
           returnvalue::OK);
     CHECK(fs::file_size(file0) == data.size());
     ifstream ifile(file0);
-    char readBuf[524]{};
-    ifile.read(readBuf, sizeof(readBuf));
-    std::string readBackString(readBuf);
+    std::array<char, 524> readBuf{};
+    ifile.read(readBuf.data(), sizeof(readBuf));
+    std::string readBackString(readBuf.data());
     CHECK(data == readBackString);
+  }
+
+  SECTION("Write To File, Check Not Truncated") {
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> distU8(1, 255);
+    std::array<uint8_t, 512> randData{};
+    for (uint8_t& byte : randData) {
+      byte = distU8(rng);
+    }
+    FileOpParams params(file0.c_str(), randData.size() - 256);
+    REQUIRE(hostFs.createFile(params.fsParams) == returnvalue::OK);
+    CHECK(fs::is_regular_file(file0));
+    REQUIRE(fs::exists(file0));
+    // Write first file chunk
+    CHECK(hostFs.writeToFile(params, randData.cbegin()) == returnvalue::OK);
+    params.offset = 256;
+    CHECK(hostFs.writeToFile(params, randData.cbegin() + 256) == returnvalue::OK);
+    std::ifstream rf(file0, ios::binary);
+    std::array<uint8_t, 512> readBack{};
+    REQUIRE(std::filesystem::file_size(file0) == 512);
+    rf.read(reinterpret_cast<char*>(readBack.data()), readBack.size());
+    for (size_t i = 0; i < 512; i++) {
+      CHECK(randData[i] == readBack[i]);
+    }
   }
 
   SECTION("Read From File") {
