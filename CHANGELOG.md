@@ -30,10 +30,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   for other modules
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/655
   which also includes a migration guide
-- Improvements for `AcceptsTelemetryIF` and `AcceptsTelecommandsIF`:
-  - Make functions `const` where it makes sense
-  - Add `const char* getName const` abstract function
-  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/684
 - Bump Catch2 dependency to regular version `v3.1.0`
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/678
 - `SerialBufferAdapter`: Rename `setBuffer` to `setConstBuffer` and update
@@ -45,6 +41,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - `#include "returnvalues/classIds.h"`
   The user has to include those themselves now
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/675
+- Improvements for `AcceptsTelemetryIF` and `AcceptsTelecommandsIF`:
+  - Make functions `const` where it makes sense
+  - Add `const char* getName const` abstract function
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/684
 - Move some generic `StorageManagerIF` implementations from `LocalPool` to
   interface itself so it can be re-used more easily. Also add new
   abstract function `bool hasDataAtId(store_address_t storeId) const`.
