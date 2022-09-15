@@ -10,6 +10,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 # [v6.0.0]
 
+## Fixes
+
+- Bugfix for Serial Buffer Stream: Setting `doActive` to false now
+  actually fully disables printing.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/680
+- `TcpTmTcServer.cpp`: The server was actually not able to handle
+  CCSDS packets which were clumped together. This has been fixed now.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/673
+
 ## Added
 
 - Add new `UnsignedByteField` class
@@ -24,6 +33,31 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   for other modules
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/655
   which also includes a migration guide
+- Bump Catch2 dependency to regular version `v3.1.0`
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/678
+- `SerialBufferAdapter`: Rename `setBuffer` to `setConstBuffer` and update
+  API to expect `const uint8_t*` accordingly.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/677
+- Remove the following user includes from `fsfw/events/Event.h` and
+  `fsfw/returnvalues/returnvalue.h`:
+  - `#include "events/subsystemIdRanges.h"`
+  - `#include "returnvalues/classIds.h"`
+  The user has to include those themselves now
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/675
+- `DeviceHandlerBase`: Set command sender before calling `buildCommandFromCommand`.
+  This allows finishing action commands immediately inside the function.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/672
+- `DeviceHandlerBase`: New signature of `handleDeviceTm` which expects
+  a `const SerializeIF&` and additional helper variant which expects `const uint8_t*`
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/671
+- Improvements for `AcceptsTelemetryIF` and `AcceptsTelecommandsIF`:
+  - Make functions `const` where it makes sense
+  - Add `const char* getName const` abstract function
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/684
+- Move some generic `StorageManagerIF` implementations from `LocalPool` to
+  interface itself so it can be re-used more easily. Also add new
+  abstract function `bool hasDataAtId(store_address_t storeId) const`.
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/685
 
 ## CFDP
 
@@ -36,7 +70,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
    - mib module for the CFDP stack
    - PDU classes renamed from `...Serializer`/`...Deserializer` to `...Creator`/`...Reader`
      respetively
-  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/682/files
+   - Renamed `TcDistributor` to `TcDistributorBase` to prevent confusion
+   - Refactored `TcDisitributorBase` to be more flexible and usable for CFDP distribution
+   - Renamed `CCSDSDistributor` to `CcsdsDistributor` and add feature which allows it
+     to remove the CCSDS header when routing a packet. This allows CCSDS agnostic receiver
+     implementation without an extra component
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/682
 
 # [v5.0.0] 25.07.2022
 
