@@ -18,7 +18,9 @@ ReturnValue_t HostFilesystem::writeToFile(FileOpParams params, const uint8_t *da
   if (not exists(path)) {
     return HasFileSystemIF::FILE_DOES_NOT_EXIST;
   }
-  ofstream file(path, ios::binary | ios::out);
+  // This is equivalent to "r+" mode, which is what we need here. Only using ::out would truncate
+  // the file
+  ofstream file(path, ios::binary | ios::out | ios::in);
   if (file.fail()) {
     return HasFileSystemIF::GENERIC_FILE_ERROR;
   }
