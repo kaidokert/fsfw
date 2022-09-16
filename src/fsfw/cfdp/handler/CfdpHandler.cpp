@@ -11,15 +11,14 @@ using namespace cfdp;
 
 CfdpHandler::CfdpHandler(const FsfwHandlerParams& fsfwParams, const CfdpHandlerCfg& cfdpCfg)
     : SystemObject(fsfwParams.objectId),
+      msgQueue(fsfwParams.msgQueue),
       destHandler(
           DestHandlerParams(LocalEntityCfg(cfdpCfg.id, cfdpCfg.indicCfg, cfdpCfg.faultHandler),
                             cfdpCfg.userHandler, cfdpCfg.remoteCfgProvider, cfdpCfg.packetInfoList,
                             cfdpCfg.lostSegmentsList),
           FsfwParams(fsfwParams.packetDest, nullptr, this, fsfwParams.tcStore,
-                     fsfwParams.tmStore)) {
-  // TODO: Make queue params configurable, or better yet, expect it to be passed externally
-  msgQueue = QueueFactory::instance()->createMessageQueue();
-  destHandler.setMsgQueue(*msgQueue);
+                     fsfwParams.tmStore))  {
+  destHandler.setMsgQueue(msgQueue);
 }
 
 [[nodiscard]] const char* CfdpHandler::getName() const { return "CFDP Handler"; }
@@ -28,7 +27,7 @@ CfdpHandler::CfdpHandler(const FsfwHandlerParams& fsfwParams, const CfdpHandlerC
   return destHandler.getDestHandlerParams().cfg.localId.getValue();
 }
 
-[[nodiscard]] MessageQueueId_t CfdpHandler::getRequestQueue() const { return msgQueue->getId(); }
+[[nodiscard]] MessageQueueId_t CfdpHandler::getRequestQueue() const { return msgQueue.getId(); }
 
 ReturnValue_t CfdpHandler::initialize() {
   ReturnValue_t result = destHandler.initialize();
@@ -47,8 +46,8 @@ ReturnValue_t CfdpHandler::performOperation(uint8_t operationCode) {
   ReturnValue_t status;
   ReturnValue_t result = OK;
   TmTcMessage tmtcMsg;
-  for (status = msgQueue->receiveMessage(&tmtcMsg); status == returnvalue::OK;
-       status = msgQueue->receiveMessage(&tmtcMsg)) {
+  for (status = msgQueue.receiveMessage(&tmtcMsg); status == returnvalue::OK;
+       status = msgQueue.receiveMessage(&tmtcMsg)) {
     result = handleCfdpPacket(tmtcMsg);
     if (result != OK) {
       status = result;

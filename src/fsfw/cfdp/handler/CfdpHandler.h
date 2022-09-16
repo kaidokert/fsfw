@@ -11,13 +11,15 @@
 
 struct FsfwHandlerParams {
   FsfwHandlerParams(object_id_t objectId, HasFileSystemIF& vfs, AcceptsTelemetryIF& packetDest,
-                    StorageManagerIF& tcStore, StorageManagerIF& tmStore)
-      : objectId(objectId), vfs(vfs), packetDest(packetDest), tcStore(tcStore), tmStore(tmStore) {}
+                    StorageManagerIF& tcStore, StorageManagerIF& tmStore, MessageQueueIF& msgQueue)
+      : objectId(objectId), vfs(vfs), packetDest(packetDest), tcStore(tcStore), tmStore(tmStore),
+        msgQueue(msgQueue) {}
   object_id_t objectId{};
   HasFileSystemIF& vfs;
   AcceptsTelemetryIF& packetDest;
   StorageManagerIF& tcStore;
   StorageManagerIF& tmStore;
+  MessageQueueIF& msgQueue;
 };
 
 struct CfdpHandlerCfg {
@@ -54,7 +56,7 @@ class CfdpHandler : public SystemObject, public ExecutableObjectIF, public Accep
   ReturnValue_t performOperation(uint8_t operationCode) override;
 
  private:
-  MessageQueueIF* msgQueue = nullptr;
+  MessageQueueIF& msgQueue;
   cfdp::DestHandler destHandler;
   StorageManagerIF* tcStore = nullptr;
   StorageManagerIF* tmStore = nullptr;
