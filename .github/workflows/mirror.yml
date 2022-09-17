@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: mirror
         id: mirror
-        uses: bridgelightcloud/github-mirror-action@v2
+        uses: kaidokert/github-mirror-action@v2
         with:
           origin: 'https://egit.irs.uni-stuttgart.de/fsfw/fsfw.git'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
