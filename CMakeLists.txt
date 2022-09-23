@@ -326,7 +326,8 @@ if(FSFW_BUILD_TESTS)
             "/usr/local/include/*"
             "*/fsfw_tests/*"
             "*/catch2-src/*"
-            "*/fsfw_hal/*")
+            "*/fsfw_hal/*"
+            "unittests/*")
       endif()
 
       target_link_options(${FSFW_TEST_TGT} PRIVATE -fprofile-arcs
@@ -345,7 +346,8 @@ if(FSFW_BUILD_TESTS)
       else()
         setup_target_for_coverage_lcov(
           NAME ${FSFW_TEST_TGT}_coverage EXECUTABLE ${FSFW_TEST_TGT}
-          DEPENDENCIES ${FSFW_TEST_TGT})
+          DEPENDENCIES ${FSFW_TEST_TGT}
+          GENHTML_ARGS --html-epilog ${CMAKE_SOURCE_DIR}/unittests/lcov_epilog.html)
       endif()
     endif()
   endif()
