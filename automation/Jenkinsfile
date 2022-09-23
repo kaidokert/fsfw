@@ -52,12 +52,12 @@ pipeline {
                     sh 'cmake -DFSFW_BUILD_DOCS=ON -DFSFW_OSAL=host ..'
                     sh 'make Sphinx'
                     sshagent(credentials: ['documentation-buildfix']) {
-                        sh 'rsync -r --delete docs/sphinx/* buildfix@documentation.irs.uni-stuttgart.de:~/www/fsfw/development'
+                        sh 'rsync -r --delete docs/sphinx/* buildfix@documentation.irs.uni-stuttgart.de:/fsfw/development'
                     }
                 }
                 dir(BUILDDIR) {
                     sshagent(credentials: ['documentation-buildfix']) {
-                        sh 'rsync -r --delete fsfw-tests_coverage/* buildfix@documentation.irs.uni-stuttgart.de:~/www/fsfw/coverage/development'
+                        sh 'rsync -r --delete fsfw-tests_coverage/* buildfix@documentation.irs.uni-stuttgart.de:/fsfw/coverage/development'
                     }
                 }
             }
@@ -71,12 +71,12 @@ pipeline {
                     sh 'cmake -DFSFW_BUILD_DOCS=ON -DFSFW_OSAL=host ..'
                     sh 'make Sphinx'
                     sshagent(credentials: ['documentation-buildfix']) {
-                        sh 'rsync -r --delete docs/sphinx/* buildfix@documentation.irs.uni-stuttgart.de:~/www/fsfw/master'
+                        sh 'rsync -r --delete docs/sphinx/* buildfix@documentation.irs.uni-stuttgart.de:/fsfw/master'
                     }
                 }
                 dir(BUILDDIR) {
                     sshagent(credentials: ['documentation-buildfix']) {
-                        sh 'rsync -r --delete fsfw-tests_coverage/* buildfix@documentation.irs.uni-stuttgart.de:~/www/fsfw/coverage/master'
+                        sh 'rsync -r --delete fsfw-tests_coverage/* buildfix@documentation.irs.uni-stuttgart.de:/fsfw/coverage/master'
                     }
                 }
             }
