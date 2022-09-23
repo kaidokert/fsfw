@@ -64,7 +64,7 @@ pipeline {
         }
         stage('Master Documentation') {
             when {
-                branch 'mohr/documentation_ci'
+                branch 'master'
             }
             steps {
                 dir(DOCDDIR) {
