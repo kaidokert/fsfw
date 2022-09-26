@@ -14,11 +14,17 @@ TEST_CASE("CCSDS Creator", "[ccsds-creator]") {
   size_t serLen = 0;
 
   SECTION("Constexpr Helpers") {
-    REQUIRE(ccsds::getTcSpacePacketIdFromApid(0x22) == 0x1822);
-    REQUIRE(ccsds::getTmSpacePacketIdFromApid(0x22) == 0x0822);
+    REQUIRE(ccsds::getTcSpacePacketIdFromApid(0x22, true) == 0x1822);
+    REQUIRE(ccsds::getTmSpacePacketIdFromApid(0x22, true) == 0x0822);
 
-    REQUIRE(ccsds::getTcSpacePacketIdFromApid(0x7ff) == 0x1fff);
-    REQUIRE(ccsds::getTmSpacePacketIdFromApid(0x7ff) == 0xfff);
+    REQUIRE(ccsds::getTcSpacePacketIdFromApid(0x22, false) == 0x1022);
+    REQUIRE(ccsds::getTmSpacePacketIdFromApid(0x22, false) == 0x0022);
+
+    REQUIRE(ccsds::getTcSpacePacketIdFromApid(0x7ff, true) == 0x1fff);
+    REQUIRE(ccsds::getTmSpacePacketIdFromApid(0x7ff, true) == 0xfff);
+
+    REQUIRE(ccsds::getTcSpacePacketIdFromApid(0x7ff, false) == 0x17ff);
+    REQUIRE(ccsds::getTmSpacePacketIdFromApid(0x7ff, false) == 0x7ff);
   }
 
   SECTION("Basic Test") {
