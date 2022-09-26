@@ -1,9 +1,8 @@
 #ifndef FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_
 #define FRAMEWORK_SERVICEINTERFACE_SERVICEINTERFACESTREAM_H_
 
-#include <FSFWConfig.h>
-
 #include "ServiceInterfaceBuffer.h"
+#include "fsfw/FSFW.h"
 
 #if FSFW_CPP_OSTREAM_ENABLED == 1
 
