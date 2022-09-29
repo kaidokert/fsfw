@@ -517,16 +517,16 @@ ReturnValue_t DeviceHandlerBase::updatePeriodicReply(bool enable, DeviceCommandI
     if (enable) {
       info->active = true;
       if (info->countdown != nullptr) {
-        info->delayCycles = info->maxDelayCycles;
-      } else {
         info->countdown->resetTimer();
+      } else {
+        info->delayCycles = info->maxDelayCycles;
       }
     } else {
       info->active = false;
       if (info->countdown != nullptr) {
-        info->delayCycles = 0;
-      } else {
         info->countdown->timeOut();
+      } else {
+        info->delayCycles = 0;
       }
     }
   }
