@@ -50,6 +50,11 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 #
 html_theme = 'alabaster'
 
+html_theme_options = {
+    "extra_nav_links": {"Impressum" : "https://www.uni-stuttgart.de/impressum", "Datenschutz": "https://info.irs.uni-stuttgart.de/datenschutz/datenschutzWebmit.html"}
+}
+
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
