@@ -16,11 +16,6 @@ ObjectManager* ObjectManager::instance() {
   return objManagerInstance;
 }
 
-void ObjectManager::setObjectFactoryFunction(produce_function_t objFactoryFunc, void* factoryArgs) {
-  this->objectFactoryFunction = objFactoryFunc;
-  this->factoryArgs = factoryArgs;
-}
-
 ObjectManager::ObjectManager() = default;
 
 ObjectManager::~ObjectManager() {
@@ -89,7 +84,6 @@ void ObjectManager::initialize() {
 #endif
     return;
   }
-  objectFactoryFunction(factoryArgs);
   ReturnValue_t result = returnvalue::FAILED;
   uint32_t errorCount = 0;
   for (auto const& it : objectList) {

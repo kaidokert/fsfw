@@ -21,7 +21,6 @@
  */
 class ObjectManager : public ObjectManagerIF {
  public:
-  using produce_function_t = void (*)(void* args);
 
   /**
    * Returns the single instance of TaskFactory.
@@ -29,8 +28,6 @@ class ObjectManager : public ObjectManagerIF {
    * Thus, we choose link-time variability of the  instance.
    */
   static ObjectManager* instance();
-
-  void setObjectFactoryFunction(produce_function_t prodFunc, void* args);
 
   template <typename T>
   T* get(object_id_t id);
@@ -54,8 +51,6 @@ class ObjectManager : public ObjectManagerIF {
    * @param   The id of the object to be created.
    * @return  Returns a pointer to the newly created object or NULL.
    */
-  produce_function_t objectFactoryFunction = nullptr;
-  void* factoryArgs = nullptr;
 
  private:
   ObjectManager();
