@@ -74,16 +74,6 @@ SystemObjectIF* ObjectManager::getSystemObject(object_id_t id) {
 }
 
 void ObjectManager::initialize() {
-  if (objectFactoryFunction == nullptr) {
-#if FSFW_CPP_OSTREAM_ENABLED == 1
-    sif::error << "ObjectManager::initialize: Passed produceObjects "
-                  "functions is nullptr!"
-               << std::endl;
-#else
-    sif::printError("ObjectManager::initialize: Passed produceObjects functions is nullptr!\n");
-#endif
-    return;
-  }
   ReturnValue_t result = returnvalue::FAILED;
   uint32_t errorCount = 0;
   for (auto const& it : objectList) {
