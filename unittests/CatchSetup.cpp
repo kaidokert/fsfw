@@ -25,7 +25,7 @@ ServiceInterfaceStream warning("WARNING");
 int customSetup() {
   // global setup
   ObjectManager* objMan = ObjectManager::instance();
-  objMan->setObjectFactoryFunction(Factory::produceFrameworkObjects, nullptr);
+  Factory::produceFrameworkObjects(nullptr);
   objMan->initialize();
   return 0;
 }
