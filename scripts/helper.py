@@ -199,7 +199,7 @@ def check_for_cmake_build_dir(build_dir_list: list) -> list:
 def perform_lcov_operation(directory: str, chdir: bool):
     if chdir:
         os.chdir(directory)
-    cmd_runner("cmake --build . -- fsfw-tests_coverage -j")
+    cmd_runner("cmake --build -j . -- fsfw-tests_coverage")
 
 
 def determine_build_dir(build_dir_list: List[str]):
