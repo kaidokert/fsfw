@@ -458,7 +458,7 @@ ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceComm
   info.expectedReplies = 0;
   info.isExecuting = false;
   info.sendReplyTo = NO_COMMANDER;
-  info.useAlternativeReplyId = alternativeReplyId;
+  info.useAlternativeReplyId = useAlternativeReply;
   info.alternativeReplyId = alternativeReplyId;
   auto resultPair = deviceCommandMap.emplace(deviceCommand, info);
   if (resultPair.second) {
@@ -517,16 +517,16 @@ ReturnValue_t DeviceHandlerBase::updatePeriodicReply(bool enable, DeviceCommandI
     if (enable) {
       info->active = true;
       if (info->countdown != nullptr) {
-        info->delayCycles = info->maxDelayCycles;
-      } else {
         info->countdown->resetTimer();
+      } else {
+        info->delayCycles = info->maxDelayCycles;
       }
     } else {
       info->active = false;
       if (info->countdown != nullptr) {
-        info->delayCycles = 0;
-      } else {
         info->countdown->timeOut();
+      } else {
+        info->delayCycles = 0;
       }
     }
   }
