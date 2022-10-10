@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Changes
 
+- Remove default secondary header argument for
+  `uint16_t getTcSpacePacketIdFromApid(uint16_t apid, bool secondaryHeaderFlag)` and
+  `uint16_t getTmSpacePacketIdFromApid(uint16_t apid, bool secondaryHeaderFlag)`
+  PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/689
 - Removed `HasReturnvaluesIF` class in favor of `returnvalue` namespace with `OK` and `FAILED`
   constants.
   PR: https://egit.irs.uni-stuttgart.de/fsfw/fsfw/pulls/659
