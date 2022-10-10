@@ -458,7 +458,7 @@ ReturnValue_t DeviceHandlerBase::insertInCommandMap(DeviceCommandId_t deviceComm
   info.expectedReplies = 0;
   info.isExecuting = false;
   info.sendReplyTo = NO_COMMANDER;
-  info.useAlternativeReplyId = alternativeReplyId;
+  info.useAlternativeReplyId = useAlternativeReply;
   info.alternativeReplyId = alternativeReplyId;
   auto resultPair = deviceCommandMap.emplace(deviceCommand, info);
   if (resultPair.second) {
